@@ -1,6 +1,7 @@
-package com.sbroussi.app1;
+package com.sbroussi.dto.jms;
 
-import com.sbroussi.dto.jms.DtoJmsRequest;
+import com.sbroussi.dto.DtoContext;
+import com.sbroussi.dto.jms.test.TestRequest;
 import org.junit.Test;
 import org.mockito.Matchers;
 
@@ -14,13 +15,12 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class App1Test {
+public class MessageSenderImplTest {
 
 
     @Test
@@ -46,19 +46,32 @@ public class App1Test {
         when(responseMessage.getText()).thenReturn("my reply response");
 
         // setup
-        App1 app = new App1();
-        app.setQueueFactory(queueFactory);
-        app.setRequestQueue(requestQueue);
-        app.setReplyQueue(replyQueue);
+        DtoContext dtoContext = DtoContext.builder().build();
+
+        MessageSenderImpl messageSender = new MessageSenderImpl(queueFactory);
+        DtoJmsContext jmsContext = DtoJmsContext.builder()
+                .dtoContext(dtoContext)
+                .applicationId("app-test")
+                .messageSender(messageSender)
+                .requestQueue(requestQueue)
+                .replyQueue(replyQueue)
+                .build();
+
+
+        // JMS request
+        TestRequest adrvirtu = TestRequest.builder()
+                .myRequestField("test")
+                .build();
+
+        // send JMS message
+        DtoJmsRequest request = new DtoJmsRequest(adrvirtu);
+        DtoJmsConnector.send(jmsContext, request);
 
         // send
-        DtoJmsRequest dtoRequest = app.sendText("hello");
-        assertNotNull(app.getDtoContext());
-        assertNotNull(app.getJmsContext());
-        assertNotNull(dtoRequest);
+        messageSender.sendMessage(jmsContext, request);
 
-        assertEquals("formatted DTO: [com.sbroussi.xml.request.v1_0.ADRVIRTU]", dtoRequest.getRawRequest());
-        assertEquals("my reply response", dtoRequest.getRawResponse());
+        assertEquals("formatted DTO: [com.sbroussi.dto.jms.test.TestRequest]", request.getRawRequest());
+        assertEquals("my reply response", request.getRawResponse());
 
 
     }

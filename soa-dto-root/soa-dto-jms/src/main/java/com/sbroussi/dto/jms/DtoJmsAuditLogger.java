@@ -9,11 +9,37 @@ import lombok.extern.slf4j.Slf4j;
 public class DtoJmsAuditLogger implements DtoJmsAudit {
 
     @Override
-    public void traceRequest(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
+    public void traceBeforeRequest(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
         if (log.isInfoEnabled()) {
-            log.info("send JMS request [" + request.getDtoRequestAnnotation().name() + "] ["
-                    + request.getRawMessage() + "]");
+            String rawMessage = request.getRawRequest();
+            log.info("Send JMS request [" + request.getDtoRequestAnnotation().name()
+                    + "] (" + rawMessage.length() + " chars): [" + rawMessage + "]");
         }
 
+    }
+
+    @Override
+    public void traceAfterResponse(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
+        if (log.isInfoEnabled()) {
+            String rawResponse = request.getRawResponse();
+            if (rawResponse == null) {
+                rawResponse = "";
+            }
+
+            // truncate 2 KB
+            final int messageLength = (rawResponse == null) ? -1 : rawResponse.length();
+            final String messageLog;
+            if (messageLength <= 2000) {
+                messageLog = rawResponse;
+            } else {
+                final int keepEndOfMessage = 40;
+                messageLog = rawResponse.substring(0, 2000 - keepEndOfMessage) + "...[truncated]..."
+                        + rawResponse.substring(messageLength - keepEndOfMessage);
+            }
+
+
+            log.info("Received response of JMS request [" + request.getDtoRequestAnnotation().name()
+                    + "] received (" + messageLength + " chars): [" + messageLog + "]");
+        }
     }
 }

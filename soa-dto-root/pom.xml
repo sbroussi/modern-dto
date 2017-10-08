@@ -19,6 +19,7 @@
         <module>soa-dto-api</module>
         <module>soa-dto</module>
         <module>soa-dto-jms</module>
+        <module>soa-dto-jms-spring</module>
     </modules>
 
 

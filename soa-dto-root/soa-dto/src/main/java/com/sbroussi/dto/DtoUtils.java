@@ -68,9 +68,9 @@ public class DtoUtils {
      * @return TRUE if found
      */
     public static boolean contains(final String[] array, final String valueToFind) {
-        if (array != null) {
-            for (String s : array) {
-                if (valueToFind.equals(s)) {
+        if ((array != null) && (valueToFind != null)) {
+            for (int i = 0; i < array.length; i++) {
+                if (valueToFind.equals(array[i])) {
                     return true;
                 }
             }

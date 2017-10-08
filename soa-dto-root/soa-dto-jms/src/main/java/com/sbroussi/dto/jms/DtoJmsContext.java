@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 
+import javax.jms.Queue;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,15 +23,28 @@ public class DtoJmsContext {
     @NonNull
     private String applicationId;
 
+    /**
+     * The JMS queue where to PUT the request.
+     */
+    @NonNull
+    private Queue requestQueue;
 
     /**
-     * A chain of auditor: they will be called in the order of the list.
+     * The JMS queue where to READ the responses ('null' for ONE-WAY request).
+     */
+    private Queue replyQueue;
+
+    @NonNull
+    private MessageSender messageSender;
+
+    /**
+     * A chain of auditors: they will be called in the order of the list (before sending the JMS message).
      */
     @Builder.Default
     private List<DtoJmsAudit> dtoJmsAuditors = buildDefaultAuditors();
 
     /**
-     * @return the list of default autitors.
+     * @return the list of default auditors.
      */
     private static List<DtoJmsAudit> buildDefaultAuditors() {
         ArrayList<DtoJmsAudit> list = new ArrayList<DtoJmsAudit>();
