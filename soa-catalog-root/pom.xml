@@ -12,6 +12,10 @@
     <artifactId>soa-catalog-root</artifactId>
     <packaging>pom</packaging>
 
+    <properties>
+        <dto-api.version>2017.10</dto-api.version>
+    </properties>
+
     <modules>
         <module>soa-catalog</module>
     </modules>

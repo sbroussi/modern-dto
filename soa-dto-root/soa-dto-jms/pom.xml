@@ -7,12 +7,18 @@
     <parent>
         <groupId>com.sbroussi</groupId>
         <artifactId>soa-dto-root</artifactId>
-        <version>${dto-api.version}</version>
+        <version>2017.10</version>
     </parent>
 
     <artifactId>soa-dto-jms</artifactId>
 
     <dependencies>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>soa-dto</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>

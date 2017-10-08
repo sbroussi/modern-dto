@@ -12,12 +12,22 @@
 
     <artifactId>soa-app1-and-app3</artifactId>
 
+    <properties>
+        <dto-api-version>2017.10</dto-api-version>
+    </properties>
+
     <dependencies>
 
         <dependency>
             <groupId>com.sbroussi</groupId>
             <artifactId>soa-dto-api</artifactId>
-            <version>${dto-api.version}</version>
+            <version>${dto-api-version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sbroussi</groupId>
+            <artifactId>soa-messages</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
     </dependencies>

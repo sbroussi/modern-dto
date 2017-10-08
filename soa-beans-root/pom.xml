@@ -13,6 +13,10 @@
     <artifactId>soa-beans-root</artifactId>
     <packaging>pom</packaging>
 
+    <properties>
+        <dto-api.version>2017.10</dto-api.version>
+    </properties>
+
     <modules>
         <module>soa-messages</module>
         <module>soa-app1-and-app3</module>
