@@ -1,4 +1,4 @@
-package com.sbroussi.xml.request.v1_0;
+package com.sbroussi.soa.dto;
 
 import com.sbroussi.dto.annotations.DtoField;
 import com.sbroussi.dto.annotations.DtoFieldReference;

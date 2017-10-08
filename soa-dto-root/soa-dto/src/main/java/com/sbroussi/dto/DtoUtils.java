@@ -2,6 +2,8 @@ package com.sbroussi.dto;
 
 
 import com.sbroussi.dto.annotations.DtoField;
+import com.sbroussi.dto.annotations.DtoFieldNumber;
+import com.sbroussi.dto.annotations.DtoFieldNumberReference;
 import com.sbroussi.dto.annotations.DtoFieldReference;
 
 import java.lang.annotation.Annotation;
@@ -24,8 +26,11 @@ public class DtoUtils {
             if (dtoField != null) {
                 result.add(dtoField);
             }
+            DtoFieldNumber dtoFieldNumber = readDtoFieldNumber(field);
+            if (dtoFieldNumber != null) {
+                result.add(dtoFieldNumber);
+            }
         }
-
 
         return result;
     }
@@ -43,5 +48,35 @@ public class DtoUtils {
         return dtoField;
     }
 
+
+    private static DtoFieldNumber readDtoFieldNumber(final AnnotatedElement element) {
+        DtoFieldNumber DtoFieldNumber = element.getAnnotation(DtoFieldNumber.class);
+        if (DtoFieldNumber == null) {
+            // not defined: search for reference
+            final DtoFieldNumberReference DtoFieldNumberRef = element.getAnnotation(DtoFieldNumberReference.class);
+            if (DtoFieldNumberRef != null) {
+                // recursive call
+                DtoFieldNumber = readDtoFieldNumber(DtoFieldNumberRef.reference());
+            }
+        }
+        return DtoFieldNumber;
+    }
+
+    /**
+     * @param array       the array to lookup
+     * @param valueToFind the value to find
+     * @return TRUE if found
+     */
+    public static boolean contains(final String[] array, final String valueToFind) {
+        if (array != null) {
+            for (String s : array) {
+                if (valueToFind.equals(s)) {
+                    return true;
+                }
+            }
+
+        }
+        return false;
+    }
 
 }

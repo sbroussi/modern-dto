@@ -8,10 +8,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.FIELD})
-public @interface DtoField {
+public @interface DtoFieldNumberReference {
 
-    int length();
-
-    char paddingChar() default ' ';
-
+    Class reference();
 }
