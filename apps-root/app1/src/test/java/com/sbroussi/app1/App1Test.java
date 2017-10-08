@@ -26,7 +26,7 @@ public class App1Test {
     @Test
     public void testSend() throws Exception {
 
-        // MOCK context (see MessageSenderImpl,java implementation)
+        // MOCK context (see MessageSenderImpl.java implementation)
         Queue requestQueue = mock(Queue.class);
         Queue replyQueue = mock(Queue.class);
         QueueConnectionFactory queueFactory = mock(QueueConnectionFactory.class);

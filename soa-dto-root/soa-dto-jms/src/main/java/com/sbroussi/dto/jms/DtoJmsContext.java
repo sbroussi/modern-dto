@@ -38,7 +38,13 @@ public class DtoJmsContext {
     private MessageSender messageSender;
 
     /**
-     * A chain of auditors: they will be called in the order of the list (before sending the JMS message).
+     * A chain of auditors: they will be called in the order of the list.
+     * <p>
+     * The auditors are called:
+     * <p>
+     * - before sending the JMS request
+     * <p>
+     * - after receiving the JMS responses (or when the One-Way request has been sent).
      */
     @Builder.Default
     private List<DtoJmsAudit> dtoJmsAuditors = buildDefaultAuditors();
