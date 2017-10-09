@@ -2,6 +2,8 @@ package com.sbroussi.dto.jms.dialect.zos;
 
 import com.sbroussi.dto.DtoUtils;
 import com.sbroussi.dto.annotations.DtoRequest;
+import com.sbroussi.dto.annotations.DtoResponse;
+import com.sbroussi.dto.error.INFO;
 import com.sbroussi.dto.jms.DtoJmsContext;
 import com.sbroussi.dto.jms.DtoJmsRequest;
 import com.sbroussi.dto.jms.JmsException;
@@ -13,6 +15,11 @@ import java.util.Set;
 
 @Slf4j
 public class ZosParser {
+
+    /**
+     * Log the technical 'INFO' response with TRACE level.
+     */
+    private String INFO_responseName = INFO.class.getAnnotation(DtoResponse.class).name();
 
 
     public void parse(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
@@ -31,9 +38,9 @@ public class ZosParser {
         final int minimalLength = 8 + 7 + 8 + 7 + 4 + 4 + 8 + 12 + 4 + 12;
         final int realResponseLength = (response == null) ? 0 : response.length();
         if (realResponseLength < minimalLength) {
-            final String msg = "Invalid response message length [" + realResponseLength + "] of request [" + requestName
-                    + "] (real length is [" + realResponseLength + "] and minimal length is [" + minimalLength + "])!";
-            throw new JmsException(msg);
+            throw new JmsException("Invalid response message length [" + realResponseLength
+                    + "] of request [" + requestName + "] (real length is [" + realResponseLength
+                    + "] and minimal length is [" + minimalLength + "])!");
         }
 
 
@@ -204,7 +211,7 @@ public class ZosParser {
                 final String responseDataElement = response.substring(startIndex, endIndex);
                 zosResponseData.getResponseDataElements().add(responseDataElement);
                 if (responseDataElement.length() > 0) {
-                    if ("INFO".equals(responseName)) {
+                    if (responseName.equals(INFO_responseName)) {
                         // log the technical 'INFO' response with TRACE level
                         if (log.isTraceEnabled()) {
                             log.trace("Record [" + responseDataElement + "]");
@@ -230,7 +237,7 @@ public class ZosParser {
             final String responseName = DtoUtils.strNN(zosResponseData.getName()).trim();
             final int nbResponses = zosResponseData.getNbElements();
             if (log.isDebugEnabled()) {
-                log.debug("request [" + requestName + "] returned [" + nbResponses + "] response [" + responseName + "]");
+                log.debug("Request [" + requestName + "] returned [" + nbResponses + "] response [" + responseName + "]");
             }
             jmsResponseBean.getZosResponses().add(zosResponseData);
         }

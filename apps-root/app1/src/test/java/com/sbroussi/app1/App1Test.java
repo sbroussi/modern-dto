@@ -26,7 +26,7 @@ public class App1Test {
     @Test
     public void testSend() throws Exception {
 
-        String expectedResponseHeader = "@WEB    0000143HEADER120000044flaghostuserId12userProfile1fsidmyLaptop    "
+        String expectedResponseHeader = "@WEB    0000143HEADER  00000440000S000userId  profile         myLaptop    "
                 + "ADRVIRTU" // response name
                 + "0004401request1                    9";
         // 2 messages of 15 characters

@@ -36,10 +36,10 @@ public class DialectZos implements Dialect {
         final DtoContext dtoContext = jmsContext.getDtoContext();
         final DtoFormatter formatter = dtoContext.getDtoFormatter();
 
-        // format DTO
+        // format DTO with fixed-width fields
         final String rawData = formatter.format(request.getRequestDto());
 
-        // insert header prefix
+        // insert z/OS header prefix
         String rawJms = zosFormatter.formatWithHeader(request, channel, rawData);
 
         request.setRawRequest(rawJms);
