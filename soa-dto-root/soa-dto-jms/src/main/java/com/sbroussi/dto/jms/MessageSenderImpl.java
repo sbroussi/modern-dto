@@ -62,16 +62,17 @@ public class MessageSenderImpl implements MessageSender {
             final String correlationId = outMessage.getJMSMessageID();
             request.setCorrelationId(correlationId);
 
-            if (!isOneWayRequest) {
-                // expect JMS response
+            // ONE-WAY request (fire and forget) ?
+            if ((!isOneWayRequest) && (correlationId != null) && (correlationId.length() > 0)) {
 
+                // read responses if a correlation ID is returned
 
                 final String correlationIdFilter = "JMSCorrelationID = '" + correlationId + "'";
                 final QueueReceiver receiver = session.createReceiver(jmsContext.getReplyQueue(), correlationIdFilter);
 
                 final long timeout = request.getReplyTimeoutInMs();
                 if (log.isDebugEnabled()) {
-                    log.debug("Waiting for reply message with time-out: [" + timeout + " ms] for request ["
+                    log.debug("Waiting for reply message with timeout: [" + timeout + " ms] for request ["
                             + jmsName + "] with correlationId [" + correlationId + "]");
                 }
 
@@ -83,7 +84,7 @@ public class MessageSenderImpl implements MessageSender {
                             + "]. Probably timed-out (waited " + timeout + " ms)");
                 }
                 if (!(jmsMessage instanceof TextMessage)) {
-                    throw new JmsException("Expected a TextMessage but received a ["
+                    throw new JmsException("Expected a 'TextMessage' but received a ["
                             + jmsMessage.getClass().getName() + "]");
                 }
                 final String rawResponse = ((TextMessage) jmsMessage).getText();

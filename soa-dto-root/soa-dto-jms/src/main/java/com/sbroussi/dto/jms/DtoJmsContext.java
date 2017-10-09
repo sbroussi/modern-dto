@@ -44,7 +44,7 @@ public class DtoJmsContext {
      * <p>
      * - before sending the JMS request
      * <p>
-     * - after receiving the JMS responses (or when the One-Way request has been sent).
+     * - after receiving the JMS response (or when the One-Way request has been sent).
      */
     @Builder.Default
     private List<DtoJmsAudit> dtoJmsAuditors = buildDefaultAuditors();

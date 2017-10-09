@@ -63,12 +63,9 @@ public class MessageSenderImplTest {
                 .myRequestField("test")
                 .build();
 
-        // send JMS message
+        // send JMS request and read response (if any)
         DtoJmsRequest request = new DtoJmsRequest(adrvirtu);
         DtoJmsConnector.send(jmsContext, request);
-
-        // send
-        messageSender.sendMessage(jmsContext, request);
 
         assertEquals("formatted DTO: [com.sbroussi.dto.jms.test.TestRequest]", request.getRawRequest());
         assertEquals("my reply response", request.getRawResponse());

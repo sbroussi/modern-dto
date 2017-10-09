@@ -60,7 +60,7 @@ public class DtoJmsConnector {
         }
 
         try {
-            // send the JMS message and read responses
+            // send JMS request and read response (if any)
             jmsContext.getMessageSender().sendMessage(jmsContext, request);
 
         } catch (Throwable t) {
@@ -69,7 +69,7 @@ public class DtoJmsConnector {
                     + "] with message [" + rawJms + "]", t);
         }
 
-        // notify all auditors (after receiving the JMS responses)
+        // notify all auditors (after receiving the JMS response)
         if (dtoJmsAuditors != null) {
             for (final DtoJmsAudit auditor : dtoJmsAuditors) {
                 auditor.traceAfterResponse(jmsContext, request);
