@@ -5,6 +5,7 @@ import com.sbroussi.dto.jms.DtoJmsConnector;
 import com.sbroussi.dto.jms.DtoJmsContext;
 import com.sbroussi.dto.jms.DtoJmsRequest;
 import com.sbroussi.dto.jms.MessageSenderImpl;
+import com.sbroussi.dto.jms.dialect.DialectZos;
 import com.sbroussi.soa.dto.Apps;
 import com.sbroussi.xml.request.v1_0.ADRVIRTU;
 import lombok.Getter;
@@ -55,9 +56,12 @@ public class App1 {
             jmsContext = DtoJmsContext.builder()
                     .dtoContext(getDtoContext())
                     .applicationId(Apps.app1)
+                    .dialect(new DialectZos()) // fixed-width fields with header
                     .messageSender(new MessageSenderImpl(queueFactory))
                     .requestQueue(requestQueue)
+                    .requestQueueName("MQ.QUEUE.WRITE")
                     .replyQueue(replyQueue)
+                    .replyQueueName("MQ.QUEUE.READ")
                     .build();
         }
         return jmsContext;

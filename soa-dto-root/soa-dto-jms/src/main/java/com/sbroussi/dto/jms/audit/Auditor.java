@@ -1,6 +1,12 @@
-package com.sbroussi.dto.jms;
+package com.sbroussi.dto.jms.audit;
 
-public interface DtoJmsAudit {
+import com.sbroussi.dto.jms.DtoJmsContext;
+import com.sbroussi.dto.jms.DtoJmsRequest;
+
+/**
+ * Auditor to keep a trace of all sent and received messages.
+ */
+public interface Auditor {
 
     /**
      * Trace before the JMS REQUEST is sent.

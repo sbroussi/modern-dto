@@ -1,6 +1,8 @@
 package com.sbroussi.dto.jms;
 
 import com.sbroussi.dto.DtoContext;
+import com.sbroussi.dto.jms.audit.AuditorVerboseLogger;
+import com.sbroussi.dto.jms.dialect.DialectZos;
 import com.sbroussi.dto.jms.test.TestRequest;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -52,10 +54,16 @@ public class MessageSenderImplTest {
         DtoJmsContext jmsContext = DtoJmsContext.builder()
                 .dtoContext(dtoContext)
                 .applicationId("app-test")
+                .dialect(new DialectZos()) // fixed-width fields with header
                 .messageSender(messageSender)
                 .requestQueue(requestQueue)
+                .requestQueueName("MQ.QUEUE.WRITE")
                 .replyQueue(replyQueue)
+                .replyQueueName("MQ.QUEUE.READ")
                 .build();
+
+        // add a verbose logger for DEBUG
+        jmsContext.getDtoJmsAuditors().add(new AuditorVerboseLogger());
 
 
         // JMS request

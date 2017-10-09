@@ -27,6 +27,7 @@ public class DtoJmsRequest {
      */
     private boolean oneWayRequest = false;
 
+
     /**
      * The time to wait for a reply message; 40 seconds by default.
      */

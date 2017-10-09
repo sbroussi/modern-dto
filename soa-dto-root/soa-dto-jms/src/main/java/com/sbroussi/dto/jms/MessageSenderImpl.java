@@ -3,6 +3,7 @@ package com.sbroussi.dto.jms;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.jms.Message;
+import javax.jms.Queue;
 import javax.jms.QueueConnection;
 import javax.jms.QueueConnectionFactory;
 import javax.jms.QueueReceiver;
@@ -49,7 +50,8 @@ public class MessageSenderImpl implements MessageSender {
             outMessage.setText(rawMessage);
 
 
-            QueueSender sender = session.createSender(jmsContext.getRequestQueue());
+            Queue requestQueue = jmsContext.getRequestQueue();
+            QueueSender sender = session.createSender(requestQueue);
 
 
             // remember the 'send' time

@@ -29,6 +29,8 @@ public class App1Test {
         // MOCK context (see MessageSenderImpl.java implementation)
         Queue requestQueue = mock(Queue.class);
         Queue replyQueue = mock(Queue.class);
+        when(requestQueue.getQueueName()).thenReturn("MQ.QUEUE.WRITE");
+        when(replyQueue.getQueueName()).thenReturn("MQ.QUEUE.READ");
         QueueConnectionFactory queueFactory = mock(QueueConnectionFactory.class);
         QueueConnection connection = mock(QueueConnection.class);
         when(queueFactory.createQueueConnection()).thenReturn(connection);

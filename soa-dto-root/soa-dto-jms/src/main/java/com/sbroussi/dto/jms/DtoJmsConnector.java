@@ -1,9 +1,9 @@
 package com.sbroussi.dto.jms;
 
-import com.sbroussi.dto.DtoContext;
-import com.sbroussi.dto.DtoFormatter;
 import com.sbroussi.dto.DtoUtils;
 import com.sbroussi.dto.annotations.DtoRequest;
+import com.sbroussi.dto.jms.audit.Auditor;
+import com.sbroussi.dto.jms.dialect.Dialect;
 
 import java.util.List;
 
@@ -21,8 +21,6 @@ public class DtoJmsConnector {
     public static void send(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
 
         final String applicationId = jmsContext.getApplicationId();
-        final DtoContext dtoContext = jmsContext.getDtoContext();
-        final DtoFormatter formatter = dtoContext.getDtoFormatter();
 
         // read DTO
         final Object dto = request.getRequestDto();
@@ -46,15 +44,17 @@ public class DtoJmsConnector {
         }
 
         // format the raw JMS text message
-        final String rawJms = formatter.format(dto);
-        request.setRawRequest(rawJms);
+        final Dialect dialect = jmsContext.getDialect();
+        dialect.formatToJmsText(jmsContext, request);
+        final String rawJms = request.getRawRequest();
 
         final String jmsName = annotation.name();
 
+
         // notify all auditors (before sending the JMS request)
-        final List<DtoJmsAudit> dtoJmsAuditors = jmsContext.getDtoJmsAuditors();
+        final List<Auditor> dtoJmsAuditors = jmsContext.getDtoJmsAuditors();
         if (dtoJmsAuditors != null) {
-            for (final DtoJmsAudit auditor : dtoJmsAuditors) {
+            for (final Auditor auditor : dtoJmsAuditors) {
                 auditor.traceBeforeRequest(jmsContext, request);
             }
         }
@@ -69,13 +69,21 @@ public class DtoJmsConnector {
                     + "] with message [" + rawJms + "]", t);
         }
 
+        // parse the raw JMS text message
+        if (!request.isOneWayRequest()) {
+            dialect.parseFromJmsText(jmsContext, request);
+        }
+
+
         // notify all auditors (after receiving the JMS response)
         if (dtoJmsAuditors != null) {
-            for (final DtoJmsAudit auditor : dtoJmsAuditors) {
+            for (final Auditor auditor : dtoJmsAuditors) {
                 auditor.traceAfterResponse(jmsContext, request);
             }
         }
 
+
     }
 
 }
+
