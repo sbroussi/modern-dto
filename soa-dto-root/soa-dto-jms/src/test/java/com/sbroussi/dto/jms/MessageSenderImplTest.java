@@ -47,19 +47,17 @@ public class MessageSenderImplTest {
         when(receiver.receive(anyLong())).thenReturn(responseMessage);
         when(responseMessage.getText()).thenReturn("my reply response");
 
-        // setup
+        // setup JMS context
         DtoContext dtoContext = DtoContext.builder().build();
 
-        MessageSenderImpl messageSender = new MessageSenderImpl(queueFactory);
+        // simple JMS implementation
+        MessageSenderImpl messageSender = new MessageSenderImpl(queueFactory, requestQueue, replyQueue);
+
         DtoJmsContext jmsContext = DtoJmsContext.builder()
                 .dtoContext(dtoContext)
                 .applicationId("app-test")
                 .dialect(new DialectZos("@WEB")) // fixed-width fields with header
                 .messageSender(messageSender)
-                .requestQueue(requestQueue)
-                .requestQueueName("MQ.QUEUE.WRITE")
-                .replyQueue(replyQueue)
-                .replyQueueName("MQ.QUEUE.READ")
                 .build();
 
         // add a verbose logger for DEBUG

@@ -18,11 +18,29 @@ import javax.jms.TextMessage;
 @Slf4j
 public class MessageSenderImpl implements MessageSender {
 
+    /**
+     * The JMS queue factory.
+     */
     private QueueConnectionFactory factory;
 
 
-    public MessageSenderImpl(final QueueConnectionFactory factory) {
+    /**
+     * The JMS queue where to PUT the request.
+     */
+    private Queue requestQueue;
+
+    /**
+     * The JMS queue where to READ the responses ('null' for ONE-WAY request).
+     */
+    private Queue replyQueue;
+
+
+    public MessageSenderImpl(final QueueConnectionFactory factory,
+                             final Queue requestQueue,
+                             final Queue replyQueue) {
         this.factory = factory;
+        this.requestQueue = requestQueue;
+        this.replyQueue = replyQueue;
 
     }
 
@@ -45,14 +63,12 @@ public class MessageSenderImpl implements MessageSender {
             final TextMessage outMessage = session.createTextMessage();
             // outMessage.setJMSExpiration(expiration); // TODO: expiration ?
             if (!isOneWayRequest) {
-                outMessage.setJMSReplyTo(jmsContext.getReplyQueue());
+                outMessage.setJMSReplyTo(replyQueue);
             }
             outMessage.setText(rawMessage);
 
 
-            Queue requestQueue = jmsContext.getRequestQueue();
             QueueSender sender = session.createSender(requestQueue);
-
 
             // remember the 'send' time
             final long start = System.currentTimeMillis();
@@ -70,7 +86,7 @@ public class MessageSenderImpl implements MessageSender {
                 // read responses if a correlation ID is returned
 
                 final String correlationIdFilter = "JMSCorrelationID = '" + correlationId + "'";
-                final QueueReceiver receiver = session.createReceiver(jmsContext.getReplyQueue(), correlationIdFilter);
+                final QueueReceiver receiver = session.createReceiver(replyQueue, correlationIdFilter);
 
                 final long timeout = request.getReplyTimeoutInMs();
                 if (log.isDebugEnabled()) {

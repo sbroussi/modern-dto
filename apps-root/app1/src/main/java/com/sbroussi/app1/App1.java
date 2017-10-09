@@ -53,15 +53,15 @@ public class App1 {
      */
     public DtoJmsContext getJmsContext() {
         if (jmsContext == null) {
+
+            // simple JMS implementation
+            MessageSenderImpl messageSender = new MessageSenderImpl(queueFactory, requestQueue, replyQueue);
+
             jmsContext = DtoJmsContext.builder()
                     .dtoContext(getDtoContext())
                     .applicationId(Apps.app1)
                     .dialect(new DialectZos("@WEB")) // fixed-width fields with header
-                    .messageSender(new MessageSenderImpl(queueFactory))
-                    .requestQueue(requestQueue)
-                    .requestQueueName("MQ.QUEUE.WRITE")
-                    .replyQueue(replyQueue)
-                    .replyQueueName("MQ.QUEUE.READ")
+                    .messageSender(messageSender)
                     .build();
         }
         return jmsContext;

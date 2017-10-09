@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-import javax.jms.Queue;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,28 +33,6 @@ public class DtoJmsContext {
      */
     @NonNull
     private Dialect dialect;
-
-
-    /**
-     * The JMS queue where to PUT the request.
-     */
-    @NonNull
-    private Queue requestQueue;
-
-    /**
-     * The name of the request Queue (optional, for logging purpose; can be populated at runtime).
-     */
-    private String requestQueueName;
-
-    /**
-     * The JMS queue where to READ the responses ('null' for ONE-WAY request).
-     */
-    private Queue replyQueue;
-
-    /**
-     * The name of the reply Queue (optional, for logging purpose; can be populated at runtime).
-     */
-    private String replyQueueName;
 
     @NonNull
     private MessageSender messageSender;

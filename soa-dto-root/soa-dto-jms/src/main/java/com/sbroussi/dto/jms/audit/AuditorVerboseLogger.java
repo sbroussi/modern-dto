@@ -27,8 +27,6 @@ public class AuditorVerboseLogger implements Auditor {
             }
 
             String jmsName = request.getDtoRequestAnnotation().name();
-            String queueName = jmsContext.getRequestQueueName();
-
 
             String data = rawMessage;
             String header = null;
@@ -52,9 +50,6 @@ public class AuditorVerboseLogger implements Auditor {
             }
             sb.append("* JMS REQUEST DATA  : [").append(data).append("]").append(CRLF);
             sb.append("* JMS DATA  LENGTH  : [").append(data.length()).append("]").append(CRLF);
-            if (queueName != null) {
-                sb.append("* JMS QUEUE NAME    : [").append(queueName).append("]").append(CRLF);
-            }
             sb.append("*").append(CRLF);
             sb.append("*");
             log.debug(sb.toString());
