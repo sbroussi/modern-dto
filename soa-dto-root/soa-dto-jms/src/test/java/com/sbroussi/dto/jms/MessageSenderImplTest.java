@@ -54,7 +54,7 @@ public class MessageSenderImplTest {
         DtoJmsContext jmsContext = DtoJmsContext.builder()
                 .dtoContext(dtoContext)
                 .applicationId("app-test")
-                .dialect(new DialectZos()) // fixed-width fields with header
+                .dialect(new DialectZos("@WEB")) // fixed-width fields with header
                 .messageSender(messageSender)
                 .requestQueue(requestQueue)
                 .requestQueueName("MQ.QUEUE.WRITE")
@@ -73,9 +73,15 @@ public class MessageSenderImplTest {
 
         // send JMS request and read response (if any)
         DtoJmsRequest request = new DtoJmsRequest(adrvirtu);
+        request.setUserId("user1");
+        request.setUserProfile("profilA");
         DtoJmsConnector.send(jmsContext, request);
 
-        assertEquals("formatted DTO: [com.sbroussi.dto.jms.test.TestRequest]", request.getRawRequest());
+
+        String expectedHeader = "@WEB    0000128HEADER  00000440000S000user1   profilA                     TEST_REQ0000054";
+        String expectedData = "formatted DTO: [com.sbroussi.dto.jms.test.TestRequest]";
+
+        assertEquals(expectedHeader + expectedData, request.getRawRequest());
         assertEquals("my reply response", request.getRawResponse());
 
 

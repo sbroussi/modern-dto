@@ -69,19 +69,27 @@ public class DtoJmsConnector {
                     + "] with message [" + rawJms + "]", t);
         }
 
-        // parse the raw JMS text message
-        if (!request.isOneWayRequest()) {
-            dialect.parseFromJmsText(jmsContext, request);
-        }
-
 
         // notify all auditors (after receiving the JMS response)
         if (dtoJmsAuditors != null) {
             for (final Auditor auditor : dtoJmsAuditors) {
-                auditor.traceAfterResponse(jmsContext, request);
+                auditor.traceAfterRequest(jmsContext, request);
             }
         }
 
+        // response expected ?
+        if (!request.isOneWayRequest()) {
+
+            // parse the raw JMS text message
+            dialect.parseFromJmsText(jmsContext, request);
+
+            // notify all auditors (after parsing the JMS response)
+            if (dtoJmsAuditors != null) {
+                for (final Auditor auditor : dtoJmsAuditors) {
+                    auditor.traceAfterResponseParsing(jmsContext, request);
+                }
+            }
+        }
 
     }
 

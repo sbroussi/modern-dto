@@ -10,7 +10,7 @@ import com.sbroussi.dto.jms.DtoJmsRequest;
 public class DialectJson implements Dialect {
 
     @Override
-    public void formatToJmsText(DtoJmsContext jmsContext, DtoJmsRequest request) {
+    public void formatToJmsText(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
 
         // TODO: not implemented yet
         throw new IllegalStateException("TODO: not implemented yet");
@@ -18,7 +18,7 @@ public class DialectJson implements Dialect {
     }
 
     @Override
-    public void parseFromJmsText(DtoJmsContext jmsContext, DtoJmsRequest request) {
+    public void parseFromJmsText(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
 
         // TODO: not implemented yet
         throw new IllegalStateException("TODO: not implemented yet");

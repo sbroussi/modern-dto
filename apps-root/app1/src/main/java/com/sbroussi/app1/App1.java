@@ -56,7 +56,7 @@ public class App1 {
             jmsContext = DtoJmsContext.builder()
                     .dtoContext(getDtoContext())
                     .applicationId(Apps.app1)
-                    .dialect(new DialectZos()) // fixed-width fields with header
+                    .dialect(new DialectZos("@WEB")) // fixed-width fields with header
                     .messageSender(new MessageSenderImpl(queueFactory))
                     .requestQueue(requestQueue)
                     .requestQueueName("MQ.QUEUE.WRITE")
@@ -79,6 +79,8 @@ public class App1 {
 
         // send JMS message
         DtoJmsRequest request = new DtoJmsRequest(adrvirtu);
+        request.setUserId("user1");
+        request.setUserProfile("profilA");
         DtoJmsConnector.send(getJmsContext(), request);
 
         return request;

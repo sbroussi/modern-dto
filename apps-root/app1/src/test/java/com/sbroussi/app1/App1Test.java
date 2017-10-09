@@ -54,13 +54,18 @@ public class App1Test {
         app.setReplyQueue(replyQueue);
 
         // send
-        DtoJmsRequest dtoRequest = app.sendText("hello");
+        DtoJmsRequest request = app.sendText("hello");
         assertNotNull(app.getDtoContext());
         assertNotNull(app.getJmsContext());
-        assertNotNull(dtoRequest);
+        assertNotNull(request);
 
-        assertEquals("formatted DTO: [com.sbroussi.xml.request.v1_0.ADRVIRTU]", dtoRequest.getRawRequest());
-        assertEquals("my reply response", dtoRequest.getRawResponse());
+
+        String expectedHeader = "@WEB    0000129HEADER  00000440000S000user1   profilA                     ADRVIRTU0000055";
+        String expectedData = "formatted DTO: [com.sbroussi.xml.request.v1_0.ADRVIRTU]";
+
+        assertEquals(expectedHeader + expectedData, request.getRawRequest());
+
+        assertEquals("my reply response", request.getRawResponse());
 
 
     }

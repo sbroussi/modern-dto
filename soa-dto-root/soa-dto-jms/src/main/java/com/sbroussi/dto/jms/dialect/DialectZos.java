@@ -2,6 +2,7 @@ package com.sbroussi.dto.jms.dialect;
 
 import com.sbroussi.dto.DtoContext;
 import com.sbroussi.dto.DtoFormatter;
+import com.sbroussi.dto.DtoUtils;
 import com.sbroussi.dto.jms.DtoJmsContext;
 import com.sbroussi.dto.jms.DtoJmsRequest;
 
@@ -10,20 +11,102 @@ import com.sbroussi.dto.jms.DtoJmsRequest;
  */
 public class DialectZos implements Dialect {
 
+    /**
+     * The channel identifier required by the back-end system (@PORTAL, @WEB, @ESB...).
+     */
+    private String channel;
+
+    /**
+     * Constructor.
+     *
+     * @param channel the channel identifier required by the back-end system (@PORTAL, @WEB, @ESB...).
+     */
+    public DialectZos(final String channel) {
+        this.channel = channel;
+
+    }
+
 
     @Override
-    public void formatToJmsText(DtoJmsContext jmsContext, DtoJmsRequest request) {
+    public void formatToJmsText(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
         final DtoContext dtoContext = jmsContext.getDtoContext();
         final DtoFormatter formatter = dtoContext.getDtoFormatter();
 
         // format DTO
-        final String rawJms = formatter.format(request.getRequestDto());
+        final String rawData = formatter.format(request.getRequestDto());
+
+        // insert header prefix
+        String rawJms = formatWithHeader(jmsContext, request, rawData);
 
         request.setRawRequest(rawJms);
     }
 
     @Override
-    public void parseFromJmsText(DtoJmsContext jmsContext, DtoJmsRequest request) {
+    public void parseFromJmsText(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
+
+    }
+
+
+    private String formatWithHeader(final DtoJmsContext jmsContext, final DtoJmsRequest request,
+                                    final String data) {
+
+        final String userId = request.getUserId();
+        final String userProfile = request.getUserProfile();
+        final String sessionId = request.getSessionId();
+        final String computerName = request.getUserComputerName();
+        final String jmsName = request.getDtoRequestAnnotation().name();
+
+        // person number can be null. if null it will be filled with spaces.
+        String personNumber = request.getPersonNumber();
+        if (personNumber != null) {
+            personNumber = DtoUtils.alignRight(personNumber, 8, '0');
+        }
+
+        if ((channel == null) || (userId == null) || (userProfile == null) || (jmsName == null)) {
+            throw new IllegalArgumentException("all the mandatory parameters are not set: channel ["
+                    + channel + "] userId [" + userId + "] userProfile [" + userProfile
+                    + "] jmsName [" + jmsName + "]");
+        }
+
+        // Transaction's header
+        final StringBuilder header = new StringBuilder();
+        // RCV-HRD-FLAGS-FIL     PIC X(8)
+        header.append("000");
+        header.append(false ? 'V' : '0'); // isVerboseMode ?
+        // '0' or 'S': Safe    'U': Unsafe (fraud detection)
+        header.append(request.isUnsafe() ? 'U' : 'S');
+        header.append("000");
+
+        // RCV-HDR-SESSION (36) 8 + 8 + 20 || 8 + 12 + 4 + 12
+        header.append(DtoUtils.alignLeft(userId, 8));              // RCV-HRD-USER-ID       PIC X(8)
+        if (personNumber != null) {
+            header.append(DtoUtils.alignLeft(personNumber, 8));    // RCV-HRD-NU-PERSONNE    PIC X(8)
+            header.append(DtoUtils.alignLeft(null, 20));           // RCV-HRD-SESSION-FILLER PIC X(20)
+        } else {
+            header.append(DtoUtils.alignLeft(userProfile, 12));    // RCV-HRD-PROFIL        PIC X(12)
+            header.append(DtoUtils.alignLeft(sessionId, 4));       // RCV-HRD-SESSION-ID    PIC X(4)
+            header.append(DtoUtils.alignLeft(computerName, 12));   // RCV-HRD-COMPUTER-NAME PIC X(12)
+        }
+
+        // Transaction's sbRequest
+        final StringBuilder sbRequest = new StringBuilder();
+        sbRequest.append(DtoUtils.alignLeft(jmsName, 8));    // RCV-REQ-NAME          PIC X(8)
+        sbRequest.append(DtoUtils.alignRight(data.length(), 7));  // RCV-REQ-LGT           PIC 9(7)
+        sbRequest.append(data);                                       // RCV-REQ-DATA          PIC X(24493)
+
+        // person number + header + sbRequest
+        final StringBuilder sbTransactionContent = new StringBuilder();
+        sbTransactionContent.append(DtoUtils.alignLeft("HEADER", 8));           // RCV-HDR-NAME              PIC X(8)
+        sbTransactionContent.append(DtoUtils.alignRight(header.length(), 7));    // RCV-HDR-LGT               PIC 9(7)
+        sbTransactionContent.append(header.toString());
+        sbTransactionContent.append(sbRequest.toString());
+
+        final StringBuilder sbTransaction = new StringBuilder();
+        sbTransaction.append(DtoUtils.alignLeft(channel, 8));                  // RCV-TRX-NAME              PIC X(8)
+        sbTransaction.append(DtoUtils.alignRight(sbTransactionContent.length(), 7));    // RCV-TRX-LGT               PIC 9(7)
+        sbTransaction.append(sbTransactionContent.toString());
+
+        return sbTransaction.toString();
 
     }
 }

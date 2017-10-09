@@ -63,7 +63,7 @@ public class AuditorVerboseLogger implements Auditor {
 
 
     @Override
-    public void traceAfterResponse(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
+    public void traceAfterRequest(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
         if (log.isDebugEnabled()) {
             String rawMessage = request.getRawResponse();
             if (rawMessage == null) {
@@ -74,4 +74,10 @@ public class AuditorVerboseLogger implements Auditor {
                     + "] received (" + rawMessage.length() + " chars): [" + rawMessage + "]");
         }
     }
+
+    @Override
+    public void traceAfterResponseParsing(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
+        // nothing to do
+    }
+
 }

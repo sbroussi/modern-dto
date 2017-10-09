@@ -79,4 +79,67 @@ public class DtoUtils {
         return false;
     }
 
+    /**
+     * @param pattern the pattern to repeat
+     * @param nbTimes the number of times to repeat the pattern
+     * @return the repeated pattern or an empty string '' if nothing to repeat
+     */
+    public static final String repeat(final String pattern, final int nbTimes) {
+        if ((pattern == null) || (pattern.length() == 0) || (nbTimes < 1)) {
+            return "";
+        }
+        final StringBuilder sb = new StringBuilder(pattern.length() * nbTimes + 2);
+        for (int i = 0; i < nbTimes; i++) {
+            sb.append(pattern);
+        }
+        return sb.toString();
+    }
+
+
+    /**
+     * @param input the value to format (MUST be a positive integer)
+     * @param len   the length of the field
+     * @return the value aligned right and padded with zeroes ('000123' for 'alignRight(123, 6)')
+     */
+    public static String alignRight(final int input, final int len) {
+        if (input < 0) {
+            throw new IllegalArgumentException("argument 'input' is negative [" + input + "]");
+        }
+        return alignRight(Integer.toString(input), len, '0');
+    }
+
+    /**
+     * @param input the value to format
+     * @param len   the length of the field
+     * @return the value aligned right and padded with the specified character ('000123' for 'alignRight(123, 6, '0')')
+     */
+    public static String alignRight(final String input, final int len, final char paddingChar) {
+        if ((input == null) || (input.length() == 0)) {
+            return repeat(" ", len);
+        }
+        final int length = input.length();
+        if (length == len) {
+            return input;
+        }
+        if (length > len) {
+            return input.substring(0, len);
+        }
+        return repeat("" + paddingChar, len - length) + input;
+
+    }
+
+    public static String alignLeft(final String input, final int len) {
+        if ((input == null) || (input.length() == 0)) {
+            return repeat(" ", len);
+        }
+        final int length = input.length();
+        if (length == len) {
+            return input;
+        }
+        if (length > len) {
+            return input.substring(0, len);
+        }
+        return input + repeat(" ", len - length);
+    }
+
 }

@@ -15,9 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 public class AuditorLogger implements Auditor {
 
     /**
-     * The size of the message to truncate (will not truncate for values less than 100).
+     * The maximum length of messages to log; if exceeds, the message is truncated.
+     * This helps to reduce the size of log files for this 'default' Auditor.
      * <p>
-     * Defaults to 2000 characters.
+     * Defaults to 2000 characters (will not truncate for values less than 100).
      * <p>
      * If truncated, the text '...[truncated]...' and the last 40 characters appears at the end of the log.
      */
@@ -32,32 +33,40 @@ public class AuditorLogger implements Auditor {
             }
 
             log.info("Send JMS request [" + request.getDtoRequestAnnotation().name()
-                    + "] (" + rawMessage.length() + " chars): [" + rawMessage + "]");
+                    + "] (" + rawMessage.length() + " chars): [" + truncate(rawMessage) + "]");
         }
 
     }
 
+
     @Override
-    public void traceAfterResponse(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
+    public void traceAfterRequest(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
         if (log.isInfoEnabled()) {
             String rawMessage = request.getRawResponse();
             if (rawMessage == null) {
                 rawMessage = "";
             }
 
-            // truncate 2 KB
-            final int len = rawMessage.length();
-            final String msg;
-            if ((truncateSize < 100) || (len <= truncateSize)) {
-                msg = rawMessage;
-            } else {
-                final int keepLastChars = 40;
-                msg = rawMessage.substring(0, truncateSize - keepLastChars) + "...[truncated]..."
-                        + rawMessage.substring(len - keepLastChars);
-            }
-
             log.info("Received response of JMS request [" + request.getDtoRequestAnnotation().name()
-                    + "] received (" + len + " chars): [" + msg + "]");
+                    + "] received (" + rawMessage.length() + " chars): [" + truncate(rawMessage) + "]");
         }
     }
+
+
+    @Override
+    public void traceAfterResponseParsing(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
+        // nothing to do
+    }
+
+    private String truncate(final String input) {
+        final int len = input.length();
+        // truncate ? (will not truncate for values less than 100)
+        if ((truncateSize < 100) || (len <= truncateSize)) {
+            return input;
+        }
+        final int keepLastChars = 40;
+        return input.substring(0, truncateSize - keepLastChars) + "...[truncated]..."
+                + input.substring(len - keepLastChars);
+    }
+
 }
