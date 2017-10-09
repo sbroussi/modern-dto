@@ -31,18 +31,23 @@ public class MessageSenderSpringImpl implements MessageSender {
 
     private JmsTemplate jmsTemplate;
 
+    private final Queue requestQueue;
+
     /**
      * Constructor.
      *
-     * @param jmsTemplate The Spring-JMS 'JmsTemplate'.
+     * @param jmsTemplate  The Spring-JMS 'JmsTemplate'.
+     * @param requestQueue the JMS queue to PUT the message
      */
-    public MessageSenderSpringImpl(final JmsTemplate jmsTemplate) {
+    public MessageSenderSpringImpl(final JmsTemplate jmsTemplate,
+                                   final Queue requestQueue) {
         this.jmsTemplate = jmsTemplate;
+        this.requestQueue = requestQueue;
     }
 
 
     public void sendMessage(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
-        String correlationId = sendMessage(jmsContext.getRequestQueue(), request.getRawRequest(), jmsTemplate);
+        String correlationId = sendMessage(requestQueue, request.getRawRequest(), jmsTemplate);
         request.setCorrelationId(correlationId);
 
         // ONE-WAY request (fire and forget) ?
