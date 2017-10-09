@@ -26,6 +26,12 @@ public class App1Test {
     @Test
     public void testSend() throws Exception {
 
+        String expectedResponseHeader = "@WEB    0000143HEADER120000044flaghostuserId12userProfile1fsidmyLaptop    "
+                + "ADRVIRTU" // response name
+                + "0004401request1                    9";
+        // 2 messages of 15 characters
+        String response = "00002" + "00015" + "Hello World    " + "Have a nice day";
+
         // MOCK context (see MessageSenderImpl.java implementation)
         Queue requestQueue = mock(Queue.class);
         Queue replyQueue = mock(Queue.class);
@@ -45,7 +51,7 @@ public class App1Test {
         when(session.createReceiver(Matchers.<Queue>anyObject(), anyString())).thenReturn(receiver);
         TextMessage responseMessage = mock(TextMessage.class);
         when(receiver.receive(anyLong())).thenReturn(responseMessage);
-        when(responseMessage.getText()).thenReturn("my reply response");
+        when(responseMessage.getText()).thenReturn(expectedResponseHeader + response);
 
         // setup
         App1 app = new App1();
@@ -65,7 +71,7 @@ public class App1Test {
 
         assertEquals(expectedHeader + expectedData, request.getRawRequest());
 
-        assertEquals("my reply response", request.getRawResponse());
+        assertEquals(expectedResponseHeader + response, request.getRawResponse());
 
 
     }

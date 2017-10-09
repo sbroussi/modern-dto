@@ -142,4 +142,13 @@ public class DtoUtils {
         return input + repeat(" ", len - length);
     }
 
+    /**
+     * @return A String ("" empty string for 'null'),
+     */
+    public static String strNN(final String input) {
+        if (input == null) {
+            return "";
+        }
+        return input;
+    }
 }

@@ -1,6 +1,10 @@
 package com.sbroussi.dto.annotations;
 
 
+import com.sbroussi.dto.error.ABORT;
+import com.sbroussi.dto.error.ERROR;
+import com.sbroussi.dto.error.INFO;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -22,4 +26,12 @@ public @interface DtoRequest {
      * This helps to generate a useful SOA catalog.
      */
     String[] usedByApplications();
+
+    /**
+     * @return the list of standard ERROR responses or technical messages that may always be returned.
+     * <p>
+     * Defaults to: ERROR, ABORT, INFO..
+     */
+    Class[] technicalResponses() default {ABORT.class, ERROR.class, INFO.class};
+
 }

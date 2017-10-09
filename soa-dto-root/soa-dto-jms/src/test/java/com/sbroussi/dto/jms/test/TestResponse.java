@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class TestResponse {
 
-    @DtoField(length = 32)
+    @DtoField(length = 15)
     public String myResponseField;
 
 }

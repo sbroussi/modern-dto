@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Locale;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -75,28 +76,43 @@ public class DtoJmsRequest {
 
     // ----------------- technical properties updated during JMS dialog
     /**
-     * Process info: the formatted JMS message sent as request.
+     * INTERNAL: the formatted JMS message sent as request.
      */
     private String rawRequest;
 
     /**
-     * Process info: the timestamp when the JMS request was sent.
+     * INTERNAL: the timestamp when the JMS request was sent.
      */
     private long timestampSend;
 
     /**
-     * Process info: the messageId (correlation-ID) to send/receive JMS Request-Response synchronously,
+     * INTERNAL: the messageId (correlation-ID) to send/receive JMS Request-Response synchronously,
      */
     private String correlationId;
 
     /**
-     * Process info: the JMS message received as response.
+     * INTERNAL: the JMS message received as response.
      */
     private String rawResponse;
+
+    /**
+     * INTERNAL: the map of '@DtoResponse' classes of the expected responses and errors,
+     * <p>
+     * - key: String short name of the response ('@DtoResponse(name="ERROR")'
+     * <p>
+     * - value: The class of the response Dto annotated with '@DtoResponse'
+     */
+    private Map<String, Class> expectedResponsesMap;
+
+    /**
+     * The response object (the real implementation is defined by the 'Dialect'),
+     */
+    private DtoJmsResponse dtoJmsResponse;
 
 
     public DtoJmsRequest(final Object requestDto) {
         this.requestDto = requestDto;
     }
+
 
 }
