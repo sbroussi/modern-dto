@@ -1,7 +1,7 @@
-package com.sbroussi.dto.jms.audit;
+package com.sbroussi.soa.audit;
 
-import com.sbroussi.dto.jms.DtoJmsContext;
-import com.sbroussi.dto.jms.DtoJmsRequest;
+import com.sbroussi.soa.SoaContext;
+import com.sbroussi.soa.SoaDtoRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class AuditorLogger implements Auditor {
     private int truncateSize = 2000;
 
     @Override
-    public void traceBeforeRequest(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
+    public void traceBeforeRequest(final SoaContext jmsContext, final SoaDtoRequest request) {
         if (log.isInfoEnabled()) {
             String rawMessage = request.getRawRequest();
             if (rawMessage == null) {
@@ -40,7 +40,7 @@ public class AuditorLogger implements Auditor {
 
 
     @Override
-    public void traceAfterRequest(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
+    public void traceAfterRequest(final SoaContext jmsContext, final SoaDtoRequest request) {
         if (log.isInfoEnabled()) {
             String rawMessage = request.getRawResponse();
             if (rawMessage == null) {
@@ -54,7 +54,7 @@ public class AuditorLogger implements Auditor {
 
 
     @Override
-    public void traceAfterResponseParsing(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
+    public void traceAfterResponseParsing(final SoaContext jmsContext, final SoaDtoRequest request) {
         // nothing to do
     }
 

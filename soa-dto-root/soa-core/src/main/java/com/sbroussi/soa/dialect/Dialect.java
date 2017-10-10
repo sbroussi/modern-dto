@@ -1,7 +1,7 @@
-package com.sbroussi.dto.jms.dialect;
+package com.sbroussi.soa.dialect;
 
-import com.sbroussi.dto.jms.DtoJmsContext;
-import com.sbroussi.dto.jms.DtoJmsRequest;
+import com.sbroussi.soa.SoaContext;
+import com.sbroussi.soa.SoaDtoRequest;
 
 /**
  * The 'dialect' defines how the JMS messages must be formatted or parsed.
@@ -17,20 +17,20 @@ import com.sbroussi.dto.jms.DtoJmsRequest;
 public interface Dialect {
 
     /**
-     * The implementation must set the 'rawRequest' property of the DtoJmsRequest.
+     * The implementation must set the 'rawRequest' property of the SoaDtoRequest.
      *
      * @param jmsContext the DTO JMS context
      * @param request    The DTO request wrapper.
      */
-    void formatToJmsText(final DtoJmsContext jmsContext, final DtoJmsRequest request);
+    void formatToJmsText(final SoaContext jmsContext, final SoaDtoRequest request);
 
     /**
-     * The implementation must parse the 'rawResponse' property of the DtoJmsRequest and
-     * populate returned Objects in the 'DtoJmsResponse' of the 'DtoJmsRequest'.
+     * The implementation must parse the 'rawResponse' property of the SoaDtoRequest and
+     * populate returned Objects in the 'SoaDtoResponse' of the 'SoaDtoRequest'.
      *
      * @param jmsContext the DTO JMS context
      * @param request    The DTO request wrapper.
      */
-    void parseFromJmsText(final DtoJmsContext jmsContext, final DtoJmsRequest request);
+    void parseFromJmsText(final SoaContext jmsContext, final SoaDtoRequest request);
 
 }

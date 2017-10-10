@@ -1,6 +1,6 @@
 package com.sbroussi.app1;
 
-import com.sbroussi.dto.jms.DtoJmsRequest;
+import com.sbroussi.soa.SoaDtoRequest;
 import org.junit.Test;
 import org.mockito.Matchers;
 
@@ -60,7 +60,7 @@ public class App1Test {
         app.setReplyQueue(replyQueue);
 
         // send
-        DtoJmsRequest request = app.sendText("hello");
+        SoaDtoRequest request = app.sendText("hello");
         assertNotNull(app.getDtoContext());
         assertNotNull(app.getJmsContext());
         assertNotNull(request);

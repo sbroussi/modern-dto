@@ -1,7 +1,7 @@
-package com.sbroussi.dto.jms.dialect.zos;
+package com.sbroussi.soa.dialect.zos;
 
 import com.sbroussi.dto.annotations.DtoRequest;
-import com.sbroussi.dto.jms.DtoJmsRequest;
+import com.sbroussi.soa.SoaDtoRequest;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,7 +15,7 @@ public class ZosFormatterTest {
 
         ZosFormatter zosFormatter = new ZosFormatter();
 
-        final DtoJmsRequest request = new DtoJmsRequest(null);
+        final SoaDtoRequest request = new SoaDtoRequest(null);
         final String channel = "@WEB";
         final String data = "my data";
         request.setUserId("userId");

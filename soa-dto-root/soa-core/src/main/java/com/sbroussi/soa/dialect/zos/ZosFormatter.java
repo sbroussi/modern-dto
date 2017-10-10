@@ -1,11 +1,11 @@
-package com.sbroussi.dto.jms.dialect.zos;
+package com.sbroussi.soa.dialect.zos;
 
 import com.sbroussi.dto.DtoUtils;
-import com.sbroussi.dto.jms.DtoJmsRequest;
+import com.sbroussi.soa.SoaDtoRequest;
 
 public class ZosFormatter {
 
-    public String formatWithHeader(final DtoJmsRequest request,
+    public String formatWithHeader(final SoaDtoRequest request,
                                    final String channel,
                                    final String data) {
 

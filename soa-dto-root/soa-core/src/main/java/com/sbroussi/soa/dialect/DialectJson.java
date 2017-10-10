@@ -1,7 +1,7 @@
-package com.sbroussi.dto.jms.dialect;
+package com.sbroussi.soa.dialect;
 
-import com.sbroussi.dto.jms.DtoJmsContext;
-import com.sbroussi.dto.jms.DtoJmsRequest;
+import com.sbroussi.soa.SoaContext;
+import com.sbroussi.soa.SoaDtoRequest;
 
 /**
  * Dialect: JSON format.
@@ -10,7 +10,7 @@ import com.sbroussi.dto.jms.DtoJmsRequest;
 public class DialectJson implements Dialect {
 
     @Override
-    public void formatToJmsText(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
+    public void formatToJmsText(final SoaContext jmsContext, final SoaDtoRequest request) {
 
         // TODO: not implemented yet
         throw new IllegalStateException("TODO: not implemented yet");
@@ -18,7 +18,7 @@ public class DialectJson implements Dialect {
     }
 
     @Override
-    public void parseFromJmsText(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
+    public void parseFromJmsText(final SoaContext jmsContext, final SoaDtoRequest request) {
 
         // TODO: not implemented yet
         throw new IllegalStateException("TODO: not implemented yet");

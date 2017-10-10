@@ -1,6 +1,6 @@
-package com.sbroussi.dto.jms.dialect.zos;
+package com.sbroussi.soa.dialect.zos;
 
-import com.sbroussi.dto.jms.DtoJmsResponse;
+import com.sbroussi.soa.SoaDtoResponse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +13,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
-public class ZosDtoJmsResponse extends DtoJmsResponse {
+public class ZosSoaDtoResponse extends SoaDtoResponse {
 
     /**
      * The channel identifier.

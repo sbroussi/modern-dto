@@ -1,11 +1,11 @@
-package com.sbroussi.dto.jms.dialect;
+package com.sbroussi.soa.dialect;
 
 import com.sbroussi.dto.DtoContext;
 import com.sbroussi.dto.DtoFormatter;
-import com.sbroussi.dto.jms.DtoJmsContext;
-import com.sbroussi.dto.jms.DtoJmsRequest;
-import com.sbroussi.dto.jms.dialect.zos.ZosFormatter;
-import com.sbroussi.dto.jms.dialect.zos.ZosParser;
+import com.sbroussi.soa.SoaContext;
+import com.sbroussi.soa.SoaDtoRequest;
+import com.sbroussi.soa.dialect.zos.ZosFormatter;
+import com.sbroussi.soa.dialect.zos.ZosParser;
 
 /**
  * Dialect: z/OS fixed-width fields with header.
@@ -32,7 +32,7 @@ public class DialectZos implements Dialect {
 
 
     @Override
-    public void formatToJmsText(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
+    public void formatToJmsText(final SoaContext jmsContext, final SoaDtoRequest request) {
         final DtoContext dtoContext = jmsContext.getDtoContext();
         final DtoFormatter formatter = dtoContext.getDtoFormatter();
 
@@ -46,7 +46,7 @@ public class DialectZos implements Dialect {
     }
 
     @Override
-    public void parseFromJmsText(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
+    public void parseFromJmsText(final SoaContext jmsContext, final SoaDtoRequest request) {
         zosParser.parse(jmsContext.getDtoContext(), request);
 
     }

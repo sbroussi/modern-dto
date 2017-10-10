@@ -1,4 +1,4 @@
-package com.sbroussi.dto.jms;
+package com.sbroussi.soa;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class DtoJmsResponse {
+public class SoaDtoResponse {
 
     /**
      * When the JMS response was received and decoded.

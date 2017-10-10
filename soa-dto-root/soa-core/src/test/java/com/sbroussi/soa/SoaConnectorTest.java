@@ -1,10 +1,10 @@
-package com.sbroussi.dto.jms;
+package com.sbroussi.soa;
 
 import com.sbroussi.dto.DtoContext;
-import com.sbroussi.dto.jms.audit.AuditorVerboseLogger;
-import com.sbroussi.dto.jms.dialect.DialectZos;
-import com.sbroussi.dto.jms.test.TestRequest;
 import com.sbroussi.dto.transport.SenderJms;
+import com.sbroussi.soa.audit.AuditorVerboseLogger;
+import com.sbroussi.soa.dialect.DialectZos;
+import com.sbroussi.soa.test.TestRequest;
 import org.junit.Test;
 import org.mockito.Matchers;
 
@@ -23,7 +23,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class DtoJmsConnectorTest {
+public class SoaConnectorTest {
 
     @Test
     public void testSend() throws Exception {
@@ -61,7 +61,7 @@ public class DtoJmsConnectorTest {
         // simple JMS implementation
         SenderJms messageSender = new SenderJms(queueFactory, requestQueue, replyQueue);
 
-        DtoJmsContext jmsContext = DtoJmsContext.builder()
+        SoaContext jmsContext = SoaContext.builder()
                 .dtoContext(dtoContext)
                 .applicationId("app-test")
                 .dialect(new DialectZos("@WEB")) // fixed-width fields with header
@@ -69,7 +69,7 @@ public class DtoJmsConnectorTest {
                 .build();
 
         // add a verbose logger for DEBUG
-        jmsContext.getDtoJmsAuditors().add(new AuditorVerboseLogger());
+        jmsContext.getAuditors().add(new AuditorVerboseLogger());
 
 
         // JMS request
@@ -78,16 +78,16 @@ public class DtoJmsConnectorTest {
                 .build();
 
         // send JMS request and read response (if any)
-        DtoJmsRequest request = new DtoJmsRequest(adrvirtu);
+        SoaDtoRequest request = new SoaDtoRequest(adrvirtu);
         request.setUserId("user1");
         request.setUserProfile("profilA");
 
         // send
-        DtoJmsConnector.send(jmsContext, request);
+        SoaConnector.send(jmsContext, request);
 
 
-        String expectedHeader = "@WEB    0000128HEADER  00000440000S000user1   profilA                     TEST_REQ0000054";
-        String expectedData = "formatted DTO: [com.sbroussi.dto.jms.test.TestRequest]";
+        String expectedHeader = "@WEB    0000124HEADER  00000440000S000user1   profilA                     TEST_REQ0000050";
+        String expectedData = "formatted DTO: [com.sbroussi.soa.test.TestRequest]";
 
         assertEquals(expectedHeader + expectedData, request.getRawRequest());
         assertEquals(expectedResponseHeader + response, request.getRawResponse());

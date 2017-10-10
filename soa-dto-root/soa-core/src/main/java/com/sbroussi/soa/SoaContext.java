@@ -1,11 +1,11 @@
-package com.sbroussi.dto.jms;
+package com.sbroussi.soa;
 
 
 import com.sbroussi.dto.DtoContext;
-import com.sbroussi.dto.jms.audit.Auditor;
-import com.sbroussi.dto.jms.audit.AuditorLogger;
-import com.sbroussi.dto.jms.dialect.Dialect;
 import com.sbroussi.dto.transport.MessageSender;
+import com.sbroussi.soa.audit.Auditor;
+import com.sbroussi.soa.audit.AuditorLogger;
+import com.sbroussi.soa.dialect.Dialect;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
@@ -17,7 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class DtoJmsContext {
+public class SoaContext {
 
     @NonNull
     private DtoContext dtoContext;
@@ -43,12 +43,15 @@ public class DtoJmsContext {
      * <p>
      * The auditors are called:
      * <p>
-     * - before sending the JMS request
+     * - Before the JMS REQUEST is sent.
      * <p>
-     * - after receiving the JMS response (or when the One-Way request has been sent).
+     * - After the JMS REQUEST is sent and the RAW JMS RESPONSE is read (if any).
+     * <p>
+     * - After the RAW JMS RESPONSE has been parsed and Response Objects
+     * are populated in the 'SoaDtoResponse' (if any).
      */
     @Builder.Default
-    private List<Auditor> dtoJmsAuditors = buildDefaultAuditors();
+    private List<Auditor> auditors = buildDefaultAuditors();
 
     /**
      * @return the list of default auditors.

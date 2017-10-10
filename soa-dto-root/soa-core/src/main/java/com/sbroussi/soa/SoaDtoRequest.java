@@ -1,4 +1,4 @@
-package com.sbroussi.dto.jms;
+package com.sbroussi.soa;
 
 
 import com.sbroussi.dto.annotations.DtoRequest;
@@ -9,7 +9,7 @@ import java.util.Locale;
 
 @Getter
 @Setter
-public class DtoJmsRequest {
+public class SoaDtoRequest {
 
     /**
      * The request DTO,
@@ -94,10 +94,10 @@ public class DtoJmsRequest {
     /**
      * The response object (the real implementation is defined by the 'Dialect'),
      */
-    private DtoJmsResponse dtoJmsResponse;
+    private SoaDtoResponse soaDtoResponse;
 
 
-    public DtoJmsRequest(final Object requestDto) {
+    public SoaDtoRequest(final Object requestDto) {
         this.requestDto = requestDto;
     }
 

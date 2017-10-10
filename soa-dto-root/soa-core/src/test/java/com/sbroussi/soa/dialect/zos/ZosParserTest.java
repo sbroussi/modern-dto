@@ -1,10 +1,10 @@
-package com.sbroussi.dto.jms.dialect.zos;
+package com.sbroussi.soa.dialect.zos;
 
 import com.sbroussi.dto.DtoContext;
 import com.sbroussi.dto.DtoException;
-import com.sbroussi.dto.jms.DtoJmsRequest;
-import com.sbroussi.dto.jms.DtoJmsResponse;
-import com.sbroussi.dto.jms.test.TestRequest;
+import com.sbroussi.soa.SoaDtoRequest;
+import com.sbroussi.soa.SoaDtoResponse;
+import com.sbroussi.soa.test.TestRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
@@ -83,23 +83,23 @@ public class ZosParserTest {
         log.info("expect this response: [" + responseStr + "]");
 
         // set the RAW response message to be parsed
-        DtoJmsRequest jmsRequest = new DtoJmsRequest(new TestRequest());
+        SoaDtoRequest jmsRequest = new SoaDtoRequest(new TestRequest());
         jmsRequest.setRawResponse(responseStr);
 
         // decode
         zosParser.parse(new DtoContext(), jmsRequest);
 
-        final DtoJmsResponse jmsResponse = jmsRequest.getDtoJmsResponse();
-        assertNotNull(jmsResponse);
+        final SoaDtoResponse soaDtoResponse = jmsRequest.getSoaDtoResponse();
+        assertNotNull(soaDtoResponse);
 
-        assertTrue(jmsResponse instanceof ZosDtoJmsResponse);
-        ZosDtoJmsResponse jmsResponseBean = (ZosDtoJmsResponse) jmsResponse;
+        assertTrue(soaDtoResponse instanceof ZosSoaDtoResponse);
+        ZosSoaDtoResponse zosSoaDtoResponse = (ZosSoaDtoResponse) soaDtoResponse;
 
 
-        assertNotNull(jmsResponseBean.getTimestampDecoded());
-        assertEquals("@WEB", jmsResponseBean.getChannel());
+        assertNotNull(zosSoaDtoResponse.getTimestampDecoded());
+        assertEquals("@WEB", zosSoaDtoResponse.getChannel());
 
-        final ZosResponseHeader zosHeader = jmsResponseBean.getHeader();
+        final ZosResponseHeader zosHeader = zosSoaDtoResponse.getHeader();
         assertEquals("HEADER12", zosHeader.getName());
         assertEquals("flag", zosHeader.getFlags());
         assertEquals(44, zosHeader.getLength());
@@ -109,7 +109,7 @@ public class ZosParserTest {
         assertEquals("fsid", zosHeader.getSessionId());
         assertEquals("myLaptop    ", zosHeader.getUserComputerName());
 
-        final List<ZosResponseData> zosResponseDataList = jmsResponseBean.getZosResponses();
+        final List<ZosResponseData> zosResponseDataList = zosSoaDtoResponse.getZosResponses();
         assertEquals(1, zosResponseDataList.size());
 
         final ZosResponseData data = zosResponseDataList.get(0);

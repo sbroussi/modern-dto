@@ -1,11 +1,11 @@
 package com.sbroussi.app1;
 
 import com.sbroussi.dto.DtoContext;
-import com.sbroussi.dto.jms.DtoJmsConnector;
-import com.sbroussi.dto.jms.DtoJmsContext;
-import com.sbroussi.dto.jms.DtoJmsRequest;
-import com.sbroussi.dto.jms.dialect.DialectZos;
 import com.sbroussi.dto.transport.SenderJms;
+import com.sbroussi.soa.SoaConnector;
+import com.sbroussi.soa.SoaContext;
+import com.sbroussi.soa.SoaDtoRequest;
+import com.sbroussi.soa.dialect.DialectZos;
 import com.sbroussi.soa.dto.Apps;
 import com.sbroussi.xml.request.v1_0.ADRVIRTU;
 import lombok.Getter;
@@ -20,7 +20,7 @@ public class App1 {
 
     private DtoContext dtoContext;
 
-    private DtoJmsContext jmsContext;
+    private SoaContext jmsContext;
 
     /**
      * The JMS Queue factory.
@@ -49,15 +49,15 @@ public class App1 {
     }
 
     /**
-     * @return a unique instance of a 'DtoJmsContext'.
+     * @return a unique instance of a 'SoaContext'.
      */
-    public DtoJmsContext getJmsContext() {
+    public SoaContext getJmsContext() {
         if (jmsContext == null) {
 
             // simple JMS implementation
             SenderJms messageSender = new SenderJms(queueFactory, requestQueue, replyQueue);
 
-            jmsContext = DtoJmsContext.builder()
+            jmsContext = SoaContext.builder()
                     .dtoContext(getDtoContext())
                     .applicationId(Apps.app1)
                     .dialect(new DialectZos("@WEB")) // fixed-width fields with header
@@ -71,17 +71,17 @@ public class App1 {
     /**
      * @return the DTO request (for Unit-test purpose)
      */
-    public DtoJmsRequest sendText(final String text) {
+    public SoaDtoRequest sendText(final String text) {
 
         ADRVIRTU adrvirtu = ADRVIRTU.builder()
                 .myRequestField1(text)
                 .build();
 
         // send JMS message
-        DtoJmsRequest request = new DtoJmsRequest(adrvirtu);
+        SoaDtoRequest request = new SoaDtoRequest(adrvirtu);
         request.setUserId("user1");
         request.setUserProfile("profilA");
-        DtoJmsConnector.send(getJmsContext(), request);
+        SoaConnector.send(getJmsContext(), request);
 
         return request;
 

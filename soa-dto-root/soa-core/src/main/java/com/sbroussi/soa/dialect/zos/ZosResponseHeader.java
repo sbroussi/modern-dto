@@ -1,4 +1,4 @@
-package com.sbroussi.dto.jms.dialect.zos;
+package com.sbroussi.soa.dialect.zos;
 
 import lombok.Getter;
 import lombok.Setter;

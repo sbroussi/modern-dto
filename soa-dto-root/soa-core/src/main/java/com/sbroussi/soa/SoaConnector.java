@@ -1,18 +1,18 @@
-package com.sbroussi.dto.jms;
+package com.sbroussi.soa;
 
 import com.sbroussi.dto.DtoContext;
 import com.sbroussi.dto.DtoUtils;
 import com.sbroussi.dto.annotations.DtoRequest;
-import com.sbroussi.dto.jms.audit.Auditor;
-import com.sbroussi.dto.jms.dialect.Dialect;
 import com.sbroussi.dto.transport.TransportException;
+import com.sbroussi.soa.audit.Auditor;
+import com.sbroussi.soa.dialect.Dialect;
 
 import java.util.List;
 
 /**
  * This class will send the JMS message and read responses.
  */
-public class DtoJmsConnector {
+public class SoaConnector {
 
     /**
      * Send the JMS message and read responses (delegate the PUT to 'jmsContext.messageSender').
@@ -20,14 +20,14 @@ public class DtoJmsConnector {
      * @param jmsContext the DTO JMS context
      * @param request    The DTO request wrapper. The responses are populated in this bean.
      */
-    public static void send(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
+    public static void send(final SoaContext jmsContext, final SoaDtoRequest request) {
 
         final String applicationId = jmsContext.getApplicationId();
 
         // read DTO
         final Object dto = request.getRequestDto();
         if (dto == null) {
-            throw new IllegalArgumentException("property 'requestDto' of DtoJmsRequest is null");
+            throw new IllegalArgumentException("property 'requestDto' of SoaDtoRequest is null");
 
         }
         final String dtoClassname = dto.getClass().getName();
@@ -60,7 +60,7 @@ public class DtoJmsConnector {
         dialect.formatToJmsText(jmsContext, request);
 
         // notify all auditors (before sending the JMS request)
-        final List<Auditor> dtoJmsAuditors = jmsContext.getDtoJmsAuditors();
+        final List<Auditor> dtoJmsAuditors = jmsContext.getAuditors();
         if (dtoJmsAuditors != null) {
             for (final Auditor auditor : dtoJmsAuditors) {
                 auditor.traceBeforeRequest(jmsContext, request);

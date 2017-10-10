@@ -1,4 +1,4 @@
-package com.sbroussi.dto.jms.dialect.zos;
+package com.sbroussi.soa.dialect.zos;
 
 import com.sbroussi.dto.DtoCatalog;
 import com.sbroussi.dto.DtoContext;
@@ -8,7 +8,7 @@ import com.sbroussi.dto.DtoUtils;
 import com.sbroussi.dto.annotations.DtoRequest;
 import com.sbroussi.dto.annotations.DtoResponse;
 import com.sbroussi.dto.error.INFO;
-import com.sbroussi.dto.jms.DtoJmsRequest;
+import com.sbroussi.soa.SoaDtoRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -33,13 +33,13 @@ public class ZosParser {
      * @param dtoContext the DTO context
      * @param request    the JMS request
      */
-    public void parse(final DtoContext dtoContext, final DtoJmsRequest request) {
+    public void parse(final DtoContext dtoContext, final SoaDtoRequest request) {
 
         //
         // step 1: decode the z/OS response
         //         split and extract the RAW 'String' parts of the response
         //
-        ZosDtoJmsResponse jmsResponseBean = parseRawResponse(dtoContext.getDtoCatalog(), request);
+        ZosSoaDtoResponse jmsResponseBean = parseRawResponse(dtoContext.getDtoCatalog(), request);
 
 
         //
@@ -50,14 +50,14 @@ public class ZosParser {
     }
 
 
-    private ZosDtoJmsResponse parseRawResponse(final DtoCatalog dtoCatalog, final DtoJmsRequest request) {
+    private ZosSoaDtoResponse parseRawResponse(final DtoCatalog dtoCatalog, final SoaDtoRequest request) {
 
         final DtoRequest annotation = request.getDtoRequestAnnotation();
         final String requestName = (annotation == null) ? null : annotation.name();
 
-        final ZosDtoJmsResponse jmsResponseBean = new ZosDtoJmsResponse();
-        jmsResponseBean.setTimestampDecoded(System.currentTimeMillis());
-        request.setDtoJmsResponse(jmsResponseBean);
+        final ZosSoaDtoResponse soaDtoResponse = new ZosSoaDtoResponse();
+        soaDtoResponse.setTimestampDecoded(System.currentTimeMillis());
+        request.setSoaDtoResponse(soaDtoResponse);
 
         final String response = request.getRawResponse();
 
@@ -83,7 +83,7 @@ public class ZosParser {
         // Application ID : X(8)
         endIndex += 8;
         final String channel = response.substring(startIndex, endIndex);
-        jmsResponseBean.setChannel(channel.trim());
+        soaDtoResponse.setChannel(channel.trim());
 
         startIndex = endIndex;
 
@@ -107,7 +107,7 @@ public class ZosParser {
          * ** Header *
          */
         final ZosResponseHeader zosHeader = new ZosResponseHeader();
-        jmsResponseBean.setHeader(zosHeader);
+        soaDtoResponse.setHeader(zosHeader);
 
         // Header structure name : X(8)
         endIndex += 8;
@@ -267,7 +267,7 @@ public class ZosParser {
             if (log.isDebugEnabled()) {
                 log.debug("Request [" + requestName + "] returned [" + nbResponses + "] response [" + responseName + "]");
             }
-            jmsResponseBean.getZosResponses().add(zosResponseData);
+            soaDtoResponse.getZosResponses().add(zosResponseData);
         }
 
 
@@ -279,7 +279,7 @@ public class ZosParser {
 
             // if one response say '*', the request will accept all responses (DEBUGREQ)
             if (!expectedResponseNames.contains("*")) {
-                for (final ZosResponseData zosResponseData : jmsResponseBean.getZosResponses()) {
+                for (final ZosResponseData zosResponseData : soaDtoResponse.getZosResponses()) {
                     final String responseName = zosResponseData.getName();
 
                     if (!expectedResponseNames.contains(responseName)) {
@@ -293,16 +293,16 @@ public class ZosParser {
                 }
             }
         }
-        return jmsResponseBean;
+        return soaDtoResponse;
 
     }
 
 
-    private Map<String, List<Object>> decodecodeJmsToDto(final DtoContext dtoContext, final DtoJmsRequest request) {
+    private Map<String, List<Object>> decodecodeJmsToDto(final DtoContext dtoContext, final SoaDtoRequest request) {
 
         final DtoParser dtoParser = dtoContext.getDtoParser();
 
-        final ZosDtoJmsResponse jmsResponseBean = (ZosDtoJmsResponse) request.getDtoJmsResponse();
+        final ZosSoaDtoResponse soaDtoResponse = (ZosSoaDtoResponse) request.getSoaDtoResponse();
 
         DtoCatalog dtoCatalog = dtoContext.getDtoCatalog();
         // check that the responses are all documented as 'expected' in the '@DtoRequest' annotation
@@ -311,7 +311,7 @@ public class ZosParser {
 
         Map<String, Class> expectedResponsesMap = dtoCatalog.getExpectedResponsesByRequest().get(dtoClass);
 
-//            for (final ZosResponseData zosResponseData : jmsResponseBean.getZosResponses()) {
+//            for (final ZosResponseData zosResponseData : soaDtoResponse.getZosResponses()) {
 //                final String responseName = zosResponseData.getName();
 //
 //                for (final String rawDto : zosResponseData.getResponseDataElements()) {
@@ -329,12 +329,12 @@ public class ZosParser {
 //        }
 
 
-        if ((jmsResponseBean == null) || (jmsResponseBean.getZosResponses() == null)) {
+        if ((soaDtoResponse == null) || (soaDtoResponse.getZosResponses() == null)) {
             // nothing to return
             return new HashMap<String, List<Object>>(0);
         }
 
-        final int nbResponseNames = jmsResponseBean.getZosResponses().size();
+        final int nbResponseNames = soaDtoResponse.getZosResponses().size();
 
         // LinkedHashMap, the iteration order is, the order in which keys were inserted
         Map<String, List<Object>> result = new LinkedHashMap<String, List<Object>>(nbResponseNames);
@@ -343,7 +343,7 @@ public class ZosParser {
         /* **
          * Decode data
          * **/
-        for (final ZosResponseData zosResponseData : jmsResponseBean.getZosResponses()) {
+        for (final ZosResponseData zosResponseData : soaDtoResponse.getZosResponses()) {
 
             final String responseName = zosResponseData.getName();
 

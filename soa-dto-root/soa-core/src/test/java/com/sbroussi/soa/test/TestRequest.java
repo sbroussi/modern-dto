@@ -1,4 +1,4 @@
-package com.sbroussi.dto.jms.test;
+package com.sbroussi.soa.test;
 
 import com.sbroussi.dto.annotations.DtoField;
 import com.sbroussi.dto.annotations.DtoRequest;
