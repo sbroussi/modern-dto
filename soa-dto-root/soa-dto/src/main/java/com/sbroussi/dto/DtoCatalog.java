@@ -9,7 +9,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * This catalog maintains a map of all DTOs that are being used.
+ * This catalog maintains a map of all DTOs that are being used ('@DtoRequest' or '@DtoResponse').
+ * <p>
+ * Is is recommended to keep one instance of this class in your application,
  * <p>
  * Note: To have a full map of ALL available '@DtoRequest' or '@DtoResponse'
  * you can call the 'scan' method. But this is NOT required to run standard applications.
