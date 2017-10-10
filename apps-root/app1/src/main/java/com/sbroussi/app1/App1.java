@@ -4,8 +4,8 @@ import com.sbroussi.dto.DtoContext;
 import com.sbroussi.dto.jms.DtoJmsConnector;
 import com.sbroussi.dto.jms.DtoJmsContext;
 import com.sbroussi.dto.jms.DtoJmsRequest;
-import com.sbroussi.dto.jms.MessageSenderImpl;
 import com.sbroussi.dto.jms.dialect.DialectZos;
+import com.sbroussi.dto.transport.SenderJms;
 import com.sbroussi.soa.dto.Apps;
 import com.sbroussi.xml.request.v1_0.ADRVIRTU;
 import lombok.Getter;
@@ -55,7 +55,7 @@ public class App1 {
         if (jmsContext == null) {
 
             // simple JMS implementation
-            MessageSenderImpl messageSender = new MessageSenderImpl(queueFactory, requestQueue, replyQueue);
+            SenderJms messageSender = new SenderJms(queueFactory, requestQueue, replyQueue);
 
             jmsContext = DtoJmsContext.builder()
                     .dtoContext(getDtoContext())

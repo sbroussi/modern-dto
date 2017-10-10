@@ -26,7 +26,7 @@
         </dependency>
         <dependency>
             <groupId>com.sbroussi</groupId>
-            <artifactId>soa-dto-jms</artifactId>
+            <artifactId>soa-core</artifactId>
             <version>${dto-api.version}</version>
         </dependency>
 

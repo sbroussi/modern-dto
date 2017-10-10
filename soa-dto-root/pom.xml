@@ -15,11 +15,16 @@
     <version>2017.10</version>
     <packaging>pom</packaging>
 
+
+    <properties>
+        <maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+    </properties>
+
     <modules>
-        <module>soa-jms</module>
+        <module>soa-transport</module>
         <module>soa-dto-api</module>
         <module>soa-dto</module>
-        <module>soa-dto-jms</module>
+        <module>soa-core</module>
     </modules>
 
 
