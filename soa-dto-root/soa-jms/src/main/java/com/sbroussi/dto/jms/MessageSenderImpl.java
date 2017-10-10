@@ -88,8 +88,6 @@ public class MessageSenderImpl implements MessageSender {
             // send
             sender.send(outMessage);
 
-            final String correlationId = outMessage.getJMSMessageID();
-
 
             // ONE-WAY request (fire and forget) ?
             if (isOneWayRequest) {
@@ -98,6 +96,7 @@ public class MessageSenderImpl implements MessageSender {
 
             // read responses if a correlation ID is returned
 
+            final String correlationId = outMessage.getJMSMessageID();
             if ((correlationId == null) || (correlationId.trim().length() == 0)) {
                 throw new JmsException("Expected a response but no correlationId is returned");
             }
@@ -106,7 +105,7 @@ public class MessageSenderImpl implements MessageSender {
             final QueueReceiver receiver = session.createReceiver(replyQueue, correlationIdFilter);
 
             if (log.isDebugEnabled()) {
-                log.debug("Waiting for reply message with timeout: [" + timeout
+                log.debug("Waiting for reply message with timeout [" + timeout
                         + " ms]; correlationId [" + correlationId + "]");
             }
 
