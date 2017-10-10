@@ -47,11 +47,22 @@ public class MessageSenderImpl implements MessageSender {
 
     // --------------- from MessageSender
     @Override
-    public void sendMessage(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
-        final boolean isOneWayRequest = request.isOneWayRequest();
-        final String jmsName = request.getDtoRequestAnnotation().name();
-        String rawMessage = request.getRawRequest();
+    public void send(final String rawMessage) {
+        sendMessage(true, rawMessage, 0L);
+    }
 
+    @Override
+    public String sendAndReceive(final String rawMessage, final long timeout) {
+        return sendMessage(false, rawMessage, timeout);
+    }
+
+    // --------------- internal implementation
+
+    private String sendMessage(final boolean isOneWayRequest,
+                               final String rawMessage,
+                               final long timeout) {
+
+        String rawResponse = null;
         QueueConnection connection = null;
         QueueSession session = null;
         try {
@@ -70,15 +81,10 @@ public class MessageSenderImpl implements MessageSender {
 
             QueueSender sender = session.createSender(requestQueue);
 
-            // remember the 'send' time
-            final long start = System.currentTimeMillis();
-            request.setTimestampSend(start);
-
             // send
             sender.send(outMessage);
 
             final String correlationId = outMessage.getJMSMessageID();
-            request.setCorrelationId(correlationId);
 
             // ONE-WAY request (fire and forget) ?
             if ((!isOneWayRequest) && (correlationId != null) && (correlationId.length() > 0)) {
@@ -88,33 +94,27 @@ public class MessageSenderImpl implements MessageSender {
                 final String correlationIdFilter = "JMSCorrelationID = '" + correlationId + "'";
                 final QueueReceiver receiver = session.createReceiver(replyQueue, correlationIdFilter);
 
-                final long timeout = request.getReplyTimeoutInMs();
                 if (log.isDebugEnabled()) {
-                    log.debug("Waiting for reply message with timeout: [" + timeout + " ms] for request ["
-                            + jmsName + "] with correlationId [" + correlationId + "]");
+                    log.debug("Waiting for reply message with timeout: [" + timeout
+                            + " ms]; correlationId [" + correlationId + "]");
                 }
 
                 // hangs until the message arrives (or timeout)
                 final Message jmsMessage = receiver.receive(timeout);
                 if (jmsMessage == null) {
-                    throw new JmsTimeoutException("No reply message for request [" + jmsName
-                            + "] message ID [" + correlationId
+                    throw new JmsTimeoutException("No reply message with correlationId [" + correlationId
                             + "]. Probably timed-out (waited " + timeout + " ms)");
                 }
                 if (!(jmsMessage instanceof TextMessage)) {
                     throw new JmsException("Expected a 'TextMessage' but received a ["
                             + jmsMessage.getClass().getName() + "]");
                 }
-                final String rawResponse = ((TextMessage) jmsMessage).getText();
-                request.setRawResponse(rawResponse);
-
+                rawResponse = ((TextMessage) jmsMessage).getText();
             }
 
         } catch (Throwable t) {
-            throw new JmsException("cannot send JMS message"
-                    + "] for request [" + jmsName
-                    + "] message [" + rawMessage + "]", t);
+            throw new JmsException("cannot send JMS message [" + rawMessage + "]", t);
         }
-
+        return rawResponse;
     }
 }

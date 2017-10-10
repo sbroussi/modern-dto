@@ -58,8 +58,6 @@ public class DtoJmsConnector {
 
         dialect.formatToJmsText(jmsContext, request);
 
-        final String rawJms = request.getRawRequest();
-
 
         // notify all auditors (before sending the JMS request)
         final List<Auditor> dtoJmsAuditors = jmsContext.getDtoJmsAuditors();
@@ -71,9 +69,26 @@ public class DtoJmsConnector {
 
 
         final String jmsName = annotation.name();
+        final String rawJms = request.getRawRequest();
         try {
             // send JMS request and read response (if any)
-            jmsContext.getMessageSender().sendMessage(jmsContext, request);
+
+
+            // remember the 'send' time
+            final long start = System.currentTimeMillis();
+            request.setTimestampSend(start);
+
+            if (request.isOneWayRequest()) {
+
+                jmsContext.getMessageSender().send(rawJms);
+
+            } else {
+
+                final String rawResponse = jmsContext.getMessageSender()
+                        .sendAndReceive(rawJms, request.getReplyTimeoutInMs());
+
+                request.setRawResponse(rawResponse);
+            }
 
         } catch (Throwable t) {
             throw new JmsException("Error while sending JMS request [" + jmsName

@@ -84,10 +84,6 @@ public class DtoJmsRequest {
      */
     private long timestampSend;
 
-    /**
-     * INTERNAL: the messageId (correlation-ID) to send/receive JMS Request-Response synchronously,
-     */
-    private String correlationId;
 
     /**
      * INTERNAL: the JMS message received as response.

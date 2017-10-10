@@ -1,9 +1,5 @@
-package com.sbroussi.dto.jms.spring;
+package com.sbroussi.dto.jms;
 
-import com.sbroussi.dto.jms.DtoJmsContext;
-import com.sbroussi.dto.jms.DtoJmsRequest;
-import com.sbroussi.dto.jms.JmsException;
-import com.sbroussi.dto.jms.MessageSender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -45,28 +41,39 @@ public class MessageSenderSpringImpl implements MessageSender {
         this.requestQueue = requestQueue;
     }
 
+    // --------------- from MessageSender
+    @Override
+    public void send(final String rawMessage) {
+        sendMessage(true, rawMessage, 0L);
+    }
 
-    public void sendMessage(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
-        String correlationId = sendMessage(requestQueue, request.getRawRequest(), jmsTemplate);
-        request.setCorrelationId(correlationId);
+    @Override
+    public String sendAndReceive(final String rawMessage, final long timeout) {
+        return sendMessage(false, rawMessage, timeout);
+    }
+
+    // --------------- internal implementation
+
+    private String sendMessage(final boolean isOneWayRequest,
+                               final String rawMessage,
+                               final long timeout) {
+
+
+        String correlationId = sendMessage(requestQueue, rawMessage, jmsTemplate);
 
         // ONE-WAY request (fire and forget) ?
-        if ((!request.isOneWayRequest()) && (correlationId != null) && (correlationId.length() > 0)) {
-            // read response if a correlation ID is returned
-
-            final String jmsName = request.getDtoRequestAnnotation().name();
-            final long timeout = request.getReplyTimeoutInMs();
-            if (log.isDebugEnabled()) {
-                log.debug("Waiting for reply message with timeout: [" + timeout + " ms] for request ["
-                        + jmsName + "] with correlationId [" + correlationId + "]");
-            }
-
-
-            // TODO: read response with Spring-JMS
-            request.setRawResponse("TODO: read response with Spring-JMS");
-
-            throw new JmsException("TODO: read response with Spring-JMS");
+        if ((isOneWayRequest) || (correlationId == null) || (correlationId.length() == 0)) {
+            return null;
         }
+
+        // read response if a correlation ID is returned
+
+        // TODO: read response with Spring-JMS
+
+        // TODO: remember to use timeout...
+
+        throw new JmsException("TODO: read response with Spring-JMS and timeout [" + timeout + "]");
+
     }
 
     private String sendMessage(final Queue requestQueue,

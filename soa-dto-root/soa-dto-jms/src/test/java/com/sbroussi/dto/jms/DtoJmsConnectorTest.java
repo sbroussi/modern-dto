@@ -22,8 +22,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class MessageSenderImplTest {
-
+public class DtoJmsConnectorTest {
 
     @Test
     public void testSend() throws Exception {
@@ -81,6 +80,8 @@ public class MessageSenderImplTest {
         DtoJmsRequest request = new DtoJmsRequest(adrvirtu);
         request.setUserId("user1");
         request.setUserProfile("profilA");
+
+        // send
         DtoJmsConnector.send(jmsContext, request);
 
 
