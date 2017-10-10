@@ -1,7 +1,7 @@
 package com.sbroussi.dto.jms;
 
 /**
- * Technical Exception thrown when sending a JMS mesages.
+ * Technical Exception thrown when sending a JMS message.
  */
 public class JmsException extends RuntimeException {
 

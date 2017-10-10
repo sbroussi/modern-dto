@@ -17,8 +17,9 @@ public interface MessageSender {
      * Sends a JMS message without expecting a response (One-Way request).
      *
      * @param message The RAW text message to send using JMS
+     * @throws JmsException if I/O error occurs
      */
-    void send(String message);
+    void send(String message) throws JmsException;
 
     /**
      * Sends a JMS message and optionally collect the RAW text of JMS response (if any).
@@ -28,7 +29,9 @@ public interface MessageSender {
      * @param message The RAW text message to send using JMS
      * @param timeout the duration to wait for a response (in milliseconds)
      * @return The RAW text message of the response (if any)
+     * @throws JmsException        if I/O error occurs
+     * @throws JmsTimeoutException if timeout delay is reached and no response is read
      */
-    String sendAndReceive(String message, long timeout);
+    String sendAndReceive(String message, long timeout) throws JmsException, JmsTimeoutException;
 
 }
