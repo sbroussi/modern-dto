@@ -1,8 +1,10 @@
 package com.sbroussi.dto.jms.dialect.zos;
 
+import com.sbroussi.dto.DtoContext;
 import com.sbroussi.dto.jms.DtoJmsRequest;
 import com.sbroussi.dto.jms.DtoJmsResponse;
 import com.sbroussi.dto.jms.JmsException;
+import com.sbroussi.dto.jms.test.TestRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
@@ -81,11 +83,11 @@ public class ZosParserTest {
         log.info("expect this response: [" + responseStr + "]");
 
         // set the RAW response message to be parsed
-        DtoJmsRequest jmsRequest = new DtoJmsRequest(null);
+        DtoJmsRequest jmsRequest = new DtoJmsRequest(new TestRequest());
         jmsRequest.setRawResponse(responseStr);
 
         // decode
-        zosParser.parse(null, jmsRequest);
+        zosParser.parse(new DtoContext(), jmsRequest);
 
         final DtoJmsResponse jmsResponse = jmsRequest.getDtoJmsResponse();
         assertNotNull(jmsResponse);
@@ -129,7 +131,7 @@ public class ZosParserTest {
         try {
             // set the RAW response message
             jmsRequest.setRawResponse(null);
-            zosParser.parse(null, jmsRequest);
+            zosParser.parse(new DtoContext(), jmsRequest);
             fail("should have throw an exception");
         } catch (final JmsException expectedOK) {
         }
@@ -138,7 +140,7 @@ public class ZosParserTest {
         try {
             // set the RAW response message
             jmsRequest.setRawResponse("@FORMINGthis is a short response");
-            zosParser.parse(null, jmsRequest);
+            zosParser.parse(new DtoContext(), jmsRequest);
             fail("should have throw an exception");
         } catch (final JmsException expectedOK) {
         }

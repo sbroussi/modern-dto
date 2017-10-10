@@ -47,7 +47,7 @@ public class DialectZos implements Dialect {
 
     @Override
     public void parseFromJmsText(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
-        zosParser.parse(jmsContext, request);
+        zosParser.parse(jmsContext.getDtoContext(), request);
 
     }
 

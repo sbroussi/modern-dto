@@ -13,7 +13,19 @@
     <artifactId>soa-dto-api</artifactId>
 
 
-    <!-- no dependencies, JDK only  -->
+    <dependencies>
+
+        <!-- no dependencies, JDK only  -->
+
+        <!-- Compilation time -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.18</version>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
 
 
     <build>

@@ -56,7 +56,7 @@ public class MessageSenderImplTest {
         when(responseMessage.getText()).thenReturn(expectedResponseHeader + response);
 
         // setup JMS context
-        DtoContext dtoContext = DtoContext.builder().build();
+        DtoContext dtoContext = new DtoContext();
 
         // simple JMS implementation
         MessageSenderImpl messageSender = new MessageSenderImpl(queueFactory, requestQueue, replyQueue);

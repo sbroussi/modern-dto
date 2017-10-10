@@ -1,15 +1,20 @@
 package com.sbroussi.dto.jms.dialect.zos;
 
+import com.sbroussi.dto.DtoCatalog;
+import com.sbroussi.dto.DtoContext;
+import com.sbroussi.dto.DtoParser;
 import com.sbroussi.dto.DtoUtils;
 import com.sbroussi.dto.annotations.DtoRequest;
 import com.sbroussi.dto.annotations.DtoResponse;
 import com.sbroussi.dto.error.INFO;
-import com.sbroussi.dto.jms.DtoJmsContext;
 import com.sbroussi.dto.jms.DtoJmsRequest;
 import com.sbroussi.dto.jms.JmsException;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -22,7 +27,30 @@ public class ZosParser {
     private String INFO_responseName = INFO.class.getAnnotation(DtoResponse.class).name();
 
 
-    public void parse(final DtoJmsContext jmsContext, final DtoJmsRequest request) {
+    /**
+     * Parse the JMS response and build the list of DTO Java objects,
+     *
+     * @param dtoContext the DTO context
+     * @param request    the JMS request
+     */
+    public void parse(final DtoContext dtoContext, final DtoJmsRequest request) {
+
+        //
+        // step 1: decode the z/OS response
+        //         split and extract the RAW 'String' parts of the response
+        //
+        ZosDtoJmsResponse jmsResponseBean = parseRawResponse(dtoContext.getDtoCatalog(), request);
+
+
+        //
+        // step 2: decode the JMS response and build the list of DTO Java objects
+        //
+        jmsResponseBean.setDtoResponsesMap(decodecodeJmsToDto(dtoContext, request));
+
+    }
+
+
+    private ZosDtoJmsResponse parseRawResponse(final DtoCatalog dtoCatalog, final DtoJmsRequest request) {
 
         final DtoRequest annotation = request.getDtoRequestAnnotation();
         final String requestName = (annotation == null) ? null : annotation.name();
@@ -242,8 +270,10 @@ public class ZosParser {
             jmsResponseBean.getZosResponses().add(zosResponseData);
         }
 
+
         // check that the responses are all documented as 'expected' in the '@DtoRequest' annotation
-        Map<String, Class> expectedResponsesMap = request.getExpectedResponsesMap();
+        final Class dtoClass = request.getRequestDto().getClass();
+        Map<String, Class> expectedResponsesMap = dtoCatalog.getExpectedResponsesByRequest().get(dtoClass);
         if (expectedResponsesMap != null) {
             final Set<String> expectedResponseNames = expectedResponsesMap.keySet();
 
@@ -263,6 +293,84 @@ public class ZosParser {
                 }
             }
         }
+        return jmsResponseBean;
 
+    }
+
+
+    private Map<String, List<Object>> decodecodeJmsToDto(final DtoContext dtoContext, final DtoJmsRequest request) {
+
+        final DtoParser dtoParser = dtoContext.getDtoParser();
+
+        final ZosDtoJmsResponse jmsResponseBean = (ZosDtoJmsResponse) request.getDtoJmsResponse();
+
+        DtoCatalog dtoCatalog = dtoContext.getDtoCatalog();
+        // check that the responses are all documented as 'expected' in the '@DtoRequest' annotation
+        final Class dtoClass = request.getRequestDto().getClass();
+        dtoCatalog.scanDto(dtoClass);
+
+        Map<String, Class> expectedResponsesMap = dtoCatalog.getExpectedResponsesByRequest().get(dtoClass);
+
+//            for (final ZosResponseData zosResponseData : jmsResponseBean.getZosResponses()) {
+//                final String responseName = zosResponseData.getName();
+//
+//                for (final String rawDto : zosResponseData.getResponseDataElements()) {
+//
+//
+//                    Object dto = dtoParser.parse(rawDto);
+//                    if (dto != null) {
+//
+//                    }
+//
+//
+//                }
+//
+//            }
+//        }
+
+
+        if ((jmsResponseBean == null) || (jmsResponseBean.getZosResponses() == null)) {
+            // nothing to return
+            return new HashMap<String, List<Object>>(0);
+        }
+
+        final int nbResponseNames = jmsResponseBean.getZosResponses().size();
+
+        // LinkedHashMap, the iteration order is, the order in which keys were inserted
+        Map<String, List<Object>> result = new LinkedHashMap<String, List<Object>>(nbResponseNames);
+
+
+        /* **
+         * Decode data
+         * **/
+        for (final ZosResponseData zosResponseData : jmsResponseBean.getZosResponses()) {
+
+            final String responseName = zosResponseData.getName();
+
+            // get the class name: 'xsd response name' -> 'java class name'
+            final Class<?> clazz = expectedResponsesMap.get(responseName);
+            if (clazz == null) {
+                log.error("no DTO found with responseName [" + responseName
+                        + "], define a new '@DtoResponse' class for this DTO");
+                // skip to the next record
+                continue;
+            }
+
+            final int nbDtos = zosResponseData.getResponseDataElements().size();
+
+            final ArrayList<Object> dtosList = new ArrayList<Object>(nbDtos);
+            result.put(responseName, dtosList);
+
+            for (final String dtoAsString : zosResponseData.getResponseDataElements()) {
+
+                final String dtoClassName = clazz.getName();
+
+
+                final Object dto = dtoParser.parse(clazz, dtoAsString);
+                dtosList.add(dto);
+            }
+        }
+
+        return result;
     }
 }

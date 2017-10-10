@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Locale;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -95,14 +94,6 @@ public class DtoJmsRequest {
      */
     private String rawResponse;
 
-    /**
-     * INTERNAL: the map of '@DtoResponse' classes of the expected responses and errors,
-     * <p>
-     * - key: String short name of the response ('@DtoResponse(name="ERROR")'
-     * <p>
-     * - value: The class of the response Dto annotated with '@DtoResponse'
-     */
-    private Map<String, Class> expectedResponsesMap;
 
     /**
      * The response object (the real implementation is defined by the 'Dialect'),

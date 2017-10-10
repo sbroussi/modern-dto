@@ -43,7 +43,7 @@ public class App1 {
      */
     public DtoContext getDtoContext() {
         if (dtoContext == null) {
-            dtoContext = DtoContext.builder().build();
+            dtoContext = new DtoContext();
         }
         return dtoContext;
     }
