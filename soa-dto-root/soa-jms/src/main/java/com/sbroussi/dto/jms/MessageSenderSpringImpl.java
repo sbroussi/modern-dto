@@ -68,9 +68,16 @@ public class MessageSenderSpringImpl implements MessageSender {
 
         // read response if a correlation ID is returned
 
-        // TODO: read response with Spring-JMS
+        // TODO: read response with Spring-JMS (correlationId)
 
         // TODO: remember to use timeout...
+
+        // TODO: log response with TRACE level
+        String rawResponse = null;
+        if (log.isTraceEnabled()) {
+            log.trace("Received JMS response [" + rawResponse
+                    + "] with correlationId [" + correlationId + "]");
+        }
 
         throw new JmsException("TODO: read response with Spring-JMS and timeout [" + timeout + "]");
 
@@ -82,6 +89,12 @@ public class MessageSenderSpringImpl implements MessageSender {
         String correlationId = null;
         MyMessageCreator messageCreator = new MyMessageCreator(message);
         try {
+
+
+            if (log.isTraceEnabled()) {
+                log.trace("Send JMS message [" + message + "]");
+            }
+
             jmsTemplate.send(requestQueue, messageCreator);
             correlationId = messageCreator.message.getJMSMessageID();
         } catch (Exception e) {

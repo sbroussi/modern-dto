@@ -81,6 +81,10 @@ public class MessageSenderImpl implements MessageSender {
 
             QueueSender sender = session.createSender(requestQueue);
 
+            if (log.isTraceEnabled()) {
+                log.trace("Send JMS message [" + rawMessage + "]");
+            }
+
             // send
             sender.send(outMessage);
 
@@ -110,6 +114,12 @@ public class MessageSenderImpl implements MessageSender {
                             + jmsMessage.getClass().getName() + "]");
                 }
                 rawResponse = ((TextMessage) jmsMessage).getText();
+
+                if (log.isTraceEnabled()) {
+                    log.trace("Received JMS response [" + rawResponse
+                            + "] with correlationId [" + correlationId + "]");
+                }
+
             }
 
         } catch (Throwable t) {
