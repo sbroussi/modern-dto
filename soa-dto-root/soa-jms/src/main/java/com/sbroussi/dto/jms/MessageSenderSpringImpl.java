@@ -62,11 +62,15 @@ public class MessageSenderSpringImpl implements MessageSender {
         String correlationId = sendMessage(requestQueue, rawMessage, jmsTemplate);
 
         // ONE-WAY request (fire and forget) ?
-        if ((isOneWayRequest) || (correlationId == null) || (correlationId.length() == 0)) {
+        if (isOneWayRequest) {
             return null;
         }
 
-        // read response if a correlation ID is returned
+        // read responses if a correlation ID is returned
+
+        if ((correlationId == null) || (correlationId.trim().length() == 0)) {
+            throw new JmsException("Expected a response but no correlationId is returned");
+        }
 
         // TODO: read response with Spring-JMS (correlationId)
 

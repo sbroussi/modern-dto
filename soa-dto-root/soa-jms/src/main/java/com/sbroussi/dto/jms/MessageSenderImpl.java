@@ -90,37 +90,43 @@ public class MessageSenderImpl implements MessageSender {
 
             final String correlationId = outMessage.getJMSMessageID();
 
+
             // ONE-WAY request (fire and forget) ?
-            if ((!isOneWayRequest) && (correlationId != null) && (correlationId.length() > 0)) {
-
-                // read responses if a correlation ID is returned
-
-                final String correlationIdFilter = "JMSCorrelationID = '" + correlationId + "'";
-                final QueueReceiver receiver = session.createReceiver(replyQueue, correlationIdFilter);
-
-                if (log.isDebugEnabled()) {
-                    log.debug("Waiting for reply message with timeout: [" + timeout
-                            + " ms]; correlationId [" + correlationId + "]");
-                }
-
-                // hangs until the message arrives (or timeout)
-                final Message jmsMessage = receiver.receive(timeout);
-                if (jmsMessage == null) {
-                    throw new JmsTimeoutException("No reply message with correlationId [" + correlationId
-                            + "]. Probably timed-out (waited " + timeout + " ms)");
-                }
-                if (!(jmsMessage instanceof TextMessage)) {
-                    throw new JmsException("Expected a 'TextMessage' but received a ["
-                            + jmsMessage.getClass().getName() + "]");
-                }
-                rawResponse = ((TextMessage) jmsMessage).getText();
-
-                if (log.isTraceEnabled()) {
-                    log.trace("Received JMS response [" + rawResponse
-                            + "] with correlationId [" + correlationId + "]");
-                }
-
+            if (isOneWayRequest) {
+                return null;
             }
+
+            // read responses if a correlation ID is returned
+
+            if ((correlationId == null) || (correlationId.trim().length() == 0)) {
+                throw new JmsException("Expected a response but no correlationId is returned");
+            }
+
+            final String correlationIdFilter = "JMSCorrelationID = '" + correlationId + "'";
+            final QueueReceiver receiver = session.createReceiver(replyQueue, correlationIdFilter);
+
+            if (log.isDebugEnabled()) {
+                log.debug("Waiting for reply message with timeout: [" + timeout
+                        + " ms]; correlationId [" + correlationId + "]");
+            }
+
+            // hangs until the message arrives (or timeout)
+            final Message jmsMessage = receiver.receive(timeout);
+            if (jmsMessage == null) {
+                throw new JmsTimeoutException("No reply message with correlationId [" + correlationId
+                        + "]. Probably timed-out (waited " + timeout + " ms)");
+            }
+            if (!(jmsMessage instanceof TextMessage)) {
+                throw new JmsException("Expected a 'TextMessage' but received a ["
+                        + jmsMessage.getClass().getName() + "]");
+            }
+            rawResponse = ((TextMessage) jmsMessage).getText();
+
+            if (log.isTraceEnabled()) {
+                log.trace("Received JMS response [" + rawResponse
+                        + "] with correlationId [" + correlationId + "]");
+            }
+
 
         } catch (Throwable t) {
             throw new JmsException("cannot send JMS message [" + rawMessage + "]", t);
