@@ -307,7 +307,7 @@ public class ZosParser {
         DtoCatalog dtoCatalog = dtoContext.getDtoCatalog();
         // check that the responses are all documented as 'expected' in the '@DtoRequest' annotation
         final Class dtoClass = request.getRequestDto().getClass();
-        dtoCatalog.scanDto(dtoClass);
+        dtoCatalog.scanDtoRequest(dtoClass);
 
         Map<String, Class> expectedResponsesMap = dtoCatalog.getExpectedResponsesByRequest().get(dtoClass);
 

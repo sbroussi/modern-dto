@@ -80,24 +80,7 @@ public class DtoCatalog {
      *
      * @param clazz the class of the DTO to scan
      */
-    public void scanDto(final Class<?> clazz) {
-        if (clazz == null) {
-            return;
-        }
-
-        final DtoRequest dtoRequest = clazz.getAnnotation(DtoRequest.class);
-        if (dtoRequest != null) {
-            scanDtoRequest(clazz);
-        } else {
-            final DtoResponse dtoResponse = clazz.getAnnotation(DtoResponse.class);
-            if (dtoResponse != null) {
-                scanDtoResponse(clazz);
-            }
-
-        }
-    }
-
-    private void scanDtoRequest(final Class<?> clazz) {
+    public void scanDtoRequest(final Class<?> clazz) {
         final String className = clazz.getName();
         if (requests.containsKey(className)) {
             // already scanned
@@ -128,7 +111,12 @@ public class DtoCatalog {
         requests.put(className, clazz);
     }
 
-    private void scanDtoResponse(final Class<?> clazz) {
+    /**
+     * Scan a DTO with annotations '@DtoRequest' or '@DtoResponse'.
+     *
+     * @param clazz the class of the DTO to scan
+     */
+    public void scanDtoResponse(final Class<?> clazz) {
         final String className = clazz.getName();
         if (responses.containsKey(className)) {
             // already scanned

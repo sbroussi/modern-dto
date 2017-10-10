@@ -51,13 +51,12 @@ public class DtoJmsConnector {
 
         // read the map of '@DtoResponse' classes of the expected responses and errors,
         DtoContext dtoContext = jmsContext.getDtoContext();
-        dtoContext.getDtoCatalog().scanDto(request.getRequestDto().getClass());
+        dtoContext.getDtoCatalog().scanDtoRequest(request.getRequestDto().getClass());
 
         // format the raw JMS text message
         final Dialect dialect = jmsContext.getDialect();
 
         dialect.formatToJmsText(jmsContext, request);
-
 
         // notify all auditors (before sending the JMS request)
         final List<Auditor> dtoJmsAuditors = jmsContext.getDtoJmsAuditors();
