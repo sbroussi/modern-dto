@@ -14,7 +14,7 @@ import com.sbroussi.soa.SoaDtoRequest;
 public class DialectString implements Dialect {
 
     @Override
-    public void formatToJmsText(final SoaContext jmsContext, final SoaDtoRequest request) {
+    public void formatToRequestMessage(final SoaContext soaContext, final SoaDtoRequest request) {
 
         // format DTO using 'dto.toString()'
         final Object dto = request.getRequestDto();
@@ -25,7 +25,7 @@ public class DialectString implements Dialect {
     }
 
     @Override
-    public void parseFromJmsText(final SoaContext jmsContext, final SoaDtoRequest request) {
+    public void parseFromResponseMessage(final SoaContext soaContext, final SoaDtoRequest request) {
 
         // nothing to do, the 'rawResponse' property of the SoaDtoRequest is already set
 

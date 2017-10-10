@@ -10,19 +10,19 @@ import com.sbroussi.soa.dialect.Dialect;
 import java.util.List;
 
 /**
- * This class will send the JMS message and read responses.
+ * This class will send the request and read responses.
  */
 public class SoaConnector {
 
     /**
-     * Send the JMS message and read responses (delegate the PUT to 'jmsContext.messageSender').
+     * Send the request and read responses (delegate the PUT to 'soaContext.messageSender').
      *
-     * @param jmsContext the DTO JMS context
+     * @param soaContext the current SOA context
      * @param request    The DTO request wrapper. The responses are populated in this bean.
      */
-    public static void send(final SoaContext jmsContext, final SoaDtoRequest request) {
+    public static void send(final SoaContext soaContext, final SoaDtoRequest request) {
 
-        final String applicationId = jmsContext.getApplicationId();
+        final String applicationId = soaContext.getApplicationId();
 
         // read DTO
         final Object dto = request.getRequestDto();
@@ -51,27 +51,26 @@ public class SoaConnector {
         }
 
         // read the map of '@DtoResponse' classes of the expected responses and errors,
-        DtoContext dtoContext = jmsContext.getDtoContext();
+        DtoContext dtoContext = soaContext.getDtoContext();
         dtoContext.getDtoCatalog().scanDtoRequest(request.getRequestDto().getClass());
 
-        // format the raw JMS text message
-        final Dialect dialect = jmsContext.getDialect();
+        // format the raw text message of the request
+        final Dialect dialect = soaContext.getDialect();
+        dialect.formatToRequestMessage(soaContext, request);
 
-        dialect.formatToJmsText(jmsContext, request);
-
-        // notify all auditors (before sending the JMS request)
-        final List<Auditor> dtoJmsAuditors = jmsContext.getAuditors();
-        if (dtoJmsAuditors != null) {
-            for (final Auditor auditor : dtoJmsAuditors) {
-                auditor.traceBeforeRequest(jmsContext, request);
+        // notify all auditors (before sending the request)
+        final List<Auditor> auditors = soaContext.getAuditors();
+        if (auditors != null) {
+            for (final Auditor auditor : auditors) {
+                auditor.traceBeforeRequest(soaContext, request);
             }
         }
 
 
-        final String jmsName = annotation.name();
-        final String rawJms = request.getRawRequest();
+        final String requestName = annotation.name();
+        final String rawRequest = request.getRawRequest();
         try {
-            // send JMS request and read response (if any)
+            // send request and read response (if any)
 
 
             // remember the 'send' time
@@ -80,39 +79,39 @@ public class SoaConnector {
 
             if (request.isOneWayRequest()) {
 
-                jmsContext.getMessageSender().send(rawJms);
+                soaContext.getMessageSender().send(rawRequest);
 
             } else {
 
-                final String rawResponse = jmsContext.getMessageSender()
-                        .sendAndReceive(rawJms, request.getReplyTimeoutInMs());
+                final String rawResponse = soaContext.getMessageSender()
+                        .sendAndReceive(rawRequest, request.getReplyTimeoutInMs());
 
                 request.setRawResponse(rawResponse);
             }
 
         } catch (Throwable t) {
-            throw new TransportException("Error while sending JMS request [" + jmsName
-                    + "] with message [" + rawJms + "]", t);
+            throw new TransportException("Error while sending request [" + requestName
+                    + "] with message [" + rawRequest + "]", t);
         }
 
 
-        // notify all auditors (after receiving the JMS response)
-        if (dtoJmsAuditors != null) {
-            for (final Auditor auditor : dtoJmsAuditors) {
-                auditor.traceAfterRequest(jmsContext, request);
+        // notify all auditors (after receiving the response)
+        if (auditors != null) {
+            for (final Auditor auditor : auditors) {
+                auditor.traceAfterRequest(soaContext, request);
             }
         }
 
         // response expected ?
         if (!request.isOneWayRequest()) {
 
-            // parse the raw JMS text message
-            dialect.parseFromJmsText(jmsContext, request);
+            // parse the raw text message of the response
+            dialect.parseFromResponseMessage(soaContext, request);
 
-            // notify all auditors (after parsing the JMS response)
-            if (dtoJmsAuditors != null) {
-                for (final Auditor auditor : dtoJmsAuditors) {
-                    auditor.traceAfterResponseParsing(jmsContext, request);
+            // notify all auditors (after parsing the response)
+            if (auditors != null) {
+                for (final Auditor auditor : auditors) {
+                    auditor.traceAfterResponseParsing(soaContext, request);
                 }
             }
         }

@@ -1,7 +1,7 @@
 package com.sbroussi.dto.transport;
 
 /**
- * Technical Exception thrown when sending a JMS message.
+ * Technical Exception thrown when sending a message.
  */
 public class TransportException extends RuntimeException {
 

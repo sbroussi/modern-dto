@@ -9,30 +9,30 @@ import com.sbroussi.soa.SoaDtoRequest;
 public interface Auditor {
 
     /**
-     * Trace step: Before the JMS REQUEST is sent.
+     * Trace step: Before the REQUEST is sent.
      *
-     * @param jmsContext the current JMS context
+     * @param soaContext the current SOA context
      * @param request    the SoaDtoRequest, with the 'rawRequest' populated
      */
-    void traceBeforeRequest(SoaContext jmsContext, SoaDtoRequest request);
+    void traceBeforeRequest(SoaContext soaContext, SoaDtoRequest request);
 
     /**
-     * Trace step: After the JMS REQUEST is sent and the RAW JMS RESPONSE is read (if any).
+     * Trace step: After the REQUEST is sent and the RAW RESPONSE is read (if any).
      *
-     * @param jmsContext the current JMS context
+     * @param soaContext the current SOA context
      * @param request    the SoaDtoRequest, with the 'rawResponse' populated
      */
-    void traceAfterRequest(SoaContext jmsContext, SoaDtoRequest request);
+    void traceAfterRequest(SoaContext soaContext, SoaDtoRequest request);
 
     /**
-     * Trace step: After the RAW JMS RESPONSE has been parsed and Response Objects
+     * Trace step: After the RAW RESPONSE has been parsed and Response Objects
      * are populated in the 'SoaDtoResponse' (if any).
      * <p>
      * This method is not called for One-Way requests.
      *
-     * @param jmsContext the current JMS context
+     * @param soaContext the current SOA context
      * @param request    the SoaDtoRequest, with the 'rawResponse' populated
      */
-    void traceAfterResponseParsing(SoaContext jmsContext, SoaDtoRequest request);
+    void traceAfterResponseParsing(SoaContext soaContext, SoaDtoRequest request);
 
 }

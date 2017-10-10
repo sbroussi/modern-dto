@@ -30,7 +30,7 @@ public class SoaContext {
 
 
     /**
-     * The 'dialect' defines how the JMS messages must be formatted or parsed.
+     * The 'dialect' defines how the request and response messages must be formatted or parsed.
      */
     @NonNull
     private Dialect dialect;
@@ -43,11 +43,11 @@ public class SoaContext {
      * <p>
      * The auditors are called:
      * <p>
-     * - Before the JMS REQUEST is sent.
+     * - Before the REQUEST is sent.
      * <p>
-     * - After the JMS REQUEST is sent and the RAW JMS RESPONSE is read (if any).
+     * - After the REQUEST is sent and the RAW RESPONSE is read (if any).
      * <p>
-     * - After the RAW JMS RESPONSE has been parsed and Response Objects
+     * - After the RAW RESPONSE has been parsed and Response Objects
      * are populated in the 'SoaDtoResponse' (if any).
      */
     @Builder.Default

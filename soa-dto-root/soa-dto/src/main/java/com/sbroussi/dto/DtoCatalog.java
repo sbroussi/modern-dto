@@ -40,7 +40,7 @@ public class DtoCatalog {
     private Map<String, Class> responses = new ConcurrentHashMap<String, Class>();
 
     /**
-     * The map of '@DtoResponse' classes by their short JMS name.
+     * The map of '@DtoResponse' classes by their short name (for example JMS name 'ADRVIRTU').
      * <p>
      * - map value, key: String short JMS name of the response ('@DtoResponse(name="ERROR")'
      * <p>

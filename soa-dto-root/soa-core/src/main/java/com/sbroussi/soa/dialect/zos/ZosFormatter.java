@@ -13,7 +13,7 @@ public class ZosFormatter {
         final String userProfile = request.getUserProfile();
         final String sessionId = request.getSessionId();
         final String computerName = request.getUserComputerName();
-        final String jmsName = request.getDtoRequestAnnotation().name();
+        final String requestName = request.getDtoRequestAnnotation().name();
 
         // person number can be null. if null it will be filled with spaces.
         String personNumber = request.getPersonNumber();
@@ -21,10 +21,10 @@ public class ZosFormatter {
             personNumber = DtoUtils.alignRight(personNumber, 8, '0');
         }
 
-        if ((channel == null) || (userId == null) || (userProfile == null) || (jmsName == null)) {
+        if ((channel == null) || (userId == null) || (userProfile == null) || (requestName == null)) {
             throw new IllegalArgumentException("all the mandatory parameters are not set: channel ["
                     + channel + "] userId [" + userId + "] userProfile [" + userProfile
-                    + "] jmsName [" + jmsName + "]");
+                    + "] requestName [" + requestName + "]");
         }
 
         // Transaction's sbHeader
@@ -49,7 +49,7 @@ public class ZosFormatter {
 
         // Transaction's sbRequest
         final StringBuilder sbRequest = new StringBuilder(data.length() + 32);
-        sbRequest.append(DtoUtils.alignLeft(jmsName, 8));         // RCV-REQ-NAME          PIC X(8)
+        sbRequest.append(DtoUtils.alignLeft(requestName, 8));     // RCV-REQ-NAME          PIC X(8)
         sbRequest.append(DtoUtils.alignRight(data.length(), 7));  // RCV-REQ-LGT           PIC 9(7)
         sbRequest.append(data);                                   // RCV-REQ-DATA          PIC X(24493)
 

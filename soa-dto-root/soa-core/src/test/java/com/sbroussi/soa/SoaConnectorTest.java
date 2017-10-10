@@ -61,7 +61,7 @@ public class SoaConnectorTest {
         // simple JMS implementation
         SenderJms messageSender = new SenderJms(queueFactory, requestQueue, replyQueue);
 
-        SoaContext jmsContext = SoaContext.builder()
+        SoaContext soaContext = SoaContext.builder()
                 .dtoContext(dtoContext)
                 .applicationId("app-test")
                 .dialect(new DialectZos("@WEB")) // fixed-width fields with header
@@ -69,7 +69,7 @@ public class SoaConnectorTest {
                 .build();
 
         // add a verbose logger for DEBUG
-        jmsContext.getAuditors().add(new AuditorVerboseLogger());
+        soaContext.getAuditors().add(new AuditorVerboseLogger());
 
 
         // JMS request
@@ -83,7 +83,7 @@ public class SoaConnectorTest {
         request.setUserProfile("profilA");
 
         // send
-        SoaConnector.send(jmsContext, request);
+        SoaConnector.send(soaContext, request);
 
 
         String expectedHeader = "@WEB    0000124HEADER  00000440000S000user1   profilA                     TEST_REQ0000050";

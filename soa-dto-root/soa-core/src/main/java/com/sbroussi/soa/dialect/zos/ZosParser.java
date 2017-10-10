@@ -28,10 +28,10 @@ public class ZosParser {
 
 
     /**
-     * Parse the JMS response and build the list of DTO Java objects,
+     * Parse the response and build the list of DTO Java objects,
      *
      * @param dtoContext the DTO context
-     * @param request    the JMS request
+     * @param request    the request
      */
     public void parse(final DtoContext dtoContext, final SoaDtoRequest request) {
 
@@ -39,13 +39,13 @@ public class ZosParser {
         // step 1: decode the z/OS response
         //         split and extract the RAW 'String' parts of the response
         //
-        ZosSoaDtoResponse jmsResponseBean = parseRawResponse(dtoContext.getDtoCatalog(), request);
+        ZosSoaDtoResponse zosSoaDtoResponse = parseRawResponse(dtoContext.getDtoCatalog(), request);
 
 
         //
-        // step 2: decode the JMS response and build the list of DTO Java objects
+        // step 2: decode the response and build the list of DTO Java objects
         //
-        jmsResponseBean.setDtoResponsesMap(decodecodeJmsToDto(dtoContext, request));
+        zosSoaDtoResponse.setDtoResponsesMap(decodeResponseToDto(dtoContext, request));
 
     }
 
@@ -298,7 +298,7 @@ public class ZosParser {
     }
 
 
-    private Map<String, List<Object>> decodecodeJmsToDto(final DtoContext dtoContext, final SoaDtoRequest request) {
+    private Map<String, List<Object>> decodeResponseToDto(final DtoContext dtoContext, final SoaDtoRequest request) {
 
         final DtoParser dtoParser = dtoContext.getDtoParser();
 

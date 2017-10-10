@@ -20,7 +20,7 @@ public class App1 {
 
     private DtoContext dtoContext;
 
-    private SoaContext jmsContext;
+    private SoaContext soaContext;
 
     /**
      * The JMS Queue factory.
@@ -51,20 +51,20 @@ public class App1 {
     /**
      * @return a unique instance of a 'SoaContext'.
      */
-    public SoaContext getJmsContext() {
-        if (jmsContext == null) {
+    public SoaContext getSoaContext() {
+        if (soaContext == null) {
 
             // simple JMS implementation
             SenderJms messageSender = new SenderJms(queueFactory, requestQueue, replyQueue);
 
-            jmsContext = SoaContext.builder()
+            soaContext = SoaContext.builder()
                     .dtoContext(getDtoContext())
                     .applicationId(Apps.app1)
                     .dialect(new DialectZos("@WEB")) // fixed-width fields with header
                     .messageSender(messageSender)
                     .build();
         }
-        return jmsContext;
+        return soaContext;
     }
 
 
@@ -77,11 +77,11 @@ public class App1 {
                 .myRequestField1(text)
                 .build();
 
-        // send JMS message
+        // send message
         SoaDtoRequest request = new SoaDtoRequest(adrvirtu);
         request.setUserId("user1");
         request.setUserProfile("profilA");
-        SoaConnector.send(getJmsContext(), request);
+        SoaConnector.send(getSoaContext(), request);
 
         return request;
 

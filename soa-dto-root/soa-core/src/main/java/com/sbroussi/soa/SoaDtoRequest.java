@@ -23,9 +23,9 @@ public class SoaDtoRequest {
 
 
     /**
-     * Indicates if this JMS request is a ONE-WAY request (fire and forget).
-     * Set it to FALSE if this request expects a JMS response (default).
-     * Set it to TRUE if this request does NOT expect a JMS response (one-way pattern).
+     * Indicates if this request is a ONE-WAY request (fire and forget).
+     * Set it to FALSE if this request expects a response (default).
+     * Set it to TRUE if this request does NOT expect a response (one-way pattern).
      */
     private boolean oneWayRequest = false;
 
@@ -73,20 +73,20 @@ public class SoaDtoRequest {
      */
     private String sessionId;
 
-    // ----------------- technical properties updated during JMS dialog
+    // ----------------- technical properties updated during Transport
     /**
-     * INTERNAL: the formatted JMS message sent as request.
+     * INTERNAL: the RAW formatted message sent as request.
      */
     private String rawRequest;
 
     /**
-     * INTERNAL: the timestamp when the JMS request was sent.
+     * INTERNAL: the timestamp when the request was sent.
      */
     private long timestampSend;
 
 
     /**
-     * INTERNAL: the JMS message received as response.
+     * INTERNAL: the RAW message received as response.
      */
     private String rawResponse;
 

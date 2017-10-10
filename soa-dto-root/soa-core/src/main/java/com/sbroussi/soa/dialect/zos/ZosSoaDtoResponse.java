@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This Java Bean contains all the JMS response information.
+ * This Java Bean contains all the response information.
  */
 @Getter
 @Setter
@@ -32,7 +32,7 @@ public class ZosSoaDtoResponse extends SoaDtoResponse {
 
 
     /**
-     * The Map of the DTO found in the JMS response.
+     * The Map of the DTO found in the response.
      * <p/>
      * key: the response name (ABORT, LSTPOPUP...)
      * <p/>

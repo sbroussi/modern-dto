@@ -62,7 +62,7 @@ public class App1Test {
         // send
         SoaDtoRequest request = app.sendText("hello");
         assertNotNull(app.getDtoContext());
-        assertNotNull(app.getJmsContext());
+        assertNotNull(app.getSoaContext());
         assertNotNull(request);
 
 

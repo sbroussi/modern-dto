@@ -32,22 +32,22 @@ public class DialectZos implements Dialect {
 
 
     @Override
-    public void formatToJmsText(final SoaContext jmsContext, final SoaDtoRequest request) {
-        final DtoContext dtoContext = jmsContext.getDtoContext();
+    public void formatToRequestMessage(final SoaContext soaContext, final SoaDtoRequest request) {
+        final DtoContext dtoContext = soaContext.getDtoContext();
         final DtoFormatter formatter = dtoContext.getDtoFormatter();
 
         // format DTO with fixed-width fields
         final String rawData = formatter.format(request.getRequestDto());
 
         // insert z/OS header prefix
-        String rawJms = zosFormatter.formatWithHeader(request, channel, rawData);
+        String rawRequest = zosFormatter.formatWithHeader(request, channel, rawData);
 
-        request.setRawRequest(rawJms);
+        request.setRawRequest(rawRequest);
     }
 
     @Override
-    public void parseFromJmsText(final SoaContext jmsContext, final SoaDtoRequest request) {
-        zosParser.parse(jmsContext.getDtoContext(), request);
+    public void parseFromResponseMessage(final SoaContext soaContext, final SoaDtoRequest request) {
+        zosParser.parse(soaContext.getDtoContext(), request);
 
     }
 

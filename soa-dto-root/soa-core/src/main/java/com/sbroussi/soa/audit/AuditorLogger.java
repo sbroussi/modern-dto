@@ -7,7 +7,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Simple slf4j logger to dump the JMS request in the LOG file with INFO level.
+ * Simple slf4j logger to dump the request in the LOG file with INFO level.
  */
 @Slf4j
 @Getter
@@ -25,14 +25,14 @@ public class AuditorLogger implements Auditor {
     private int truncateSize = 2000;
 
     @Override
-    public void traceBeforeRequest(final SoaContext jmsContext, final SoaDtoRequest request) {
+    public void traceBeforeRequest(final SoaContext soaContext, final SoaDtoRequest request) {
         if (log.isInfoEnabled()) {
             String rawMessage = request.getRawRequest();
             if (rawMessage == null) {
                 rawMessage = "";
             }
 
-            log.info("Send JMS request [" + request.getDtoRequestAnnotation().name()
+            log.info("Send request [" + request.getDtoRequestAnnotation().name()
                     + "] (" + rawMessage.length() + " chars): [" + truncate(rawMessage) + "]");
         }
 
@@ -40,21 +40,21 @@ public class AuditorLogger implements Auditor {
 
 
     @Override
-    public void traceAfterRequest(final SoaContext jmsContext, final SoaDtoRequest request) {
+    public void traceAfterRequest(final SoaContext soaContext, final SoaDtoRequest request) {
         if (log.isInfoEnabled()) {
             String rawMessage = request.getRawResponse();
             if (rawMessage == null) {
                 rawMessage = "";
             }
 
-            log.info("Received response of JMS request [" + request.getDtoRequestAnnotation().name()
+            log.info("Received response of request [" + request.getDtoRequestAnnotation().name()
                     + "] received (" + rawMessage.length() + " chars): [" + truncate(rawMessage) + "]");
         }
     }
 
 
     @Override
-    public void traceAfterResponseParsing(final SoaContext jmsContext, final SoaDtoRequest request) {
+    public void traceAfterResponseParsing(final SoaContext soaContext, final SoaDtoRequest request) {
         // nothing to do
     }
 

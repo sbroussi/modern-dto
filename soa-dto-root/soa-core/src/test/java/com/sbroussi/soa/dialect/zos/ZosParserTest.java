@@ -83,13 +83,13 @@ public class ZosParserTest {
         log.info("expect this response: [" + responseStr + "]");
 
         // set the RAW response message to be parsed
-        SoaDtoRequest jmsRequest = new SoaDtoRequest(new TestRequest());
-        jmsRequest.setRawResponse(responseStr);
+        SoaDtoRequest soaDtoRequest = new SoaDtoRequest(new TestRequest());
+        soaDtoRequest.setRawResponse(responseStr);
 
         // decode
-        zosParser.parse(new DtoContext(), jmsRequest);
+        zosParser.parse(new DtoContext(), soaDtoRequest);
 
-        final SoaDtoResponse soaDtoResponse = jmsRequest.getSoaDtoResponse();
+        final SoaDtoResponse soaDtoResponse = soaDtoRequest.getSoaDtoResponse();
         assertNotNull(soaDtoResponse);
 
         assertTrue(soaDtoResponse instanceof ZosSoaDtoResponse);
@@ -130,8 +130,8 @@ public class ZosParserTest {
         // cannot decode a 'null' response
         try {
             // set the RAW response message
-            jmsRequest.setRawResponse(null);
-            zosParser.parse(new DtoContext(), jmsRequest);
+            soaDtoRequest.setRawResponse(null);
+            zosParser.parse(new DtoContext(), soaDtoRequest);
             fail("should have throw an exception");
         } catch (final DtoException expectedOK) {
         }
@@ -139,8 +139,8 @@ public class ZosParserTest {
         // cannot decode a response with a length < 74 characters
         try {
             // set the RAW response message
-            jmsRequest.setRawResponse("@FORMINGthis is a short response");
-            zosParser.parse(new DtoContext(), jmsRequest);
+            soaDtoRequest.setRawResponse("@FORMINGthis is a short response");
+            zosParser.parse(new DtoContext(), soaDtoRequest);
             fail("should have throw an exception");
         } catch (final DtoException expectedOK) {
         }
