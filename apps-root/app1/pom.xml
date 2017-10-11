@@ -22,7 +22,7 @@
 
         <dependency>
             <groupId>com.sbroussi</groupId>
-            <artifactId>soa-core</artifactId>
+            <artifactId>soa-core-zos</artifactId>
             <version>${dto-api.version}</version>
         </dependency>
 
@@ -57,9 +57,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.10.19</version>
+            <groupId>com.sbroussi</groupId>
+            <artifactId>soa-core-zos-test</artifactId>
+            <version>${dto-api.version}</version>
             <scope>test</scope>
         </dependency>
 

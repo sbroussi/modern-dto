@@ -3,6 +3,7 @@ package com.sbroussi.soa;
 import com.sbroussi.dto.DtoContext;
 import com.sbroussi.dto.DtoUtils;
 import com.sbroussi.dto.annotations.DtoRequest;
+import com.sbroussi.dto.transport.MessageSender;
 import com.sbroussi.dto.transport.TransportException;
 import com.sbroussi.soa.audit.Auditor;
 import com.sbroussi.soa.dialect.Dialect;
@@ -17,11 +18,11 @@ public class SoaConnector {
     /**
      * Send the request and read responses (delegate the PUT to 'soaContext.messageSender').
      *
-     * @param soaContext the current SOA context
-     * @param request    The DTO request wrapper. The responses are populated in this bean.
+     * @param request The DTO request wrapper. The responses are populated in this bean.
      */
-    public static void send(final SoaContext soaContext, final SoaDtoRequest request) {
+    public static void send(final SoaDtoRequest request) {
 
+        final SoaContext soaContext = request.getSoaContext();
         final String applicationId = soaContext.getApplicationId();
 
         // read DTO
@@ -50,19 +51,22 @@ public class SoaConnector {
                     dtoClassname + "] defines an empty 'name' in annotation '@DtoRequest'");
         }
 
+        // clear response (if sent twice)
+        request.setSoaDtoResponse(null);
+
         // read the map of '@DtoResponse' classes of the expected responses and errors,
         DtoContext dtoContext = soaContext.getDtoContext();
         dtoContext.getDtoCatalog().scanDtoRequest(request.getRequestDto().getClass());
 
         // format the raw text message of the request
         final Dialect dialect = soaContext.getDialect();
-        dialect.formatToRequestMessage(soaContext, request);
+        dialect.formatToRequestMessage(request);
 
         // notify all auditors (before sending the request)
         final List<Auditor> auditors = soaContext.getAuditors();
         if (auditors != null) {
             for (final Auditor auditor : auditors) {
-                auditor.traceBeforeRequest(soaContext, request);
+                auditor.traceBeforeRequest(request);
             }
         }
 
@@ -77,13 +81,18 @@ public class SoaConnector {
             final long start = System.currentTimeMillis();
             request.setTimestampSend(start);
 
+
+            final MessageSender messageSender = soaContext.getMessageSender();
+            if (messageSender == null) {
+                throw new IllegalArgumentException("no 'MessageSender' set in 'SoaContext'");
+            }
             if (request.isOneWayRequest()) {
 
-                soaContext.getMessageSender().send(rawRequest);
+                messageSender.send(rawRequest);
 
             } else {
 
-                final String rawResponse = soaContext.getMessageSender()
+                final String rawResponse = messageSender
                         .sendAndReceive(rawRequest, request.getReplyTimeoutInMs());
 
                 request.setRawResponse(rawResponse);
@@ -98,7 +107,7 @@ public class SoaConnector {
         // notify all auditors (after receiving the response)
         if (auditors != null) {
             for (final Auditor auditor : auditors) {
-                auditor.traceAfterRequest(soaContext, request);
+                auditor.traceAfterRequest(request);
             }
         }
 
@@ -106,12 +115,12 @@ public class SoaConnector {
         if (!request.isOneWayRequest()) {
 
             // parse the raw text message of the response
-            dialect.parseFromResponseMessage(soaContext, request);
+            dialect.parseFromResponseMessage(request);
 
             // notify all auditors (after parsing the response)
             if (auditors != null) {
                 for (final Auditor auditor : auditors) {
-                    auditor.traceAfterResponseParsing(soaContext, request);
+                    auditor.traceAfterResponseParsing(request);
                 }
             }
         }

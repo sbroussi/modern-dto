@@ -5,62 +5,32 @@ import com.sbroussi.dto.transport.SenderJms;
 import com.sbroussi.soa.SoaConnector;
 import com.sbroussi.soa.SoaContext;
 import com.sbroussi.soa.SoaDtoRequest;
-import com.sbroussi.soa.dialect.DialectZos;
 import com.sbroussi.soa.dto.Apps;
+import com.sbroussi.soa.zos.ZosDialect;
 import com.sbroussi.xml.request.v1_0.ADRVIRTU;
 import lombok.Getter;
 import lombok.Setter;
-
-import javax.jms.Queue;
-import javax.jms.QueueConnectionFactory;
 
 @Getter
 @Setter
 public class App1 {
 
-    private DtoContext dtoContext;
-
     private SoaContext soaContext;
 
-    /**
-     * The JMS Queue factory.
-     */
-    private QueueConnectionFactory queueFactory;
 
     /**
-     * The JMS queue where to PUT the request.
-     */
-    private Queue requestQueue;
-
-    /**
-     * The JMS queue where to READ the response.
-     */
-    private Queue replyQueue;
-
-
-    /**
-     * @return a unique instance of a 'getDtoContext'.
-     */
-    public DtoContext getDtoContext() {
-        if (dtoContext == null) {
-            dtoContext = new DtoContext();
-        }
-        return dtoContext;
-    }
-
-    /**
-     * @return a unique instance of a 'SoaContext'.
+     * @return the unique instance of 'SoaContext'  in this application
      */
     public SoaContext getSoaContext() {
         if (soaContext == null) {
 
             // simple JMS implementation
-            SenderJms messageSender = new SenderJms(queueFactory, requestQueue, replyQueue);
+            SenderJms messageSender = null; // new SenderJms(queueFactory, requestQueue, replyQueue);
 
             soaContext = SoaContext.builder()
-                    .dtoContext(getDtoContext())
+                    .dtoContext(new DtoContext())
                     .applicationId(Apps.app1)
-                    .dialect(new DialectZos("@WEB")) // fixed-width fields with header
+                    .dialect(new ZosDialect("@WEB")) // fixed-width fields with header
                     .messageSender(messageSender)
                     .build();
         }
@@ -78,10 +48,10 @@ public class App1 {
                 .build();
 
         // send message
-        SoaDtoRequest request = new SoaDtoRequest(adrvirtu);
+        SoaDtoRequest request = new SoaDtoRequest(getSoaContext(), adrvirtu);
         request.setUserId("user1");
         request.setUserProfile("profilA");
-        SoaConnector.send(getSoaContext(), request);
+        SoaConnector.send(request);
 
         return request;
 

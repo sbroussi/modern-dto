@@ -14,11 +14,20 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This wrapper maintains all useful helpers to send SOA requests and receive responses.
+ * <p>
+ * Is is recommended to keep one instance of this class per SOA communication channel
+ * in your application (one for JMS, one for Rest API A, one for Rest API B...).
+ */
 @Getter
 @Setter
 @Builder
 public class SoaContext {
 
+    /**
+     * This wrapper maintains all useful helpers to manipulate DTOs.
+     */
     @NonNull
     private DtoContext dtoContext;
 
@@ -35,7 +44,11 @@ public class SoaContext {
     @NonNull
     private Dialect dialect;
 
-    @NonNull
+    /**
+     * The implementation to send a REQUEST and optionally collect a RESPONSE.
+     * <p>
+     * Not required at the 'builder time': Can be injected later.
+     */
     private MessageSender messageSender;
 
     /**

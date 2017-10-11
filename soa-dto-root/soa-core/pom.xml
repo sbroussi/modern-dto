@@ -61,6 +61,12 @@
             <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>soa-transport-test</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 

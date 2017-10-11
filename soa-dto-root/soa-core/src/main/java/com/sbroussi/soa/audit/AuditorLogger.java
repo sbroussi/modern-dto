@@ -1,6 +1,5 @@
 package com.sbroussi.soa.audit;
 
-import com.sbroussi.soa.SoaContext;
 import com.sbroussi.soa.SoaDtoRequest;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +24,7 @@ public class AuditorLogger implements Auditor {
     private int truncateSize = 2000;
 
     @Override
-    public void traceBeforeRequest(final SoaContext soaContext, final SoaDtoRequest request) {
+    public void traceBeforeRequest(final SoaDtoRequest request) {
         if (log.isInfoEnabled()) {
             String rawMessage = request.getRawRequest();
             if (rawMessage == null) {
@@ -40,7 +39,7 @@ public class AuditorLogger implements Auditor {
 
 
     @Override
-    public void traceAfterRequest(final SoaContext soaContext, final SoaDtoRequest request) {
+    public void traceAfterRequest(final SoaDtoRequest request) {
         if (log.isInfoEnabled()) {
             String rawMessage = request.getRawResponse();
             if (rawMessage == null) {
@@ -54,7 +53,7 @@ public class AuditorLogger implements Auditor {
 
 
     @Override
-    public void traceAfterResponseParsing(final SoaContext soaContext, final SoaDtoRequest request) {
+    public void traceAfterResponseParsing(final SoaDtoRequest request) {
         // nothing to do
     }
 

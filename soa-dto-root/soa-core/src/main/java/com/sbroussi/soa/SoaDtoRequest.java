@@ -12,6 +12,11 @@ import java.util.Locale;
 public class SoaDtoRequest {
 
     /**
+     * The SOA Context to use for this request.
+     */
+    private SoaContext soaContext;
+
+    /**
      * The request DTO,
      */
     private final Object requestDto;
@@ -96,10 +101,27 @@ public class SoaDtoRequest {
      */
     private SoaDtoResponse soaDtoResponse;
 
+    // ------------------------ constructor
 
-    public SoaDtoRequest(final Object requestDto) {
+
+    /**
+     * Constructor,
+     *
+     * @param soaContext the SOA Context to use for this request.
+     * @param requestDto the request object to send
+     */
+    public SoaDtoRequest(final SoaContext soaContext, final Object requestDto) {
+        this.soaContext = soaContext;
         this.requestDto = requestDto;
     }
 
+    // ------------------------ exceute: send
+
+    /**
+     * Send this request.
+     */
+    public void execute() {
+        SoaConnector.send(this);
+    }
 
 }

@@ -19,14 +19,17 @@ public class AuditorVerboseLogger implements Auditor {
     private String CRLF = System.getProperty("line.separator");
 
     @Override
-    public void traceBeforeRequest(final SoaContext soaContext, final SoaDtoRequest request) {
+    public void traceBeforeRequest(final SoaDtoRequest request) {
         if (log.isDebugEnabled()) {
             String rawMessage = request.getRawRequest();
             if (rawMessage == null) {
                 rawMessage = "";
             }
 
+
+            final SoaContext soaContext = request.getSoaContext();
             String requestName = request.getDtoRequestAnnotation().name();
+
 
             String data = rawMessage;
             String header = null;
@@ -58,7 +61,7 @@ public class AuditorVerboseLogger implements Auditor {
 
 
     @Override
-    public void traceAfterRequest(final SoaContext soaContext, final SoaDtoRequest request) {
+    public void traceAfterRequest(final SoaDtoRequest request) {
         if (log.isDebugEnabled()) {
             String rawMessage = request.getRawResponse();
             if (rawMessage == null) {
@@ -71,7 +74,7 @@ public class AuditorVerboseLogger implements Auditor {
     }
 
     @Override
-    public void traceAfterResponseParsing(final SoaContext soaContext, final SoaDtoRequest request) {
+    public void traceAfterResponseParsing(final SoaDtoRequest request) {
         // nothing to do
     }
 

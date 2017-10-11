@@ -1,6 +1,5 @@
 package com.sbroussi.soa.dialect;
 
-import com.sbroussi.soa.SoaContext;
 import com.sbroussi.soa.SoaDtoRequest;
 
 /**
@@ -10,7 +9,7 @@ import com.sbroussi.soa.SoaDtoRequest;
 public class DialectJson implements Dialect {
 
     @Override
-    public void formatToRequestMessage(final SoaContext soaContext, final SoaDtoRequest request) {
+    public void formatToRequestMessage(final SoaDtoRequest request) {
 
         // TODO: not implemented yet
         throw new IllegalStateException("TODO: not implemented yet");
@@ -18,7 +17,7 @@ public class DialectJson implements Dialect {
     }
 
     @Override
-    public void parseFromResponseMessage(final SoaContext soaContext, final SoaDtoRequest request) {
+    public void parseFromResponseMessage(final SoaDtoRequest request) {
 
         // TODO: not implemented yet
         throw new IllegalStateException("TODO: not implemented yet");
