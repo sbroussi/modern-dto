@@ -92,7 +92,7 @@ public class DtoCatalogScanner {
         // compact list of URLs (no duplicates)
         packageUrls = distinctUrls(packageUrls);
 
-        UrlScannerFactory factory = new UrlScannerFactory();
+        final UrlScannerFactory factory = new UrlScannerFactory();
 
         for (final URL url : packageUrls) {
             final UrlScanner container = factory.create(url);
