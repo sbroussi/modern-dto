@@ -16,17 +16,7 @@
         <!-- SOA catalog generator -->
         <dependency>
             <groupId>com.sbroussi</groupId>
-            <artifactId>soa-dto-api</artifactId>
-            <version>${dto-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sbroussi</groupId>
             <artifactId>soa-dto</artifactId>
-            <version>${dto-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sbroussi</groupId>
-            <artifactId>soa-core</artifactId>
             <version>${dto-api.version}</version>
         </dependency>
 
@@ -35,12 +25,21 @@
             <groupId>com.sbroussi</groupId>
             <artifactId>soa-messages</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.sbroussi</groupId>
             <artifactId>soa-app1-and-app3</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <distributionManagement>
+        <site>
+            <id>website</id>
+            <url>http://www.mycompany.com/www/docs/project/</url>
+        </site>
+    </distributionManagement>
 
 </project>

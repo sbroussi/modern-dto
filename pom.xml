@@ -13,6 +13,7 @@
         <module>soa-dto-root</module>
         <module>soa-beans-root</module>
         <module>apps-root</module>
+        <module>soa-maven-plugin-root</module>
         <module>soa-catalog-root</module>
     </modules>
 

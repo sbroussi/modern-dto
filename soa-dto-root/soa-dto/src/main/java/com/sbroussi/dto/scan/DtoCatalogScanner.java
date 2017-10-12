@@ -76,7 +76,13 @@ public class DtoCatalogScanner {
 
         final long start = System.currentTimeMillis();
 
-        for (final String basePackage : basePackages) {
+        for (final String p : basePackages) {
+
+            // clean the list
+            final String basePackage = (p == null) ? "" : p.trim();
+            if (basePackage.length() == 0) {
+                continue;
+            }
 
             if (log.isInfoEnabled()) {
                 log.info("scan package [" + basePackage + "]");

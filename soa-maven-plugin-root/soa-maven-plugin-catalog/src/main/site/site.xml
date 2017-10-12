@@ -1,0 +1,13 @@
+<project name="${project.artifactId}">
+    <skin>
+        <groupId>${maven.site.skin.groupId}</groupId>
+        <artifactId>${maven.site.skin.artifactId}</artifactId>
+        <version>${maven.site.skin.version}</version>
+    </skin>
+
+    <body>
+        <menu name="Overview">
+            <item name="Goals" href="plugin-info.html"/>
+        </menu>
+    </body>
+</project>
