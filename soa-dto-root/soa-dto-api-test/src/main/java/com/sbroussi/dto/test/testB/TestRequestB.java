@@ -1,4 +1,4 @@
-package com.sbroussi.soa.zos.test;
+package com.sbroussi.dto.test.testB;
 
 import com.sbroussi.dto.annotations.DtoField;
 import com.sbroussi.dto.annotations.DtoRequest;
@@ -8,16 +8,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@DtoRequest(name = "TEST_REQ",
+@DtoRequest(name = "TESTREQB",
         usedByApplications = {"app-test"},
-        expectedResponses = {TestResponse.class}
+        expectedResponses = {TestResponseB.class}
 )
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TestRequest {
+public class TestRequestB {
 
     @DtoField(length = 10)
     public String myRequestField;

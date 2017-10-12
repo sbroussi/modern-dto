@@ -25,6 +25,7 @@
         <module>soa-transport</module>
         <module>soa-transport-test</module>
         <module>soa-dto-api</module>
+        <module>soa-dto-api-test</module>
         <module>soa-dto</module>
         <module>soa-core</module>
         <module>soa-core-zos</module>

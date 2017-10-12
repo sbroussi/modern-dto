@@ -2,9 +2,9 @@ package com.sbroussi.soa.zos;
 
 import com.sbroussi.dto.DtoContext;
 import com.sbroussi.dto.DtoException;
+import com.sbroussi.dto.test.TestRequest;
 import com.sbroussi.soa.SoaDtoRequest;
 import com.sbroussi.soa.SoaDtoResponse;
-import com.sbroussi.soa.zos.test.TestRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 

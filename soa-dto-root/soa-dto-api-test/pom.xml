@@ -10,13 +10,13 @@
         <version>2017.10.1</version>
     </parent>
 
-    <artifactId>soa-core-zos-test</artifactId>
+    <artifactId>soa-dto-api-test</artifactId>
 
     <dependencies>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>soa-core-zos</artifactId>
+            <artifactId>soa-dto-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -28,38 +28,12 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Test -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.1.9</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.10.19</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>soa-dto-api-test</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
 
     <build>
         <plugins>
-            <!-- generate sources -->
+            <!-- generate sources of the API -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -75,6 +49,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>

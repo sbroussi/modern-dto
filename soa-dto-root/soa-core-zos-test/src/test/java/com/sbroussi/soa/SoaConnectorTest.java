@@ -1,10 +1,10 @@
 package com.sbroussi.soa;
 
 import com.sbroussi.dto.DtoContext;
+import com.sbroussi.dto.test.TestRequest;
 import com.sbroussi.dto.transport.MockSender;
 import com.sbroussi.soa.audit.AuditorVerboseLogger;
 import com.sbroussi.soa.zos.ZosDialect;
-import com.sbroussi.soa.zos.test.TestRequest;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -16,7 +16,7 @@ public class SoaConnectorTest {
 
         // ------------ MOCK request / response
 
-        String mockRequest = "@WEB    0000128HEADER  00000440000S000user1   profilA                     TEST_REQ0000054formatted DTO: [com.sbroussi.soa.zos.test.TestRequest]";
+        String mockRequest = "@WEB    0000124HEADER  00000440000S000user1   profilA                     TEST_REQ0000050formatted DTO: [com.sbroussi.dto.test.TestRequest]";
         String expectedResponseHeader = "@WEB    0000143HEADER  00000440000S000userId  profile         myLaptop    "
                 + "TEST_REP" // response name
                 + "0004401request1                    9";
@@ -56,8 +56,8 @@ public class SoaConnectorTest {
         // ----------------- send via 'SoaConnector.send'
         request.execute();
 
-        String expectedHeader = "@WEB    0000128HEADER  00000440000S000user1   profilA                     TEST_REQ0000054";
-        String expectedData = "formatted DTO: [com.sbroussi.soa.zos.test.TestRequest]";
+        String expectedHeader = "@WEB    0000124HEADER  00000440000S000user1   profilA                     TEST_REQ0000050";
+        String expectedData = "formatted DTO: [com.sbroussi.dto.test.TestRequest]";
 
         assertEquals(expectedHeader + expectedData, request.getRawRequest());
         assertEquals(expectedResponseHeader + expectedResponse, request.getRawResponse());

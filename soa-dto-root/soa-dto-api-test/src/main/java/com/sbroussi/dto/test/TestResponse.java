@@ -1,4 +1,4 @@
-package com.sbroussi.soa.zos.test;
+package com.sbroussi.dto.test;
 
 import com.sbroussi.dto.annotations.DtoField;
 import com.sbroussi.dto.annotations.DtoResponse;
