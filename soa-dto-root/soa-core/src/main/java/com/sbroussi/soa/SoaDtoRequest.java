@@ -38,7 +38,7 @@ public class SoaDtoRequest {
     /**
      * The time to wait for a reply message; 40 seconds by default.
      */
-    private long replyTimeoutInMs = 40L * 60L * 1000L;
+    private long receiveTimeout = 40L * 60L * 1000L;
 
 
     /**
@@ -88,6 +88,11 @@ public class SoaDtoRequest {
      * INTERNAL: the timestamp when the request was sent.
      */
     private long timestampSend;
+
+    /**
+     * INTERNAL: the duration (in ms) of the call (send response and wait for response -if any-).
+     */
+    private long duration;
 
 
     /**

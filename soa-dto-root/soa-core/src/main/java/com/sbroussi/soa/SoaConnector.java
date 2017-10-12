@@ -73,14 +73,13 @@ public class SoaConnector {
 
         final String requestName = annotation.name();
         final String rawRequest = request.getRawRequest();
+
+        // remember the 'send' time
+        final long start = System.currentTimeMillis();
+        request.setTimestampSend(start);
+
         try {
             // send request and read response (if any)
-
-
-            // remember the 'send' time
-            final long start = System.currentTimeMillis();
-            request.setTimestampSend(start);
-
 
             final MessageSender messageSender = soaContext.getMessageSender();
             if (messageSender == null) {
@@ -93,14 +92,22 @@ public class SoaConnector {
             } else {
 
                 final String rawResponse = messageSender
-                        .sendAndReceive(rawRequest, request.getReplyTimeoutInMs());
+                        .sendAndReceive(rawRequest, request.getReceiveTimeout());
 
                 request.setRawResponse(rawResponse);
             }
 
+
         } catch (Throwable t) {
+
             throw new TransportException("Error while sending request [" + requestName
                     + "] with message [" + rawRequest + "]", t);
+
+        } finally {
+
+            // compute call duration
+            request.setDuration(System.currentTimeMillis() - start);
+
         }
 
 

@@ -6,7 +6,7 @@ import lombok.Setter;
 /**
  * This 'SoaDtoRequest' has a 'static' SOA Context that is populated to ALL instances.
  * <p>
- * You have to set call 'setStaticSoaContext'.
+ * You have to call 'setStaticSoaContext' (not 'setSoaContext' of super-class).
  * <p>
  * This class is helpful for legacy applications that cannot easily propagate a
  * reference to one SOA Context in existing code.

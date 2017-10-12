@@ -13,8 +13,11 @@
     <artifactId>apps-root</artifactId>
     <packaging>pom</packaging>
 
+
     <properties>
-        <dto-api.version>2017.10</dto-api.version>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <dto-api.version>2017.10.1</dto-api.version>
     </properties>
 
     <modules>

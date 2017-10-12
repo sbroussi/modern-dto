@@ -13,7 +13,7 @@
     <artifactId>soa-app1-and-app3</artifactId>
 
     <properties>
-        <dto-api-version>2017.10</dto-api-version>
+        <dto-api-version>2017.10.1</dto-api-version>
     </properties>
 
     <dependencies>

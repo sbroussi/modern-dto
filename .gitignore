@@ -6,3 +6,5 @@
 # Maven
 **/target
 
+# Maven:  mvn versions:set -DnewVersion=...
+pom.xml.versionsBackup
