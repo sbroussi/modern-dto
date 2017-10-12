@@ -15,9 +15,11 @@ public class MockSenderTest {
 
         // send
         messageSender.send("my request");
+        messageSender.send("my request"); // 2 identical calls are OK
 
         // sendAndReceive
         assertEquals("my response", messageSender.sendAndReceive("my request", 100L));
+        assertEquals("my response", messageSender.sendAndReceive("my request", 100L)); // 2 identical calls are OK
     }
 
 
@@ -26,7 +28,7 @@ public class MockSenderTest {
         MockSender messageSender = new MockSender();
         messageSender.mock("my request", "my response");
 
-        messageSender.mock("my request", "my response 2"); // duplicate request
+        messageSender.mock("my request", "my response 2"); // cannot register duplicate request
 
     }
 

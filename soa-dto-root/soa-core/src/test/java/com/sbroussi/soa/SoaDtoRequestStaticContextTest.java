@@ -8,12 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-public class SoaDtoRequestFactoryTest {
+public class SoaDtoRequestStaticContextTest {
 
     @Test
     public void testCreate() {
-        SoaDtoRequestFactory factory = new SoaDtoRequestFactory(null);
-        assertNull(factory.create(this).getSoaContext());
+
+        assertNull(new SoaDtoRequestStaticContext(this).getSoaContext());
 
 
         SoaContext soaContext = SoaContext.builder()
@@ -22,10 +22,10 @@ public class SoaDtoRequestFactoryTest {
                 .dialect(new DialectString())
                 .build();
 
-        // set 'context' in the factory
-        factory = new SoaDtoRequestFactory(soaContext);
+        // set 'static' context
+        SoaDtoRequestStaticContext.setStaticSoaContext(soaContext);
 
-        SoaDtoRequest request = factory.create(this);
+        SoaDtoRequestStaticContext request = new SoaDtoRequestStaticContext(this);
         // check that the populated context is the expected one
         assertNotNull(request.getSoaContext());
         assertEquals("my app for testing", request.getSoaContext().getApplicationId());
