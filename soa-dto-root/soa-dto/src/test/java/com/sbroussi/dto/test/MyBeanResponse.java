@@ -1,15 +1,11 @@
 package com.sbroussi.dto.test;
 
-
 import com.sbroussi.dto.annotations.DtoFieldReference;
-import com.sbroussi.dto.annotations.DtoRequest;
+import com.sbroussi.dto.annotations.DtoResponse;
 
-@DtoRequest(name = "MyBean", expectedResponses = {}, usedByApplications = {})
-public class MyBean {
-
+@DtoResponse(name = "MY_RESP")
+public class MyBeanResponse {
 
     @DtoFieldReference(reference = TestDatatypes.MY_DEFINITION_2.class)
     public String myField;
-
-
 }

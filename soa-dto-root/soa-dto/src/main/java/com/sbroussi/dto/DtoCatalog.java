@@ -13,10 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>
  * Is is recommended to keep one instance of this class in your application,
  * <p>
- * Note: To have a full map of ALL available '@DtoRequest' or '@DtoResponse'
- * you can call the 'scan' method. But this is NOT required to run standard applications.
- * The 'scan' method is implemented to help 'catalog generation', 'website generation'
- * or 'development' tooling (DEBUGREQ).
+ * Note: To have a full map of ALL available '@DtoRequest' or '@DtoResponse'; use 'DtoCatalogScanner'.
  */
 @Getter
 public class DtoCatalog {
@@ -76,15 +73,16 @@ public class DtoCatalog {
 
 
     /**
-     * Scan a DTO with annotations '@DtoRequest' or '@DtoResponse'.
+     * Scan a DTO with annotation '@DtoRequest'.
      *
      * @param clazz the class of the DTO to scan
+     * @return TRUE if this class was scanned for the first time
      */
-    public void scanDtoRequest(final Class<?> clazz) {
+    public boolean scanDtoRequest(final Class<?> clazz) {
         final String className = clazz.getName();
         if (requests.containsKey(className)) {
             // already scanned
-            return;
+            return false;
         }
 
         final DtoRequest dtoRequest = clazz.getAnnotation(DtoRequest.class);
@@ -109,18 +107,21 @@ public class DtoCatalog {
         expectedResponsesByRequest.put(clazz, responsesMap);
 
         requests.put(className, clazz);
+
+        return true;
     }
 
     /**
-     * Scan a DTO with annotations '@DtoRequest' or '@DtoResponse'.
+     * Scan a DTO with annotation '@DtoResponse'.
      *
      * @param clazz the class of the DTO to scan
+     * @return TRUE if this class was scanned for the first time
      */
-    public void scanDtoResponse(final Class<?> clazz) {
+    public boolean scanDtoResponse(final Class<?> clazz) {
         final String className = clazz.getName();
         if (responses.containsKey(className)) {
             // already scanned
-            return;
+            return false;
         }
 
         final DtoResponse dtoResponse = clazz.getAnnotation(DtoResponse.class);
@@ -146,6 +147,8 @@ public class DtoCatalog {
 
         responsesByName.put(name, clazz);
         responses.put(className, clazz);
+
+        return true;
     }
 
 

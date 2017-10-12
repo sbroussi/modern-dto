@@ -151,4 +151,32 @@ public class DtoUtils {
         }
         return input;
     }
+
+
+    /**
+     * From Spring: org.springframework.util.ClassUtils.
+     *
+     * @return the default ClassLoader
+     */
+    public static ClassLoader getDefaultClassLoader() {
+        ClassLoader cl = null;
+
+        try {
+            cl = Thread.currentThread().getContextClassLoader();
+        } catch (Throwable ignore) {
+        }
+
+        if (cl == null) {
+            cl = DtoUtils.class.getClassLoader();
+            if (cl == null) {
+                try {
+                    cl = ClassLoader.getSystemClassLoader();
+                } catch (Throwable ignore) {
+
+                }
+            }
+        }
+
+        return cl;
+    }
 }
