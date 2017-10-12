@@ -89,6 +89,9 @@ public class DtoCatalogScanner {
             }
         }
 
+        // compact list of URLs (no duplicates)
+        packageUrls = distinctUrls(packageUrls);
+
         UrlScannerFactory factory = new UrlScannerFactory();
 
         for (final URL url : packageUrls) {
