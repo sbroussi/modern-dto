@@ -53,8 +53,15 @@ public class ScannerJar implements UrlScanner {
             final ZipEntry entry = entries.nextElement();
             if (!entry.isDirectory()) {
                 // read: com/acme/beans/MyBean.class
-                final String name = entry.getName();
+                String name = entry.getName();
                 if (name.endsWith(".class")) {
+
+                    // clean entry name stored in the JAR
+                    name = name.replace('\\', '/'); // Windows / Unix
+                    if (name.startsWith("/")) {
+                        name = name.substring(1);
+                    }
+
                     for (final String folder : folderNames) {
                         // test if    : 'com/acme/beans/MyBean.class'
                         // starts with: 'com/acme/beans'

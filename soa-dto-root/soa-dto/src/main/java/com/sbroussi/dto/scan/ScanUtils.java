@@ -23,7 +23,7 @@ public class ScanUtils {
     public static String folderName(final String packageName) {
         if (packageName != null) {
             String resourceName = packageName.replace(".", "/");
-            resourceName = resourceName.replace("\\", "/");
+            resourceName = resourceName.replace("\\", "/");  // Windows / Unix
             if (resourceName.startsWith("/")) {
                 resourceName = resourceName.substring(1);
             }
@@ -42,7 +42,7 @@ public class ScanUtils {
     public static String className(final String resourceName) {
         if (resourceName != null) {
             String className = resourceName.replace("/", ".");
-            className = className.replace("\\", ".");
+            className = className.replace("\\", "."); // Windows / Unix
             if (className.startsWith(".")) {
                 className = className.substring(1);
             }
@@ -101,8 +101,8 @@ public class ScanUtils {
         if (text != null) {
 
             // clean CR/LF
-            text = text.replaceAll("\\r\\n", "\n");
-            text = text.replaceAll("\\r", "\n");
+            text = text.replaceAll("\\r\\n", "\n"); // Windows / Unix / Mac
+            text = text.replaceAll("\\r", "\n"); // Windows / Unix / Mac
 
             // split the lines
             final String[] lines = text.split("[\\s]*\\n[\\s]*");
