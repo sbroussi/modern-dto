@@ -53,11 +53,6 @@ public class AuditorLogger implements Auditor {
         }
     }
 
-    @Override
-    public void traceOnTransportError(final SoaDtoRequest request, final Map<String, Object> data, final Throwable cause) {
-        log.error("ERROR while sending request [" + request.getDtoRequestAnnotation().name() + "]: " + cause.getMessage());
-    }
-
 
     @Override
     public void traceAfterResponseParsing(final SoaDtoRequest request, final Map<String, Object> data) {
@@ -65,8 +60,10 @@ public class AuditorLogger implements Auditor {
     }
 
     @Override
-    public void traceClose(final SoaDtoRequest request, final Map<String, Object> data, final Throwable cause) {
-        // nothing to do
+    public void traceFinally(final SoaDtoRequest request, final Map<String, Object> data, final Throwable cause) {
+        if (cause != null) {
+            log.error("ERROR while sending request [" + request.getDtoRequestAnnotation().name() + "]: " + cause.getMessage());
+        }
     }
 
     private String truncate(final String input) {

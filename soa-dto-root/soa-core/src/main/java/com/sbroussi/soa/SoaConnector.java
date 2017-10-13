@@ -110,17 +110,8 @@ public class SoaConnector {
 
 
             } catch (Throwable t) {
-
-                // notify all auditors on 'Transport Error'
-                if (auditors != null) {
-                    for (final Auditor auditor : auditors) {
-                        auditor.traceOnTransportError(request, auditorsData, t);
-                    }
-                }
-
                 throw new TransportException("Error while sending request [" + requestName
                         + "] with message [" + rawRequest + "]", t);
-
             } finally {
 
                 // compute call duration
@@ -156,12 +147,14 @@ public class SoaConnector {
             throw e;
 
         } finally {
-            // notify all auditors (last call 'close')
+
+            // notify all auditors (last call 'finally')
             if (auditors != null) {
                 for (final Auditor auditor : auditors) {
-                    auditor.traceClose(request, auditorsData, auditorLastError);
+                    auditor.traceFinally(request, auditorsData, auditorLastError);
                 }
             }
+
         }
     }
 

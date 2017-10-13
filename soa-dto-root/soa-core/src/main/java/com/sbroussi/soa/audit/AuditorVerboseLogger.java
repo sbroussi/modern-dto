@@ -76,18 +76,15 @@ public class AuditorVerboseLogger implements Auditor {
     }
 
     @Override
-    public void traceOnTransportError(final SoaDtoRequest request, final Map<String, Object> data, final Throwable cause) {
-        log.error("ERROR while sending request [" + request.getDtoRequestAnnotation().name() + "]", cause);
-    }
-
-    @Override
     public void traceAfterResponseParsing(final SoaDtoRequest request, final Map<String, Object> data) {
         // nothing to do
     }
 
     @Override
-    public void traceClose(final SoaDtoRequest request, final Map<String, Object> data, final Throwable cause) {
-        // nothing to do
+    public void traceFinally(final SoaDtoRequest request, final Map<String, Object> data, final Throwable cause) {
+        if (cause != null) {
+            log.error("ERROR while sending request [" + request.getDtoRequestAnnotation().name() + "]", cause);
+        }
     }
 
 }

@@ -19,19 +19,6 @@ public interface Auditor {
      */
     void traceBeforeRequest(SoaDtoRequest request, Map<String, Object> data);
 
-    /**
-     * Trace step: An error occured while sending the request or receiving the response.
-     *
-     * @param request the SoaDtoRequest, with the 'rawResponse' populated
-     * @param data    a Map to store objects that can be re-used during the whole audit process
-     *                <p>
-     *                The auditor should store one object with its classname as 'key' of the map.
-     * @param cause   the error returned during send (or receive)
-     *                <p>
-     *                The auditor should NOT re-throw exception, the sender will do that later on.
-     */
-    void traceOnTransportError(SoaDtoRequest request, Map<String, Object> data, Throwable cause);
-
 
     /**
      * Trace step: After the REQUEST is sent and the RAW RESPONSE is read (if any).
@@ -58,19 +45,20 @@ public interface Auditor {
     void traceAfterResponseParsing(SoaDtoRequest request, Map<String, Object> data);
 
     /**
-     * Trace step: the final call to the auditor.
+     * Trace step: the final call to the auditor (try/catch/finally meaning).
      * <p>
-     * Note: This is the LAST call of the auditor for this request that was successful.
+     * Note: This is the LAST call of the auditor for this request that was successful or failed.
      *
      * @param request the SoaDtoRequest, with the 'rawResponse' populated
      * @param data    a Map to store objects that can be re-used during the whole audit process
      *                <p>
      *                The auditor should store one object with its classname as 'key' of the map.
-     * @param cause   Optional: the last error returned during send (or receive)
+     * @param cause   Optional: the last error returned during sending the request or
+     *                receiving or parsing the response.
      *                <p>
      *                The auditor should NOT re-throw exception, the sender will do that later on.
      */
-    void traceClose(SoaDtoRequest request, Map<String, Object> data, Throwable cause);
+    void traceFinally(SoaDtoRequest request, Map<String, Object> data, Throwable cause);
 
 
 }
