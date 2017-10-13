@@ -1,5 +1,6 @@
 package com.sbroussi.soa.audit;
 
+import com.sbroussi.dto.annotations.DtoRequest;
 import com.sbroussi.soa.SoaContext;
 import com.sbroussi.soa.SoaDtoRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +22,7 @@ public class AuditorVerboseLogger implements Auditor {
     private String CRLF = System.getProperty("line.separator");
 
     @Override
-    public void traceBeforeRequest(final SoaDtoRequest request, final Map<String, Object> data) {
+    public void traceBefore(final SoaDtoRequest request, final Map<String, Object> data) {
         if (log.isDebugEnabled()) {
             String rawMessage = request.getRawRequest();
             if (rawMessage == null) {
@@ -63,28 +64,27 @@ public class AuditorVerboseLogger implements Auditor {
 
 
     @Override
-    public void traceAfterRequest(final SoaDtoRequest request, final Map<String, Object> data) {
-        if (log.isDebugEnabled()) {
+    public void traceAfter(final SoaDtoRequest request, final Map<String, Object> data, final Throwable cause) {
+        final DtoRequest dtoRequest = request.getDtoRequestAnnotation();
+        final String requestName = (dtoRequest == null) ? null : dtoRequest.name();
+
+        if (cause != null) {
+
+            // ERROR
+            log.error("ERROR while sending request [" + requestName + "]", cause);
+
+        } else if (log.isDebugEnabled()) {
+
+            // SUCCESS
             String rawMessage = request.getRawResponse();
             if (rawMessage == null) {
                 rawMessage = "";
             }
 
-            log.debug("Received response of request [" + request.getDtoRequestAnnotation().name()
+            log.debug("Received response of request [" + requestName
                     + "] received (" + rawMessage.length() + " chars): [" + rawMessage + "]");
         }
-    }
 
-    @Override
-    public void traceAfterResponseParsing(final SoaDtoRequest request, final Map<String, Object> data) {
-        // nothing to do
-    }
-
-    @Override
-    public void traceFinally(final SoaDtoRequest request, final Map<String, Object> data, final Throwable cause) {
-        if (cause != null) {
-            log.error("ERROR while sending request [" + request.getDtoRequestAnnotation().name() + "]", cause);
-        }
     }
 
 }

@@ -79,7 +79,7 @@ public class SoaConnector {
             // notify all auditors (before sending the request)
             if (auditors != null) {
                 for (final Auditor auditor : auditors) {
-                    auditor.traceBeforeRequest(request, auditorsData);
+                    auditor.traceBefore(request, auditorsData);
                 }
             }
 
@@ -119,26 +119,12 @@ public class SoaConnector {
 
             }
 
-
-            // notify all auditors (after receiving the response)
-            if (auditors != null) {
-                for (final Auditor auditor : auditors) {
-                    auditor.traceAfterRequest(request, auditorsData);
-                }
-            }
-
             // response expected ?
             if (!request.isOneWayRequest()) {
 
                 // parse the raw text message of the response
                 dialect.parseFromResponseMessage(request);
 
-                // notify all auditors (after parsing the response)
-                if (auditors != null) {
-                    for (final Auditor auditor : auditors) {
-                        auditor.traceAfterResponseParsing(request, auditorsData);
-                    }
-                }
             }
         } catch (RuntimeException e) {
             // keep a copy for the auditors
@@ -148,10 +134,10 @@ public class SoaConnector {
 
         } finally {
 
-            // notify all auditors (last call 'finally')
+            // notify all auditors (after the REQUEST is sent and the RESPONSE is received and parsed -if any-)
             if (auditors != null) {
                 for (final Auditor auditor : auditors) {
-                    auditor.traceFinally(request, auditorsData, auditorLastError);
+                    auditor.traceAfter(request, auditorsData, auditorLastError);
                 }
             }
 
