@@ -4,7 +4,9 @@ import com.google.common.io.Closer;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import com.sbroussi.dto.DtoCatalog;
-import com.sbroussi.dto.annotations.DtoRequest;
+import com.sbroussi.dto.catalog.DtoCatalogExtended;
+import com.sbroussi.dto.catalog.DtoRequestBean;
+import com.sbroussi.dto.catalog.DtoResponseBean;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.reporting.MavenReportException;
 import org.apache.velocity.Template;
@@ -58,6 +60,11 @@ public class CatalogGenerator implements URIResolver {
 
         try {
 
+            // load definitions of all DTOs
+            final DtoCatalogExtended catalogExtended = new DtoCatalogExtended(dtoCatalog);
+            catalogExtended.refresh();
+
+
             Velocity.setProperty("parser.pool.size", "1");
             Velocity.setProperty("resource.loader", "class");
             Velocity.setProperty("runtime.references.strict", "true");
@@ -70,26 +77,20 @@ public class CatalogGenerator implements URIResolver {
             transformerFactory.setURIResolver(this);
 
             // Request Details
-            final Map<String, Class> requests = dtoCatalog.getRequests();
-            final Map<String, Class> responses = dtoCatalog.getResponses();
+            final Map<String, DtoRequestBean> requests = catalogExtended.getRequestBeans();
+            final Map<String, DtoResponseBean> responses = catalogExtended.getResponseBeans();
 
             log.info(String.format("Generate catalog for %d request(s)", requests.size()));
             final Template templateRequest = Velocity.getTemplate("/templates/request.xml.vm");
-            for (final Map.Entry<String, Class> entry : requests.entrySet()) {
+            for (final DtoRequestBean bean : requests.values()) {
 
-                String className = entry.getKey();
-                Class<?> clazz = entry.getValue();
-                String requestFilename = getRequestFilename(clazz);
-                DtoRequest dtoRequest = clazz.getAnnotation(DtoRequest.class);
+                String requestFilename = getRequestFilename(bean.getDtoClass());
 
                 VelocityContext context = new VelocityContext();
                 context.put("generator", this);
                 context.put("dtoCatalog", dtoCatalog);
-                context.put("requests", requests);
-                context.put("responses", responses);
                 context.put("createdAt", now);
-                context.put("className", className);
-                context.put("dtoRequest", dtoRequest);
+                context.put("bean", bean);
 
                 File outputFileHtml = new File(outputDirectory, "html/" + requestFilename + ".html");
 

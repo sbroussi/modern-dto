@@ -88,7 +88,7 @@ public class DtoCatalog {
         final DtoRequest dtoRequest = clazz.getAnnotation(DtoRequest.class);
         if (dtoRequest == null) {
             throw new DtoException("Request class [" + className
-                    + "] has not annotation '@DtoRequest'");
+                    + "] has no annotation '@DtoRequest'");
         }
 
         final String name = dtoRequest.name().trim();
@@ -127,7 +127,7 @@ public class DtoCatalog {
         final DtoResponse dtoResponse = clazz.getAnnotation(DtoResponse.class);
         if (dtoResponse == null) {
             throw new DtoException("Response class [" + className
-                    + "] has not annotation '@DtoResponse'");
+                    + "] has no annotation '@DtoResponse'");
         }
 
         final String name = dtoResponse.name().trim();
