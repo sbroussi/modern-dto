@@ -1,0 +1,17 @@
+#parse("templates/page-header.vm")
+<h1>Response '${bean.name}'</h1>
+<h2>Documentation:</h2>
+<blockquote>
+    #foreach( $comment in ${bean.dtoComments} )
+        $comment<br/>
+    #end
+    <hr/>
+    Java Class: ${bean.classname}
+</blockquote>
+<h2>Expected by responses:</h2>
+<ul>
+    #foreach( $request in ${bean.requestsExpectingThisResponse} )
+        <li><a href="${generator.getRequestFilename($request.classname)}.html">${request.name}</a> - ${request.firstDtoComment}</li>
+    #end
+</ul>
+#parse("templates/page-footer.vm")

@@ -1,0 +1,23 @@
+#parse("templates/page-header.vm")
+<h1>Request '${bean.name}'</h1>
+<h2>Documentation:</h2>
+<blockquote>
+    #foreach( $comment in ${bean.dtoComments} )
+        $comment<br/>
+    #end
+    <hr/>
+    Java Class: ${bean.classname}
+</blockquote>
+<h2>Used by applications:</h2>
+<ul>
+    #foreach( $applicationID in ${bean.usedByApplications} )
+        <li><a href="${generator.getApplicationFilename($applicationID)}.html">$applicationID</a></li>
+    #end
+</ul>
+<h2>Expected responses:</h2>
+<ul>
+    #foreach( $response in ${bean.expectedResponseBeans} )
+        <li><a href="${generator.getResponseFilename($response.classname)}.html">${response.name}</a> - ${response.firstDtoComment}</li>
+    #end
+</ul>
+#parse("templates/page-footer.vm")

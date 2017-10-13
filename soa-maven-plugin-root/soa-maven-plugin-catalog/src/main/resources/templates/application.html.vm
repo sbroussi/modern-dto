@@ -1,0 +1,9 @@
+#parse("templates/page-header.vm")
+<h1>Application '${applicationId}'</h1>
+<h2>List of Requests called by application '${applicationId}':</h2>
+<ul>
+    #foreach( $request in ${requests} )
+        <li><a href="${generator.getRequestFilename($request.classname)}.html">${request.name}</a> - ${request.firstDtoComment}</li>
+    #end
+</ul>
+#parse("templates/page-footer.vm")

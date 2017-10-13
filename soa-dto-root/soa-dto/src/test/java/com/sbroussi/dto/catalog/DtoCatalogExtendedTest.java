@@ -9,7 +9,7 @@ import com.sbroussi.dto.test.testA.TestRequestA;
 import com.sbroussi.dto.test.testA.TestResponseA;
 import org.junit.Test;
 
-import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -90,11 +90,11 @@ public class DtoCatalogExtendedTest {
         catalogExtended.refresh();
 
         // 2 requests define: usedByApplications = {"app-test-A"}
-        List<Class<?>> apps = catalogExtended.getRequestsByApplicationId().get("app-test-A");
+        Set<DtoRequestBean> apps = catalogExtended.getRequestsByApplicationId().get("app-test-A");
         assertNotNull(apps);
         assertEquals(2, apps.size());
-        assertTrue(apps.contains(MyBean.class));
-        assertTrue(apps.contains(MyBeanWithResponse.class));
+        assertTrue(apps.contains(catalogExtended.getDtoRequestBean(MyBean.class)));
+        assertTrue(apps.contains(catalogExtended.getDtoRequestBean(MyBeanWithResponse.class)));
 
 
         // 1 request 'MyBeanWithResponse' defines: usedByApplications = {"app-test-B"}

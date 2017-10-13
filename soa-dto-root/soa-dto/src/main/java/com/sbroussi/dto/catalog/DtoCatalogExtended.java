@@ -8,6 +8,8 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -40,13 +42,23 @@ public class DtoCatalogExtended {
 
 
     /**
+     * For each Response, the list of Request that expect this response.
+     * <p>
+     * - key: class name of the response.
+     * <p>
+     * - value: The list of requests expecting this response.
+     */
+    private Map<String, Set<DtoRequestBean>> requestsByExpectedResponse = new ConcurrentHashMap<String, Set<DtoRequestBean>>();
+
+
+    /**
      * The list of 'applicationId's referenced by '@DtoRequest'
      * <p>
      * - key: the ID of the application
      * <p>
-     * - value: List of the '@DtoRequest' that are allowed by this application.
+     * - value: List of the DtoRequestBean that are allowed by this application.
      */
-    private Map<String, List<Class<?>>> requestsByApplicationId = new ConcurrentHashMap<String, List<Class<?>>>();
+    private Map<String, Set<DtoRequestBean>> requestsByApplicationId = new ConcurrentHashMap<String, Set<DtoRequestBean>>();
 
 
     /**
@@ -65,6 +77,7 @@ public class DtoCatalogExtended {
      */
     public void refresh() {
 
+        // requests
         for (final Class<?> clazz : dtoCatalog.getRequests().values()) {
 
             final DtoRequestBean requestBean = getDtoRequestBean(clazz);
@@ -72,14 +85,12 @@ public class DtoCatalogExtended {
             // maintain the list of application IDs
             final String[] applicationIds = requestBean.getUsedByApplications();
             for (final String applicationId : applicationIds) {
-                List<Class<?>> apps = requestsByApplicationId.get(applicationId);
+                Set<DtoRequestBean> apps = requestsByApplicationId.get(applicationId);
                 if (apps == null) {
-                    apps = new ArrayList<Class<?>>();
+                    apps = new TreeSet<DtoRequestBean>();
                     requestsByApplicationId.put(applicationId, apps);
                 }
-                if (!apps.contains(clazz)) {
-                    apps.add(clazz);
-                }
+                apps.add(requestBean);
             }
 
             final Class[] expectedResponses = requestBean.getExpectedResponses();
@@ -87,7 +98,29 @@ public class DtoCatalogExtended {
             requestBean.setExpectedResponseBeans(responseBeans);
             for (final Class expectedResponseClass : expectedResponses) {
                 responseBeans.add(getDtoResponseBean(expectedResponseClass));
+
+
+                // maintain the list of requests expecting this response
+                String responseClassname = expectedResponseClass.getName();
+                Set<DtoRequestBean> requestsExpectingThisResponse = requestsByExpectedResponse.get(responseClassname);
+                if (requestsExpectingThisResponse == null) {
+                    requestsExpectingThisResponse = new TreeSet<DtoRequestBean>();
+                    requestsByExpectedResponse.put(responseClassname, requestsExpectingThisResponse);
+                }
+                requestsExpectingThisResponse.add(requestBean);
             }
+        }
+
+        // responses
+        for (final Class<?> clazz : dtoCatalog.getResponses().values()) {
+
+            final DtoResponseBean responseBean = getDtoResponseBean(clazz);
+
+            Set<DtoRequestBean> requestsExpectingThisResponse = requestsByExpectedResponse.get(clazz.getName());
+
+            responseBean.setRequestsExpectingThisResponse((requestsExpectingThisResponse == null)
+                    ? new ArrayList<DtoRequestBean>(0)
+                    : requestsExpectingThisResponse);
         }
     }
 
@@ -96,6 +129,7 @@ public class DtoCatalogExtended {
      * @param clazz the class of the DTO to scan
      * @return A bean that represents a '@DtoRequest' for Catalog generation or DEV tooling,
      */
+
     public DtoRequestBean getDtoRequestBean(final Class<?> clazz) {
         final String className = clazz.getName();
         DtoRequestBean bean = requestBeans.get(className);

@@ -28,6 +28,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Generate old catalog (migrated from ing-components/ing-soa-catalog).
@@ -76,26 +78,97 @@ public class CatalogGenerator implements URIResolver {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             transformerFactory.setURIResolver(this);
 
-            // Request Details
-            final Map<String, DtoRequestBean> requests = catalogExtended.getRequestBeans();
-            final Map<String, DtoResponseBean> responses = catalogExtended.getResponseBeans();
+            // List of Applications
+            final Map<String, Set<DtoRequestBean>> apps = catalogExtended.getRequestsByApplicationId();
+            log.info("Generate catalog for [" + apps.size() + "] applications");
+            final Template templateApplicationsList = Velocity.getTemplate("/templates/applications-list.html.vm");
+            Set<String> sortedApps = new TreeSet<String>();
+            sortedApps.addAll(apps.keySet());
+            VelocityContext context = new VelocityContext();
+            context.put("generator", this);
+            context.put("now", now);
+            context.put("applications", sortedApps);
+            File outputFileHtml = new File(outputDirectory, "html/applications-list.html");
+            createFile(outputFileHtml, templateApplicationsList, context);
 
-            log.info(String.format("Generate catalog for %d request(s)", requests.size()));
-            final Template templateRequest = Velocity.getTemplate("/templates/request.xml.vm");
+            // Applications
+            final Template templateApplication = Velocity.getTemplate("/templates/application.html.vm");
+            for (final Map.Entry<String, Set<DtoRequestBean>> entry : apps.entrySet()) {
+
+                String applicationId = entry.getKey();
+                Set<DtoRequestBean> requests = entry.getValue();
+
+                String filename = getApplicationFilename(applicationId);
+
+                context = new VelocityContext();
+                context.put("generator", this);
+                context.put("now", now);
+                context.put("applicationId", applicationId);
+                context.put("requests", requests);
+
+                outputFileHtml = new File(outputDirectory, "html/" + filename + ".html");
+
+                createFile(outputFileHtml, templateApplication, context);
+            }
+
+            // List of Requests
+            final Map<String, DtoRequestBean> requests = catalogExtended.getRequestBeans();
+            log.info("Generate catalog for [" + requests.size() + "] requests");
+            final Template templateRequestsList = Velocity.getTemplate("/templates/requests-list.html.vm");
+            Set<DtoRequestBean> sortedRequests = new TreeSet<DtoRequestBean>();
+            sortedRequests.addAll(requests.values());
+            context = new VelocityContext();
+            context.put("generator", this);
+            context.put("now", now);
+            context.put("requests", sortedRequests);
+            outputFileHtml = new File(outputDirectory, "html/requests-list.html");
+            createFile(outputFileHtml, templateRequestsList, context);
+
+            // Requests
+            final Template templateRequest = Velocity.getTemplate("/templates/request.html.vm");
             for (final DtoRequestBean bean : requests.values()) {
 
-                String requestFilename = getRequestFilename(bean.getDtoClass());
+                String filename = getRequestFilename(bean.getClassname());
 
-                VelocityContext context = new VelocityContext();
+                context = new VelocityContext();
                 context.put("generator", this);
-                context.put("dtoCatalog", dtoCatalog);
-                context.put("createdAt", now);
+                context.put("now", now);
                 context.put("bean", bean);
 
-                File outputFileHtml = new File(outputDirectory, "html/" + requestFilename + ".html");
+                outputFileHtml = new File(outputDirectory, "html/" + filename + ".html");
 
                 createFile(outputFileHtml, templateRequest, context);
             }
+
+            // List of Responses
+            final Map<String, DtoResponseBean> responses = catalogExtended.getResponseBeans();
+            log.info("Generate catalog for [" + responses.size() + "] responses");
+            final Template templateResponsesList = Velocity.getTemplate("/templates/responses-list.html.vm");
+            Set<DtoResponseBean> sortedResponses = new TreeSet<DtoResponseBean>();
+            sortedResponses.addAll(responses.values());
+            context = new VelocityContext();
+            context.put("generator", this);
+            context.put("now", now);
+            context.put("responses", sortedResponses);
+            outputFileHtml = new File(outputDirectory, "html/responses-list.html");
+            createFile(outputFileHtml, templateResponsesList, context);
+
+            // Responses
+            final Template templateResponse = Velocity.getTemplate("/templates/response.html.vm");
+            for (final DtoResponseBean bean : responses.values()) {
+
+                String filename = getResponseFilename(bean.getClassname());
+
+                context = new VelocityContext();
+                context.put("generator", this);
+                context.put("now", now);
+                context.put("bean", bean);
+
+                outputFileHtml = new File(outputDirectory, "html/" + filename + ".html");
+
+                createFile(outputFileHtml, templateResponse, context);
+            }
+
 
 
             // Static resources
@@ -127,22 +200,18 @@ public class CatalogGenerator implements URIResolver {
         }
     }
 
-    public String getRequestFilename(Class clazz) {
-        return getRequestFilename(clazz.getName());
+    public String getRequestFilename(final String className) {
+        return "request_" + className.replace('$', '.');
     }
 
-    public String getRequestFilename(String className) {
-        return "request_" + className;
+
+    public String getResponseFilename(final String className) {
+        return "response_" + className.replace('$', '.');
     }
 
-    public String getResponseFilename(Class clazz) {
-        return getResponseFilename(clazz.getName());
+    public String getApplicationFilename(final String applicationId) {
+        return "app_" + applicationId.replace(' ', '_');
     }
-
-    public String getResponseFilename(String className) {
-        return "response_" + className;
-    }
-
 
     private void copyResource(final String resource, final File outputFile) throws IOException {
         Files.createParentDirs(outputFile);

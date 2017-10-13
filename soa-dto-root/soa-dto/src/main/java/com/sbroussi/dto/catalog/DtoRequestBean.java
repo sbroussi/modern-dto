@@ -3,6 +3,7 @@ package com.sbroussi.dto.catalog;
 import com.sbroussi.dto.annotations.DtoComment;
 import com.sbroussi.dto.annotations.DtoRequest;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +17,8 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class DtoRequestBean {
+@EqualsAndHashCode(of = "classname")
+public class DtoRequestBean implements Comparable<DtoRequestBean> {
 
     /**
      * The annotation.
@@ -105,4 +107,15 @@ public class DtoRequestBean {
     }
 
 
+    // ---------------- from interface 'Comparable', to sort elements alphabetically in TreeSet
+    @Override
+    public int compareTo(final DtoRequestBean o) {
+        // sort by name
+        int comp = name.compareTo(o.name);
+        if (comp == 0) {
+            // and by classname for duplicates
+            comp = classname.compareTo(o.classname);
+        }
+        return comp;
+    }
 }

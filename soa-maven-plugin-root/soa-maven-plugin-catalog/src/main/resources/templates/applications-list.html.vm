@@ -1,0 +1,8 @@
+#parse("templates/page-header.vm")
+<h1>List of applications</h1>
+<ul>
+    #foreach( $applicationID in ${applications} )
+        <li><a href="${generator.getApplicationFilename($applicationID)}.html">$applicationID</a></li>
+    #end
+</ul>
+#parse("templates/page-footer.vm")
