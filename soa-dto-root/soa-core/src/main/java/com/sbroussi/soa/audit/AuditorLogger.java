@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Map;
+
 /**
  * Simple slf4j logger to dump the request in the LOG file with INFO level.
  */
@@ -24,7 +26,7 @@ public class AuditorLogger implements Auditor {
     private int truncateSize = 2000;
 
     @Override
-    public void traceBeforeRequest(final SoaDtoRequest request) {
+    public void traceBeforeRequest(final SoaDtoRequest request, final Map<String, Object> data) {
         if (log.isInfoEnabled()) {
             String rawMessage = request.getRawRequest();
             if (rawMessage == null) {
@@ -39,7 +41,7 @@ public class AuditorLogger implements Auditor {
 
 
     @Override
-    public void traceAfterRequest(final SoaDtoRequest request) {
+    public void traceAfterRequest(final SoaDtoRequest request, final Map<String, Object> data) {
         if (log.isInfoEnabled()) {
             String rawMessage = request.getRawResponse();
             if (rawMessage == null) {
@@ -51,9 +53,19 @@ public class AuditorLogger implements Auditor {
         }
     }
 
+    @Override
+    public void traceOnTransportError(final SoaDtoRequest request, final Map<String, Object> data, final Throwable cause) {
+        log.error("ERROR while sending request [" + request.getDtoRequestAnnotation().name() + "]: " + cause.getMessage());
+    }
+
 
     @Override
-    public void traceAfterResponseParsing(final SoaDtoRequest request) {
+    public void traceAfterResponseParsing(final SoaDtoRequest request, final Map<String, Object> data) {
+        // nothing to do
+    }
+
+    @Override
+    public void traceClose(final SoaDtoRequest request, final Map<String, Object> data, final Throwable cause) {
         // nothing to do
     }
 

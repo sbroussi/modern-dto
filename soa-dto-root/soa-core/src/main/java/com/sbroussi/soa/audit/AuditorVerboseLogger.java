@@ -4,6 +4,8 @@ import com.sbroussi.soa.SoaContext;
 import com.sbroussi.soa.SoaDtoRequest;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Map;
+
 /**
  * Simple slf4j logger to dump the request in the LOG file with DEBUG level.
  * <p>
@@ -19,7 +21,7 @@ public class AuditorVerboseLogger implements Auditor {
     private String CRLF = System.getProperty("line.separator");
 
     @Override
-    public void traceBeforeRequest(final SoaDtoRequest request) {
+    public void traceBeforeRequest(final SoaDtoRequest request, final Map<String, Object> data) {
         if (log.isDebugEnabled()) {
             String rawMessage = request.getRawRequest();
             if (rawMessage == null) {
@@ -31,19 +33,19 @@ public class AuditorVerboseLogger implements Auditor {
             String requestName = request.getDtoRequestAnnotation().name();
 
 
-            String data = rawMessage;
+            String rawData = rawMessage;
             String header = null;
             final String applicationId = soaContext.getApplicationId();
-            if ((applicationId != null) && (data.length() >= 89) && (data.startsWith(applicationId))) {
+            if ((applicationId != null) && (rawData.length() >= 89) && (rawData.startsWith(applicationId))) {
                 // @CHANNEL0000090HEADER  000004400000000SB758   TEST                        REQUEST 00000161081080
                 // 0        1         2         3         4         5         6         7         8         9
                 // 1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
                 // -----------------------------------------------------------------------------------------1081080
-                header = data.substring(0, 89);
-                data = data.substring(89);
+                header = rawData.substring(0, 89);
+                rawData = rawData.substring(89);
             }
 
-            final StringBuilder sb = new StringBuilder(data.length() + 512);
+            final StringBuilder sb = new StringBuilder(rawData.length() + 512);
             sb.append("SOA REQUEST CALL:").append(CRLF);
             sb.append("*").append(CRLF);
             sb.append("*").append(CRLF);
@@ -51,8 +53,8 @@ public class AuditorVerboseLogger implements Auditor {
             if (header != null) {
                 sb.append("* SOA REQUEST HEADER: [").append(header).append("]").append(CRLF);
             }
-            sb.append("* SOA REQUEST DATA  : [").append(data).append("]").append(CRLF);
-            sb.append("* SOA DATA  LENGTH  : [").append(data.length()).append("]").append(CRLF);
+            sb.append("* SOA REQUEST DATA  : [").append(rawData).append("]").append(CRLF);
+            sb.append("* SOA DATA  LENGTH  : [").append(rawData.length()).append("]").append(CRLF);
             sb.append("*").append(CRLF);
             sb.append("*");
             log.debug(sb.toString());
@@ -61,7 +63,7 @@ public class AuditorVerboseLogger implements Auditor {
 
 
     @Override
-    public void traceAfterRequest(final SoaDtoRequest request) {
+    public void traceAfterRequest(final SoaDtoRequest request, final Map<String, Object> data) {
         if (log.isDebugEnabled()) {
             String rawMessage = request.getRawResponse();
             if (rawMessage == null) {
@@ -74,7 +76,17 @@ public class AuditorVerboseLogger implements Auditor {
     }
 
     @Override
-    public void traceAfterResponseParsing(final SoaDtoRequest request) {
+    public void traceOnTransportError(final SoaDtoRequest request, final Map<String, Object> data, final Throwable cause) {
+        log.error("ERROR while sending request [" + request.getDtoRequestAnnotation().name() + "]", cause);
+    }
+
+    @Override
+    public void traceAfterResponseParsing(final SoaDtoRequest request, final Map<String, Object> data) {
+        // nothing to do
+    }
+
+    @Override
+    public void traceClose(final SoaDtoRequest request, final Map<String, Object> data, final Throwable cause) {
         // nothing to do
     }
 
