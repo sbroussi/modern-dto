@@ -71,13 +71,24 @@ public class CatalogReportMojo extends AbstractMavenReport {
 
 
     /**
+     * TRUE to auto-detect all DTOs by reading files 'config/soa/dto.packages' present in the classpath.
+     * Defaults to TRUE.
+     */
+    @Parameter(
+            alias = "autodetect",
+            defaultValue = "true",
+            required = false
+    )
+    private String autodetect;
+
+    /**
      * The list of Java packages that contain DTOs requests.
      * <p>
      * The list is comma separated ('com.acme.beans, com.app1.beans, com.app2.beans').
      */
     @Parameter(
             alias = "scanPackages",
-            required = true
+            required = false
     )
     private String scanPackages;
 
@@ -205,13 +216,13 @@ public class CatalogReportMojo extends AbstractMavenReport {
             ClassLoader classLoader = getClassLoader();
             Thread.currentThread().setContextClassLoader(classLoader);
 
-            // list of packages containing DTOs
+            // list of packages containing DTOs separated by comma: 'com.acme, com.acme.beans'
             final List<String> packagesList = Arrays.asList(scanPackages.split("[\\s]*,[\\s]*"));
 
             // scan DTOs
             DtoCatalog dtoCatalog = new DtoCatalog();
             DtoCatalogScanner scanner = new DtoCatalogScanner(dtoCatalog);
-            scanner.scanPackages(packagesList);
+            scanner.scanPackages(Boolean.valueOf(autodetect), packagesList);
 
             // generate SOA Catalog
             CatalogGenerator generator = new CatalogGenerator(

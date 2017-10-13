@@ -22,6 +22,7 @@ public class CatalogGeneratorTest {
 
         final String outputDirectory = System.getProperty("java.io.tmpdir") + "/soa-catalog";
         final String encoding = "UTF-8";
+        final boolean autodetect = false;
 
         // list of packages containing DTOs
         final List<String> packagesList = asList(
@@ -34,7 +35,7 @@ public class CatalogGeneratorTest {
         // scan DTOs
         final DtoCatalog dtoCatalog = new DtoCatalog();
         final DtoCatalogScanner scanner = new DtoCatalogScanner(dtoCatalog);
-        scanner.scanPackages(packagesList);
+        scanner.scanPackages(autodetect, packagesList);
 
         // generate SOA Catalog
         Log log = new SystemStreamLog();

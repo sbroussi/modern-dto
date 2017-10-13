@@ -15,6 +15,8 @@ import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * This class will find all DTOs that are in the classpath ('@DtoRequest' or '@DtoResponse').
@@ -52,13 +54,14 @@ public class DtoCatalogScanner {
     /**
      * This method scan all the classes in the Classpath to detect annotations '@DtoRequest' or '@DtoResponse'.
      *
+     * @param autodetect  TRUE to read all files 'config/soa/dto.packages' present in the classpath to scan specified packages
      * @param basePackage the java packages to scan
      */
-    public void scanPackage(final String basePackage) {
+    public void scanPackage(final boolean autodetect, final String basePackage) {
 
         List<String> basePackages = new ArrayList<String>(1);
         basePackages.add(basePackage);
-        scanPackages(basePackages);
+        scanPackages(autodetect, basePackages);
     }
 
     /**
@@ -66,23 +69,27 @@ public class DtoCatalogScanner {
      * <p>
      * Performance: please specify a limited number of packages to avoid scanning all the classes loaded in the JVM.
      *
+     * @param autodetect   TRUE to read all files 'config/soa/dto.packages' present in the classpath to scan specified packages
      * @param basePackages the list of java packages to scan
      */
-    public void scanPackages(final List<String> basePackages) {
-        final ClassLoader classLoader = DtoUtils.getDefaultClassLoader();
+    public void scanPackages(final boolean autodetect, final List<String> basePackages) {
 
-        // from Spring: org.springframework.context.annotation.ClassPathBeanDefinitionScanner
-        //  resourcePattern="**/*.class";
+        final ClassLoader classLoader = DtoUtils.getDefaultClassLoader();
 
         final long start = System.currentTimeMillis();
 
-        for (final String p : basePackages) {
+        // remove duplicate and sort with 'TreeSet'
+        final Set<String> sortedList = new TreeSet<String>();
+        addAllRemoveEmpty(sortedList, basePackages);
+        if (autodetect) {
+            addAllRemoveEmpty(sortedList, ScanUtils.autodetectPackages(classLoader));
+        }
 
-            // clean the list
-            final String basePackage = (p == null) ? "" : p.trim();
-            if (basePackage.length() == 0) {
-                continue;
-            }
+        // create the final list of packages (avoid 'Set' interface)
+        final List<String> packageList = new ArrayList<String>(sortedList.size());
+        packageList.addAll(sortedList);
+
+        for (final String basePackage : packageList) {
 
             if (log.isInfoEnabled()) {
                 log.info("scan package [" + basePackage + "]");
@@ -102,7 +109,7 @@ public class DtoCatalogScanner {
 
         for (final URL url : packageUrls) {
             final UrlScanner container = factory.create(url);
-            List<String> classNames = (container == null) ? null : container.getClassNames(url, basePackages);
+            List<String> classNames = (container == null) ? null : container.getClassNames(url, packageList);
             if (classNames != null) {
                 for (final String className : classNames) {
 
@@ -138,12 +145,32 @@ public class DtoCatalogScanner {
 
         final long duration = System.currentTimeMillis() - start;
         log.info("scan finished; [" + duration + " ms] to scan ["
-                + basePackages.size() + "] packages and ["
+                + packageList.size() + "] packages and ["
                 + packageUrls.size() + "] URLs to detect ["
                 + dtoCatalog.getRequests().size() + "] requests and ["
                 + dtoCatalog.getResponses().size() + "] responses");
 
     }
+
+    /**
+     * Adds the 'trimmed' values of the list 'toAdd' to the set 'list', removing null or empty values.
+     */
+    private void addAllRemoveEmpty(final Set<String> list, final List<String> toAdd) {
+        if ((list == null) || (toAdd == null) || (toAdd.isEmpty())) {
+            return;
+        }
+        for (final String value : toAdd) {
+            if (value == null) {
+                continue;
+            }
+            final String trimmedValue = value.trim();
+            if (trimmedValue.length() == 0) {
+                continue;
+            }
+            list.add(trimmedValue);
+        }
+    }
+
 
 
     /**

@@ -1,0 +1,8 @@
+# DTO convention: the file name is always 'config/soa/dto.packages' in all the JARs
+# enter the list of java packages that contain @DtoRequest or @DtoResponse classes
+# the list of packages can be separated by CR/LF or comma ','
+# comment lines starting with '#' are ignored
+
+com.sbroussi.dto.test
+com.sbroussi.dto.test.testA
+com.sbroussi.dto.test.testB

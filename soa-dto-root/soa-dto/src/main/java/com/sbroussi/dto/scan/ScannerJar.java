@@ -66,8 +66,8 @@ public class ScannerJar implements UrlScanner {
                             final String endOfName = name.substring(folder.length() + 1);
                             if (!endOfName.contains("/")) {
                                 result.add(ScanUtils.className(name));
+                                break;
                             }
-                            break;
                         }
                     }
                 }
