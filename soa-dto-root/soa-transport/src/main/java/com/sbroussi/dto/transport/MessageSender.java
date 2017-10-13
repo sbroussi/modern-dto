@@ -9,6 +9,8 @@ package com.sbroussi.dto.transport;
  * <p>
  * - SenderSpringJms.java: an implementation based on Spring-JMS (with JmsTemplate).
  * <p>
+ * - SenderVoid.java: a '/dev/null' sender that does not send and receive anything
+ * <p>
  * - MockSender.java: a MOCK implementation for Unit-Tests.
  * <p>
  * - possible extension: HTTP connector to Rest API/Json
