@@ -78,17 +78,34 @@ public class CatalogGenerator implements URIResolver {
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             transformerFactory.setURIResolver(this);
 
-            // List of Applications
+            // read main lists
             final Map<String, Set<DtoRequestBean>> apps = catalogExtended.getRequestsByApplicationId();
+            final Map<String, DtoRequestBean> requests = catalogExtended.getRequestBeans();
+            final Map<String, DtoResponseBean> responses = catalogExtended.getResponseBeans();
+            log.info("Generate catalog for [" + requests.size() + "] requests");
+            log.info("Generate catalog for [" + responses.size() + "] responses");
             log.info("Generate catalog for [" + apps.size() + "] applications");
-            final Template templateApplicationsList = Velocity.getTemplate("/templates/applications-list.html.vm");
-            Set<String> sortedApps = new TreeSet<String>();
-            sortedApps.addAll(apps.keySet());
+
+            // Welcome page 'index.html'
+            final Template templateWelcome = Velocity.getTemplate("/templates/index.html.vm");
             VelocityContext context = new VelocityContext();
             context.put("generator", this);
             context.put("now", now);
+            context.put("nbRequests", requests.size());
+            context.put("nbResponses", responses.size());
+            context.put("nbApplications", apps.size());
+            File outputFileHtml = new File(outputDirectory, "html/index.html");
+            createFile(outputFileHtml, templateWelcome, context);
+
+            // List of Applications
+            final Template templateApplicationsList = Velocity.getTemplate("/templates/applications-list.html.vm");
+            Set<String> sortedApps = new TreeSet<String>();
+            sortedApps.addAll(apps.keySet());
+            context = new VelocityContext();
+            context.put("generator", this);
+            context.put("now", now);
             context.put("applications", sortedApps);
-            File outputFileHtml = new File(outputDirectory, "html/applications-list.html");
+            outputFileHtml = new File(outputDirectory, "html/applications-list.html");
             createFile(outputFileHtml, templateApplicationsList, context);
 
             // Applications
@@ -96,7 +113,7 @@ public class CatalogGenerator implements URIResolver {
             for (final Map.Entry<String, Set<DtoRequestBean>> entry : apps.entrySet()) {
 
                 String applicationId = entry.getKey();
-                Set<DtoRequestBean> requests = entry.getValue();
+                Set<DtoRequestBean> appRequests = entry.getValue();
 
                 String filename = getApplicationFilename(applicationId);
 
@@ -104,7 +121,7 @@ public class CatalogGenerator implements URIResolver {
                 context.put("generator", this);
                 context.put("now", now);
                 context.put("applicationId", applicationId);
-                context.put("requests", requests);
+                context.put("requests", appRequests);
 
                 outputFileHtml = new File(outputDirectory, "html/" + filename + ".html");
 
@@ -112,8 +129,6 @@ public class CatalogGenerator implements URIResolver {
             }
 
             // List of Requests
-            final Map<String, DtoRequestBean> requests = catalogExtended.getRequestBeans();
-            log.info("Generate catalog for [" + requests.size() + "] requests");
             final Template templateRequestsList = Velocity.getTemplate("/templates/requests-list.html.vm");
             Set<DtoRequestBean> sortedRequests = new TreeSet<DtoRequestBean>();
             sortedRequests.addAll(requests.values());
@@ -141,8 +156,6 @@ public class CatalogGenerator implements URIResolver {
             }
 
             // List of Responses
-            final Map<String, DtoResponseBean> responses = catalogExtended.getResponseBeans();
-            log.info("Generate catalog for [" + responses.size() + "] responses");
             final Template templateResponsesList = Velocity.getTemplate("/templates/responses-list.html.vm");
             Set<DtoResponseBean> sortedResponses = new TreeSet<DtoResponseBean>();
             sortedResponses.addAll(responses.values());
@@ -168,7 +181,6 @@ public class CatalogGenerator implements URIResolver {
 
                 createFile(outputFileHtml, templateResponse, context);
             }
-
 
 
             // Static resources
