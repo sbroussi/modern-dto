@@ -5,6 +5,7 @@ import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import com.sbroussi.dto.DtoCatalog;
 import com.sbroussi.dto.catalog.DtoCatalogExtended;
+import com.sbroussi.dto.catalog.DtoFieldBean;
 import com.sbroussi.dto.catalog.DtoRequestBean;
 import com.sbroussi.dto.catalog.DtoResponseBean;
 import org.apache.maven.plugin.logging.Log;
@@ -26,7 +27,6 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -38,18 +38,15 @@ public class CatalogGenerator implements URIResolver {
 
     private final Log log;
     private final DtoCatalog dtoCatalog;
-    private final List<String> packagesList;
     private final String outputDirectory;
     private final String encoding;
 
     public CatalogGenerator(final Log log,
                             final DtoCatalog dtoCatalog,
-                            final List<String> packagesList,
                             final String outputDirectory,
                             final String encoding) {
         this.log = log;
         this.dtoCatalog = dtoCatalog;
-        this.packagesList = packagesList;
         this.outputDirectory = outputDirectory;
         this.encoding = encoding;
 
@@ -57,8 +54,7 @@ public class CatalogGenerator implements URIResolver {
 
     public void generate() throws MavenReportException {
 
-        log.info("Generate catalog to folder: [" + outputDirectory
-                + "] for [" + packagesList.size() + "] packages " + packagesList);
+        log.info("Generate catalog to folder: [" + outputDirectory + "]");
 
         try {
 
@@ -82,8 +78,11 @@ public class CatalogGenerator implements URIResolver {
             final Map<String, Set<DtoRequestBean>> apps = catalogExtended.getRequestsByApplicationId();
             final Map<String, DtoRequestBean> requests = catalogExtended.getRequestBeans();
             final Map<String, DtoResponseBean> responses = catalogExtended.getResponseBeans();
+            final Map<String, Set<DtoFieldBean>> datatypes = catalogExtended.getFieldsByDatatypes();
+            final Set<String> packagesList = catalogExtended.getPackages();
             log.info("Generate catalog for [" + requests.size() + "] requests");
             log.info("Generate catalog for [" + responses.size() + "] responses");
+            log.info("Generate catalog for [" + datatypes.size() + "] DataTypes");
             log.info("Generate catalog for [" + apps.size() + "] applications");
             log.info("Generate catalog for [" + packagesList.size() + "] java packages");
 
@@ -94,11 +93,44 @@ public class CatalogGenerator implements URIResolver {
             context.put("now", now);
             context.put("nbRequests", requests.size());
             context.put("nbResponses", responses.size());
+            context.put("nbDataTypes", datatypes.size());
             context.put("nbApplications", apps.size());
             context.put("nbPackages", packagesList.size());
             context.put("packagesList", packagesList);
             File outputFileHtml = new File(outputDirectory, "html/index.html");
             createFile(outputFileHtml, templateWelcome, context);
+
+
+            // List of Datatypes
+            final Template templateDatatypesList = Velocity.getTemplate("/templates/datatypes-list.html.vm");
+            Set<String> sortedDatatypes = new TreeSet<String>();
+            sortedDatatypes.addAll(datatypes.keySet());
+            context = new VelocityContext();
+            context.put("generator", this);
+            context.put("now", now);
+            context.put("datatypes", sortedDatatypes);
+            outputFileHtml = new File(outputDirectory, "html/datatypes-list.html");
+            createFile(outputFileHtml, templateDatatypesList, context);
+
+            // Datatypes
+            final Template templateDatatype = Velocity.getTemplate("/templates/datatype.html.vm");
+            for (final Map.Entry<String, Set<DtoFieldBean>> entry : datatypes.entrySet()) {
+
+                String datatype = entry.getKey();
+                Set<DtoFieldBean> fields = entry.getValue();
+
+                String filename = getDatatypeFilename(datatype);
+
+                context = new VelocityContext();
+                context.put("generator", this);
+                context.put("now", now);
+                context.put("datatype", datatype);
+                context.put("fields", fields);
+
+                outputFileHtml = new File(outputDirectory, "html/" + filename + ".html");
+
+                createFile(outputFileHtml, templateDatatype, context);
+            }
 
             // List of Applications
             final Template templateApplicationsList = Velocity.getTemplate("/templates/applications-list.html.vm");
@@ -146,7 +178,7 @@ public class CatalogGenerator implements URIResolver {
             final Template templateRequest = Velocity.getTemplate("/templates/request.html.vm");
             for (final DtoRequestBean bean : requests.values()) {
 
-                String filename = getRequestFilename(bean.getClassname());
+                String filename = getRequestFilename(bean.getDtoClassname());
 
                 context = new VelocityContext();
                 context.put("generator", this);
@@ -173,7 +205,7 @@ public class CatalogGenerator implements URIResolver {
             final Template templateResponse = Velocity.getTemplate("/templates/response.html.vm");
             for (final DtoResponseBean bean : responses.values()) {
 
-                String filename = getResponseFilename(bean.getClassname());
+                String filename = getResponseFilename(bean.getDtoClassname());
 
                 context = new VelocityContext();
                 context.put("generator", this);
@@ -213,6 +245,10 @@ public class CatalogGenerator implements URIResolver {
         } finally {
             closer.close();
         }
+    }
+
+    public String getDatatypeFilename(final String className) {
+        return "datatype_" + className.replace('$', '.');
     }
 
     public String getRequestFilename(final String className) {

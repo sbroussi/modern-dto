@@ -10,7 +10,7 @@ import com.sbroussi.dto.annotations.DtoRequest;
 public class MyBean {
 
 
-    @DtoFieldReference(reference = TestDatatypes.MY_DEFINITION_2.class)
+    @DtoFieldReference(TestDatatypes.MY_DEFINITION_2.class)
     public String myField;
 
 

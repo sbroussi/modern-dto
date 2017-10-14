@@ -1,0 +1,15 @@
+#parse("templates/page-header.vm")
+<h1>Datatype '${datatype}'</h1>
+<h2>List of Fields referencing this Datatype:</h2>
+<ul>
+    #foreach( $field in ${fields} )
+         #set ($dtoBean = ${field.dtoBean})
+         #if (${dtoBean.class.simpleName} == "DtoRequestBean")
+            <li>Request ${dtoBean.name}, field <a href="${generator.getRequestFilename($dtoBean.dtoClassname)}.html#${dtoBean.name}-${field.name}">${field.name}</a> - ${field.firstDtoComment}</li>
+         #end
+         #if (${dtoBean.class.simpleName} == "DtoResponseBean")
+            <li>Response ${dtoBean.name}, field <a href="${generator.getResponseFilename($dtoBean.dtoClassname)}.html#${dtoBean.name}-${field.name}">${field.name}</a> - ${field.firstDtoComment}</li>
+         #end
+    #end
+</ul>
+#parse("templates/page-footer.vm")

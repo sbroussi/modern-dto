@@ -8,6 +8,6 @@ import com.sbroussi.dto.annotations.DtoResponse;
 @DtoResponse(name = "MY_RESP")
 public class MyBeanResponse {
 
-    @DtoFieldReference(reference = TestDatatypes.MY_DEFINITION_2.class)
+    @DtoFieldReference(TestDatatypes.MY_DEFINITION_2.class)
     public String myField;
 }

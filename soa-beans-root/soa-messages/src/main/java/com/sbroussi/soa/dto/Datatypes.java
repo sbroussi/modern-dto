@@ -9,7 +9,7 @@ public class Datatypes {
     public static class MY_DEFINITION_1 {
     }
 
-    @DtoFieldReference(reference = MY_DEFINITION_3.class)
+    @DtoFieldReference(MY_DEFINITION_3.class)
     public static class MY_DEFINITION_2 {
     }
 

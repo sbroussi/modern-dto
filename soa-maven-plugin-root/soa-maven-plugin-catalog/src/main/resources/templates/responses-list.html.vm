@@ -2,7 +2,7 @@
 <h1>List of Responses</h1>
 <ul>
     #foreach( $response in ${responses} )
-        <li><a href="${generator.getResponseFilename($response.classname)}.html">${response.name}</a> - ${response.firstDtoComment}</li>
+        <li><a href="${generator.getResponseFilename($response.dtoClassname)}.html">${response.name}</a> - ${response.firstDtoComment}</li>
     #end
 </ul>
 #parse("templates/page-footer.vm")

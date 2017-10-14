@@ -6,8 +6,9 @@
         $comment<br/>
     #end
     <hr/>
-    Java Class: ${bean.classname}
+    Java Class: ${bean.dtoClassname}
 </blockquote>
+#parse("templates/section-fields.vm")
 <h2>Used by applications:</h2>
 <ul>
     #foreach( $applicationID in ${bean.usedByApplications} )
@@ -17,7 +18,7 @@
 <h2>Expected responses:</h2>
 <ul>
     #foreach( $response in ${bean.expectedResponseBeans} )
-        <li><a href="${generator.getResponseFilename($response.classname)}.html">${response.name}</a> - ${response.firstDtoComment}</li>
+        <li><a href="${generator.getResponseFilename($response.dtoClassname)}.html">${response.name}</a> - ${response.firstDtoComment}</li>
     #end
 </ul>
 #parse("templates/page-footer.vm")

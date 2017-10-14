@@ -32,7 +32,7 @@ public class DtoCatalogExtendedTest {
         assertNotNull(requestClazz);
         DtoRequestBean bean = catalogExtended.getDtoRequestBean(requestClazz);
         assertNotNull(bean);
-        assertEquals(MyBean.class.getName(), bean.getClassname());
+        assertEquals(MyBean.class.getName(), bean.getDtoClassname());
         assertEquals(MyBean.class, bean.getDtoClass());
         assertEquals("MyBean", bean.getName());
         assertTrue(bean.getExpectedResponses().length == 0);
@@ -43,7 +43,7 @@ public class DtoCatalogExtendedTest {
         assertNotNull(requestClazz);
         bean = catalogExtended.getDtoRequestBean(requestClazz);
         assertNotNull(bean);
-        assertEquals(TestRequestA.class.getName(), bean.getClassname());
+        assertEquals(TestRequestA.class.getName(), bean.getDtoClassname());
         assertEquals(TestRequestA.class, bean.getDtoClass());
         assertEquals("TESTREQA", bean.getName());
         assertTrue(bean.getExpectedResponses().length == 1);
@@ -54,8 +54,8 @@ public class DtoCatalogExtendedTest {
         assertEquals("TESTREPA", response.getName());
 
         // read comments of the response 'TestResponseA'
-        assertEquals(3, response.getDtoComment().notes().length);
-        assertEquals(2, response.getDtoComments().size()); // first empty line has be ignored
+        assertEquals(5, response.getDtoComment().notes().length); // starts with 2 empty lines
+        assertEquals(3, response.getDtoComments().size()); // 2 first empty lines have be ignored, contains inner 1 empty line
         assertEquals("TestResponseA: comment line 1", response.getFirstDtoComment());
     }
 

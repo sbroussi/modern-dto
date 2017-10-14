@@ -6,12 +6,13 @@
         $comment<br/>
     #end
     <hr/>
-    Java Class: ${bean.classname}
+    Java Class: ${bean.dtoClassname}
 </blockquote>
-<h2>Expected by responses:</h2>
+#parse("templates/section-fields.vm")
+<h2>Expected by requests:</h2>
 <ul>
     #foreach( $request in ${bean.requestsExpectingThisResponse} )
-        <li><a href="${generator.getRequestFilename($request.classname)}.html">${request.name}</a> - ${request.firstDtoComment}</li>
+        <li><a href="${generator.getRequestFilename($request.dtoClassname)}.html">${request.name}</a> - ${request.firstDtoComment}</li>
     #end
 </ul>
 #parse("templates/page-footer.vm")

@@ -31,7 +31,6 @@ public class CatalogGeneratorTest {
                 Test.class.getPackage().getName() //            "org.junit" in "junit.jar"
         );
 
-
         // scan DTOs
         final DtoCatalog dtoCatalog = new DtoCatalog();
         final DtoCatalogScanner scanner = new DtoCatalogScanner(dtoCatalog);
@@ -43,7 +42,6 @@ public class CatalogGeneratorTest {
         final CatalogGenerator generator = new CatalogGenerator(
                 log,
                 dtoCatalog,
-                packagesList,
                 outputDirectory,
                 encoding);
         generator.generate();

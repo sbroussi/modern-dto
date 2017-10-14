@@ -18,6 +18,7 @@ import org.codehaus.plexus.classworlds.realm.ClassRealm;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -64,8 +65,8 @@ public class CatalogReportMojo extends AbstractMavenReport {
      */
     @Parameter(
             alias = "encoding",
-            defaultValue = "${project.build.sourceEncoding}",
-            required = true
+            defaultValue = "UTF-8",
+            required = false
     )
     private String encoding;
 
@@ -88,6 +89,7 @@ public class CatalogReportMojo extends AbstractMavenReport {
      */
     @Parameter(
             alias = "scanPackages",
+            defaultValue = "",
             required = false
     )
     private String scanPackages;
@@ -217,7 +219,9 @@ public class CatalogReportMojo extends AbstractMavenReport {
             Thread.currentThread().setContextClassLoader(classLoader);
 
             // list of packages containing DTOs separated by comma: 'com.acme, com.acme.beans'
-            final List<String> packagesList = Arrays.asList(scanPackages.split("[\\s]*,[\\s]*"));
+            final List<String> packagesList = ((scanPackages == null) || (scanPackages.length() == 0))
+                    ? new ArrayList<String>()
+                    : Arrays.asList(scanPackages.split("[\\s]*,[\\s]*"));
 
             // scan DTOs
             DtoCatalog dtoCatalog = new DtoCatalog();
@@ -228,7 +232,6 @@ public class CatalogReportMojo extends AbstractMavenReport {
             CatalogGenerator generator = new CatalogGenerator(
                     getLog(),
                     dtoCatalog,
-                    packagesList,
                     getOutputDirectory(),
                     getEncoding());
             generator.generate();

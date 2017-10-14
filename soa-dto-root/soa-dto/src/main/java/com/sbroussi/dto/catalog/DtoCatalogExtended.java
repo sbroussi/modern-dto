@@ -1,10 +1,16 @@
 package com.sbroussi.dto.catalog;
 
 import com.sbroussi.dto.DtoCatalog;
+import com.sbroussi.dto.DtoUtils;
 import com.sbroussi.dto.annotations.DtoComment;
+import com.sbroussi.dto.annotations.DtoField;
+import com.sbroussi.dto.annotations.DtoFieldNumber;
+import com.sbroussi.dto.annotations.DtoFieldNumberReference;
+import com.sbroussi.dto.annotations.DtoFieldReference;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +79,16 @@ public class DtoCatalogExtended {
 
 
     /**
+     * The list of fields that reference one DataType.
+     * <p>
+     * - key: the name of the Datatype Reference (a classname)
+     * <p>
+     * - value: List of the DtoFieldBean that are referencing this DataType.
+     */
+    private Map<String, Set<DtoFieldBean>> fieldsByDatatypes = new ConcurrentHashMap<String, Set<DtoFieldBean>>();
+
+
+    /**
      * Constructor (no DTOS are scanned, you must call the method 'scan' to analyse the DTOs).
      *
      * @param dtoCatalog the DTO Catalog.
@@ -91,10 +107,10 @@ public class DtoCatalogExtended {
         // requests
         for (final Class<?> clazz : dtoCatalog.getRequests().values()) {
 
-            // maintain the list of packages
-            packages.add(clazz.getPackage().getName());
-
             final DtoRequestBean requestBean = getDtoRequestBean(clazz);
+
+            // analyze class (package, fields...)
+            scan(requestBean);
 
             // maintain the list of application IDs
             final String[] applicationIds = requestBean.getUsedByApplications();
@@ -128,16 +144,107 @@ public class DtoCatalogExtended {
         // responses
         for (final Class<?> clazz : dtoCatalog.getResponses().values()) {
 
-            // maintain the list of packages
-            packages.add(clazz.getPackage().getName());
-
             final DtoResponseBean responseBean = getDtoResponseBean(clazz);
+
+            // analyze class (package, fields...)
+            scan(responseBean);
 
             Set<DtoRequestBean> requestsExpectingThisResponse = requestsByExpectedResponse.get(clazz.getName());
 
             responseBean.setRequestsExpectingThisResponse((requestsExpectingThisResponse == null)
                     ? new ArrayList<DtoRequestBean>(0)
                     : requestsExpectingThisResponse);
+        }
+    }
+
+    private boolean isRequest(final DtoAbstractMessage bean) {
+        return bean instanceof DtoRequestBean;
+    }
+
+    private boolean isResponse(final DtoAbstractMessage bean) {
+        return bean instanceof DtoResponseBean;
+    }
+
+    /**
+     * Analyze class (package, fields...),
+     *
+     * @param dtoBean the parent bean (DtoRequestBean or DtoResponseBean)
+     */
+    private void scan(final DtoAbstractMessage dtoBean) {
+
+        final Class<?> clazz = dtoBean.getDtoClass();
+
+        // maintain the list of packages
+        packages.add(clazz.getPackage().getName());
+
+
+        final Set<DtoFieldBean> fields = new TreeSet<DtoFieldBean>();
+        dtoBean.setFields(fields);
+        int position = 1;
+        for (final Field field : clazz.getFields()) {
+
+            int length = 0;
+            int minOccurs = 1;
+            int maxOccurs = 1;
+            char type = 'X';
+            String datatypeReference = null;
+
+            final DtoComment dtoComment = field.getAnnotation(DtoComment.class);
+            final List<String> dtoComments = DtoCatalogExtended.extractDtoComment(dtoComment, "Field " + field.getName());
+
+
+            DtoFieldReference dtoFieldReference = field.getAnnotation(DtoFieldReference.class);
+            if (dtoFieldReference != null) {
+                datatypeReference = dtoFieldReference.value().getName();
+            } else {
+                DtoFieldNumberReference dtoFieldNumberReference = field.getAnnotation(DtoFieldNumberReference.class);
+                if (dtoFieldNumberReference != null) {
+                    datatypeReference = dtoFieldNumberReference.value().getName();
+                }
+            }
+
+            DtoField dtoField = DtoUtils.readDtoField(field);
+            if (dtoField != null) {
+                length = dtoField.length();
+            }
+            final DtoFieldNumber dtoFieldNumber = DtoUtils.readDtoFieldNumber(field);
+            if (dtoFieldNumber != null) {
+                type = '9';
+                length = dtoFieldNumber.length();
+                dtoField = dtoFieldNumber.dtoField();
+            }
+
+            final DtoFieldBean bean = DtoFieldBean.builder()
+                    .dtoField(dtoField)
+                    .dtoFieldNumber(dtoFieldNumber)
+                    .dtoBean(dtoBean)
+                    .datatypeReference(datatypeReference)
+                    .dtoComment(dtoComment)
+                    .dtoComments(dtoComments)
+                    .firstDtoComment(dtoComments.get(0))
+                    .field(field)
+                    .name(field.getName())
+                    .length(length)
+                    .type(type)
+                    .minOccurs(minOccurs)
+                    .maxOccurs(maxOccurs)
+                    .positionStart(position)
+                    .positionEnd(position + length)
+                    .build();
+
+            fields.add(bean);
+
+            // maintain the list of DataType references
+            if (datatypeReference != null) {
+                Set<DtoFieldBean> datatypeFields = fieldsByDatatypes.get(datatypeReference);
+                if (datatypeFields == null) {
+                    datatypeFields = new TreeSet<DtoFieldBean>();
+                    fieldsByDatatypes.put(datatypeReference, datatypeFields);
+                }
+                datatypeFields.add(bean);
+            }
+
+            position += length;
         }
     }
 

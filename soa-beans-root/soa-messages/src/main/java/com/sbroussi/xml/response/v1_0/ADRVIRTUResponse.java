@@ -7,10 +7,10 @@ import com.sbroussi.soa.dto.Datatypes;
 @DtoResponse(name = "ADRVIRTU")
 public class ADRVIRTUResponse {
 
-    @DtoFieldReference(reference = Datatypes.MY_DEFINITION_2.class)
+    @DtoFieldReference(Datatypes.MY_DEFINITION_2.class)
     public String myResponseField1;
 
-    @DtoFieldReference(reference = Datatypes.MY_DEFINITION_2.class)
+    @DtoFieldReference(Datatypes.MY_DEFINITION_2.class)
     public String myResponseField2;
 
 }

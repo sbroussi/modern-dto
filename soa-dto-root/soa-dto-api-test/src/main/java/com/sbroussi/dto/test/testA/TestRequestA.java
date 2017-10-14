@@ -1,7 +1,7 @@
 package com.sbroussi.dto.test.testA;
 
 import com.sbroussi.dto.annotations.DtoComment;
-import com.sbroussi.dto.annotations.DtoField;
+import com.sbroussi.dto.annotations.DtoFieldReference;
 import com.sbroussi.dto.annotations.DtoRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +21,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class TestRequestA {
 
-    @DtoField(length = 10)
+    @DtoFieldReference(TestResponseA.MY_DATATYPE_REF.class)
     public String myRequestField;
 
 }

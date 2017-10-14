@@ -20,7 +20,7 @@
             <version>${dto-api.version}</version>
         </dependency>
 
-        <!-- list of SOA messages -->
+        <!-- list of SOA messages; simply add a reference to the project containing DTOs -->
         <dependency>
             <groupId>com.sbroussi</groupId>
             <artifactId>soa-messages</artifactId>
@@ -34,6 +34,18 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>com.sbroussi</groupId>
+                <artifactId>soa-maven-plugin-catalog</artifactId>
+                <version>1.0</version>
+            </plugin>
+        </plugins>
+    </reporting>
+
 
     <distributionManagement>
         <site>

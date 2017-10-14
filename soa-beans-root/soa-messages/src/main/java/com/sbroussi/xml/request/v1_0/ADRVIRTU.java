@@ -1,5 +1,7 @@
 package com.sbroussi.xml.request.v1_0;
 
+import com.sbroussi.dto.annotations.DtoComment;
+import com.sbroussi.dto.annotations.DtoField;
 import com.sbroussi.dto.annotations.DtoFieldReference;
 import com.sbroussi.dto.annotations.DtoRequest;
 import com.sbroussi.soa.dto.Apps;
@@ -9,6 +11,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+
+@DtoComment(notes = {"Retrieve the list of contacts",
+        "",
+        "- Emails ",
+        "- Phone",
+        "- Address"})
 @DtoRequest(name = "ADRVIRTU",
         usedByApplications = {Apps.app1, Apps.app2, Apps.app3},
         expectedResponses = {ADRVIRTUResponse.class}
@@ -18,7 +26,15 @@ import lombok.Setter;
 @Builder
 public class ADRVIRTU {
 
-    @DtoFieldReference(reference = Datatypes.MY_DEFINITION_2.class)
+    @DtoComment(notes = {"The type of contact",
+            "",
+            "- EMAIL: Emails ",
+            "- PHONE: Phone",
+            "- STREET: Address"})
+    @DtoField(length = 5)
+    public String typeOfContact;
+
+    @DtoFieldReference(Datatypes.MY_DEFINITION_2.class)
     public String myRequestField1;
 
 }

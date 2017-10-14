@@ -2,7 +2,7 @@
 <h1>List of Requests</h1>
 <ul>
     #foreach( $request in ${requests} )
-        <li><a href="${generator.getRequestFilename($request.classname)}.html">${request.name}</a> - ${request.firstDtoComment}</li>
+        <li><a href="${generator.getRequestFilename($request.dtoClassname)}.html">${request.name}</a> - ${request.firstDtoComment}</li>
     #end
 </ul>
 #parse("templates/page-footer.vm")

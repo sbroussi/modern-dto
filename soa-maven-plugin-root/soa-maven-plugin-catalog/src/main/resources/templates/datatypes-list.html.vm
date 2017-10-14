@@ -1,0 +1,8 @@
+#parse("templates/page-header.vm")
+<h1>List of Datatypes</h1>
+<ul>
+    #foreach( $datatype in ${datatypes} )
+        <li><a href="${generator.getDatatypeFilename($datatype)}.html">$datatype</a></li>
+    #end
+</ul>
+#parse("templates/page-footer.vm")

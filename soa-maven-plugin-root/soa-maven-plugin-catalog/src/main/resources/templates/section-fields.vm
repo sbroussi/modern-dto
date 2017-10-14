@@ -1,0 +1,55 @@
+<h2>Fields:</h2>
+
+<table width="100%">
+    <tr>
+        <td class="cell_title" style="min-width: 40;">
+            Name
+        </td>
+        <td width="40" class="cell_title">
+            Type
+        </td>
+        <td width="40" class="cell_title">
+            Size
+        </td>
+        <td class="cell_title">
+            Description / Datatype
+        </td>
+        <td width="80" class="cell_title">
+            Position
+        </td>
+    </tr>
+
+    #foreach( $field in ${bean.fields} )
+        <tr>
+            <td class="cell_data"><a name="${bean.name}-${field.name}"></a>
+                ${field.name}</td>
+            <td align="right" class="cell_data">
+                #if ( (${field.minOccurs} != 1) && (${field.maxOccurs} != 1) )
+                    <font color="red">
+                        OCCURS ${field.minOccurs} ... ${field.maxOccurs}
+                    </font>
+                #else
+                    ${field.type}
+                #end
+
+            </td>
+            <td align="right" class="cell_data">${field.length}</td>
+            <td class="cell_data">
+                <div class="field_documentation">
+                    #foreach( $comment in ${field.dtoComments} )
+                        $comment<br/>
+                    #end
+
+                    #if (${field.datatypeReference})
+                        <div class="field_datatype">
+                        Datatype: <a href="${generator.getDatatypeFilename(${field.datatypeReference})}.html">${field.datatypeReference}</a>
+                        </div>
+                    #end
+                </div>
+            </td>
+            <td align="right" class="cell_data">${field.positionStart} - ${field.positionEnd}</td>
+        </tr>
+
+    #end
+</table>
+

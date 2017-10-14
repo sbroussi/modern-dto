@@ -17,7 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class DtoResponseBean extends DtoBean {
+public class DtoResponseBean extends DtoAbstractMessage {
 
     /**
      * The annotation.
@@ -44,14 +44,14 @@ public class DtoResponseBean extends DtoBean {
                 .dtoResponse(dtoResponse)
                 .build();
 
-        // common fields
+        // common fields; Lombok Builder does not support fields from parent Class
         bean.setName(dtoResponse.name());
 
         bean.setDtoComment(dtoComment);
         bean.setDtoComments(dtoComments);
         bean.setFirstDtoComment(dtoComments.get(0));
         bean.setDtoComments(dtoComments);
-        bean.setClassname(clazz.getName());
+        bean.setDtoClassname(clazz.getName());
         bean.setDtoClass(clazz);
 
         return bean;

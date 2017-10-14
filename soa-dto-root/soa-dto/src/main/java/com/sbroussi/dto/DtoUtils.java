@@ -35,28 +35,38 @@ public class DtoUtils {
         return result;
     }
 
-    private static DtoField readDtoField(final AnnotatedElement element) {
+    /**
+     * @param element the element to inspect
+     * @return the '@DtoField' or null
+     * This method will drill-down all the '@DtoFieldReference' found
+     */
+    public static DtoField readDtoField(final AnnotatedElement element) {
         DtoField dtoField = element.getAnnotation(DtoField.class);
         if (dtoField == null) {
             // not defined: search for reference
             final DtoFieldReference dtoFieldRef = element.getAnnotation(DtoFieldReference.class);
             if (dtoFieldRef != null) {
                 // recursive call
-                dtoField = readDtoField(dtoFieldRef.reference());
+                dtoField = readDtoField(dtoFieldRef.value());
             }
         }
         return dtoField;
     }
 
 
-    private static DtoFieldNumber readDtoFieldNumber(final AnnotatedElement element) {
+    /**
+     * @param element the element to inspect
+     * @return the '@DtoField' or null
+     * This method will drill-down all the '@DtoFieldReference' found
+     */
+    public static DtoFieldNumber readDtoFieldNumber(final AnnotatedElement element) {
         DtoFieldNumber DtoFieldNumber = element.getAnnotation(DtoFieldNumber.class);
         if (DtoFieldNumber == null) {
             // not defined: search for reference
             final DtoFieldNumberReference DtoFieldNumberRef = element.getAnnotation(DtoFieldNumberReference.class);
             if (DtoFieldNumberRef != null) {
                 // recursive call
-                DtoFieldNumber = readDtoFieldNumber(DtoFieldNumberRef.reference());
+                DtoFieldNumber = readDtoFieldNumber(DtoFieldNumberRef.value());
             }
         }
         return DtoFieldNumber;
