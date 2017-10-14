@@ -58,13 +58,13 @@ public class CatalogGenerator implements URIResolver {
     public void generate() throws MavenReportException {
 
         log.info("Generate catalog to folder: [" + outputDirectory
-                + "] for packages " + packagesList);
+                + "] for [" + packagesList.size() + "] packages " + packagesList);
 
         try {
 
             // load definitions of all DTOs
             final DtoCatalogExtended catalogExtended = new DtoCatalogExtended(dtoCatalog);
-            catalogExtended.refresh();
+            catalogExtended.scan();
 
 
             Velocity.setProperty("parser.pool.size", "1");
@@ -85,6 +85,7 @@ public class CatalogGenerator implements URIResolver {
             log.info("Generate catalog for [" + requests.size() + "] requests");
             log.info("Generate catalog for [" + responses.size() + "] responses");
             log.info("Generate catalog for [" + apps.size() + "] applications");
+            log.info("Generate catalog for [" + packagesList.size() + "] java packages");
 
             // Welcome page 'index.html'
             final Template templateWelcome = Velocity.getTemplate("/templates/index.html.vm");
@@ -94,6 +95,8 @@ public class CatalogGenerator implements URIResolver {
             context.put("nbRequests", requests.size());
             context.put("nbResponses", responses.size());
             context.put("nbApplications", apps.size());
+            context.put("nbPackages", packagesList.size());
+            context.put("packagesList", packagesList);
             File outputFileHtml = new File(outputDirectory, "html/index.html");
             createFile(outputFileHtml, templateWelcome, context);
 

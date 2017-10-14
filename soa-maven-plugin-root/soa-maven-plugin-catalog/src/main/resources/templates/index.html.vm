@@ -3,11 +3,18 @@
 
 <p>This catalog has been generated at ${now}.</p>
 
-<p>It contains:
+<h2>Catalog content:</h2>
 <ul>
+<li>$nbApplications applications</li>
 <li>$nbRequests requests</li>
 <li>$nbResponses responses</li>
-<li>$nbApplications applications</li>
+</ul>
+
+<h2>List of $nbPackages Java packages scanned:</h2>
+<ul>
+    #foreach( $p in $packagesList )
+        <li>$p</li>
+    #end
 </ul>
 
 #parse("templates/page-footer.vm")

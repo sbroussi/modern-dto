@@ -14,6 +14,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * An 'extended' catalog to retrieve more information on DTOs for Catalog generation or DEV tooling,
+ * <p>
+ * Is is recommended to keep one instance of this class in your application,
+ * <p>
+ * Note: This is NOT required to run standard applications.
+ * The 'scan' method is implemented to help 'catalog generation', 'website generation'
+ * or 'development' tooling (DEBUGREQ).
  */
 @Getter
 @Setter
@@ -42,6 +48,11 @@ public class DtoCatalogExtended {
 
 
     /**
+     * The list of Java packages.
+     */
+    private Set<String> packages = new TreeSet<String>();
+
+    /**
      * For each Response, the list of Request that expect this response.
      * <p>
      * - key: class name of the response.
@@ -62,7 +73,7 @@ public class DtoCatalogExtended {
 
 
     /**
-     * Constructor (no DTOS are scanned, you must call the method 'refresh' to analyse the DTOs).
+     * Constructor (no DTOS are scanned, you must call the method 'scan' to analyse the DTOs).
      *
      * @param dtoCatalog the DTO Catalog.
      */
@@ -75,10 +86,13 @@ public class DtoCatalogExtended {
      * <p>
      * You should call this method when all the DTO classes have been scanned.
      */
-    public void refresh() {
+    public void scan() {
 
         // requests
         for (final Class<?> clazz : dtoCatalog.getRequests().values()) {
+
+            // maintain the list of packages
+            packages.add(clazz.getPackage().getName());
 
             final DtoRequestBean requestBean = getDtoRequestBean(clazz);
 
@@ -113,6 +127,9 @@ public class DtoCatalogExtended {
 
         // responses
         for (final Class<?> clazz : dtoCatalog.getResponses().values()) {
+
+            // maintain the list of packages
+            packages.add(clazz.getPackage().getName());
 
             final DtoResponseBean responseBean = getDtoResponseBean(clazz);
 

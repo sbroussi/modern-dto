@@ -3,7 +3,6 @@ package com.sbroussi.dto.catalog;
 import com.sbroussi.dto.annotations.DtoComment;
 import com.sbroussi.dto.annotations.DtoRequest;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,44 +16,13 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-@EqualsAndHashCode(of = "classname")
-public class DtoRequestBean implements Comparable<DtoRequestBean> {
+public class DtoRequestBean extends DtoBean {
 
     /**
      * The annotation.
      */
     private DtoRequest dtoRequest;
 
-
-    /**
-     * The documentation annotation.
-     */
-    private DtoComment dtoComment;
-
-    /**
-     * The documentation content.
-     */
-    private String firstDtoComment;
-
-    /**
-     * The documentation content.
-     */
-    private List<String> dtoComments;
-
-    /**
-     * The short name of the request.
-     */
-    private String name;
-
-    /**
-     * The name of the java class.
-     */
-    private String classname;
-
-    /**
-     * The java class of the DTO class annotated with '@DtoRequest'.
-     */
-    private Class<?> dtoClass;
 
     /**
      * The list of expected responses (as class).
@@ -91,31 +59,23 @@ public class DtoRequestBean implements Comparable<DtoRequestBean> {
 
         final DtoRequestBean bean = DtoRequestBean.builder()
                 .dtoRequest(dtoRequest)
-                .dtoComment(dtoComment)
-                .dtoComments(dtoComments)
-                .firstDtoComment(dtoComments.get(0))
-                .name(dtoRequest.name())
-                .classname(clazz.getName())
-                .dtoClass(clazz)
                 .expectedResponses(dtoRequest.expectedResponses())
                 .usedByApplications(dtoRequest.usedByApplications())
                 .technicalResponses(dtoRequest.technicalResponses())
                 .build();
 
+        // common fields
+        bean.setName(dtoRequest.name());
+
+        bean.setDtoComment(dtoComment);
+        bean.setDtoComments(dtoComments);
+        bean.setFirstDtoComment(dtoComments.get(0));
+        bean.setDtoComments(dtoComments);
+        bean.setClassname(clazz.getName());
+        bean.setDtoClass(clazz);
+
         return bean;
 
     }
 
-
-    // ---------------- from interface 'Comparable', to sort elements alphabetically in TreeSet
-    @Override
-    public int compareTo(final DtoRequestBean o) {
-        // sort by name
-        int comp = name.compareTo(o.name);
-        if (comp == 0) {
-            // and by classname for duplicates
-            comp = classname.compareTo(o.classname);
-        }
-        return comp;
-    }
 }

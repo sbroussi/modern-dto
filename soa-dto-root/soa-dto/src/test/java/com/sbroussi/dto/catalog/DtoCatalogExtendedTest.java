@@ -25,7 +25,7 @@ public class DtoCatalogExtendedTest {
 
         // load definitions of all DTOs
         final DtoCatalogExtended catalogExtended = new DtoCatalogExtended(dtoCatalog);
-        catalogExtended.refresh();
+        catalogExtended.scan();
 
         // bean WITHOUT expected response
         Class requestClazz = dtoCatalog.getRequests().get(MyBean.class.getName());
@@ -87,7 +87,7 @@ public class DtoCatalogExtendedTest {
 
         // load definitions of all DTOs
         final DtoCatalogExtended catalogExtended = new DtoCatalogExtended(dtoCatalog);
-        catalogExtended.refresh();
+        catalogExtended.scan();
 
         // 2 requests define: usedByApplications = {"app-test-A"}
         Set<DtoRequestBean> apps = catalogExtended.getRequestsByApplicationId().get("app-test-A");
