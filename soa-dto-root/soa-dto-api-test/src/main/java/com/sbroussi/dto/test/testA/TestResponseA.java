@@ -31,6 +31,10 @@ public class TestResponseA {
     public String myResponseField2;
 
 
+    @DtoComment(notes = {"This is the documentation of a datatype",
+            "that can be referenced by many fields to share/centralize",
+            "definitions of DataTypes",
+            "here we have: a plain String of 3 characters maximum"})
     @DtoField(length = 3)
     public static class MY_DATATYPE_REF {
     }

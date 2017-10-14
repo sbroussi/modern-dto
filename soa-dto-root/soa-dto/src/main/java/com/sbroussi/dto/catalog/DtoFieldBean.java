@@ -50,7 +50,7 @@ public class DtoFieldBean implements Comparable<DtoFieldBean> {
      * Optional: when a field references another DataTypes to
      * share/centralize definitions (see @DtoFieldReference and @DtoFieldNumberReference).
      */
-    private String datatypeReference;
+    private DtoDatatypeBean datatypeReference;
 
     /**
      * The type ('X' for String or '9' for Numbers),

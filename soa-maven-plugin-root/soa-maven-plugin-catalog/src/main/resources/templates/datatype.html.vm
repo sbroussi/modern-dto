@@ -1,8 +1,16 @@
 #parse("templates/page-header.vm")
-<h1>Datatype '${datatype}'</h1>
+<h1>Datatype '${bean.name}'</h1>
+<h2>Documentation:</h2>
+<blockquote>
+    #foreach( $comment in ${bean.dtoComments} )
+        $comment<br/>
+    #end
+    <hr/>
+    Java Class: ${bean.name}
+</blockquote>
 <h2>List of Fields referencing this Datatype:</h2>
 <ul>
-    #foreach( $field in ${fields} )
+    #foreach( $field in ${bean.fields} )
          #set ($dtoBean = ${field.dtoBean})
          #if (${dtoBean.class.simpleName} == "DtoRequestBean")
             <li>Request ${dtoBean.name}, field <a href="${generator.getRequestFilename($dtoBean.dtoClassname)}.html#${dtoBean.name}-${field.name}">${field.name}</a> - ${field.firstDtoComment}</li>

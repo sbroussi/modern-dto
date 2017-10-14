@@ -83,9 +83,9 @@ public class DtoCatalogExtended {
      * <p>
      * - key: the name of the Datatype Reference (a classname)
      * <p>
-     * - value: List of the DtoFieldBean that are referencing this DataType.
+     * - value: The 'DtoDatatypeBean'.
      */
-    private Map<String, Set<DtoFieldBean>> fieldsByDatatypes = new ConcurrentHashMap<String, Set<DtoFieldBean>>();
+    private Map<String, DtoDatatypeBean> datatypes = new ConcurrentHashMap<String, DtoDatatypeBean>();
 
 
     /**
@@ -187,7 +187,7 @@ public class DtoCatalogExtended {
             int minOccurs = 1;
             int maxOccurs = 1;
             char type = 'X';
-            String datatypeReference = null;
+            Class datatypeReference = null;
 
             final DtoComment dtoComment = field.getAnnotation(DtoComment.class);
             final List<String> dtoComments = DtoCatalogExtended.extractDtoComment(dtoComment, "Field " + field.getName());
@@ -195,11 +195,11 @@ public class DtoCatalogExtended {
 
             DtoFieldReference dtoFieldReference = field.getAnnotation(DtoFieldReference.class);
             if (dtoFieldReference != null) {
-                datatypeReference = dtoFieldReference.value().getName();
+                datatypeReference = dtoFieldReference.value();
             } else {
                 DtoFieldNumberReference dtoFieldNumberReference = field.getAnnotation(DtoFieldNumberReference.class);
                 if (dtoFieldNumberReference != null) {
-                    datatypeReference = dtoFieldNumberReference.value().getName();
+                    datatypeReference = dtoFieldNumberReference.value();
                 }
             }
 
@@ -214,11 +214,17 @@ public class DtoCatalogExtended {
                 dtoField = dtoFieldNumber.dtoField();
             }
 
-            final DtoFieldBean bean = DtoFieldBean.builder()
+            // maintain the list of DataType references
+            DtoDatatypeBean dtoDatatypeBean = (datatypeReference == null)
+                    ? null
+                    : getDtoDatatypeBean(datatypeReference);
+
+
+            final DtoFieldBean fieldBean = DtoFieldBean.builder()
                     .dtoField(dtoField)
                     .dtoFieldNumber(dtoFieldNumber)
                     .dtoBean(dtoBean)
-                    .datatypeReference(datatypeReference)
+                    .datatypeReference(dtoDatatypeBean)
                     .dtoComment(dtoComment)
                     .dtoComments(dtoComments)
                     .firstDtoComment(dtoComments.get(0))
@@ -232,20 +238,27 @@ public class DtoCatalogExtended {
                     .positionEnd(position + length)
                     .build();
 
-            fields.add(bean);
+            fields.add(fieldBean);
 
-            // maintain the list of DataType references
-            if (datatypeReference != null) {
-                Set<DtoFieldBean> datatypeFields = fieldsByDatatypes.get(datatypeReference);
-                if (datatypeFields == null) {
-                    datatypeFields = new TreeSet<DtoFieldBean>();
-                    fieldsByDatatypes.put(datatypeReference, datatypeFields);
-                }
-                datatypeFields.add(bean);
+            if (dtoDatatypeBean != null) {
+                dtoDatatypeBean.getFields().add(fieldBean);
             }
 
             position += length;
         }
+
+    }
+
+    private DtoDatatypeBean getDtoDatatypeBean(final Class<?> clazz) {
+        final String className = clazz.getName();
+        DtoDatatypeBean bean = datatypes.get(className);
+        if (bean == null) {
+
+            bean = DtoDatatypeBean.fromClass(clazz);
+
+            datatypes.put(className, bean);
+        }
+        return bean;
     }
 
 

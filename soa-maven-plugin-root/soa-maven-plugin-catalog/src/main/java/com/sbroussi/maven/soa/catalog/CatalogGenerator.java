@@ -5,7 +5,7 @@ import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import com.sbroussi.dto.DtoCatalog;
 import com.sbroussi.dto.catalog.DtoCatalogExtended;
-import com.sbroussi.dto.catalog.DtoFieldBean;
+import com.sbroussi.dto.catalog.DtoDatatypeBean;
 import com.sbroussi.dto.catalog.DtoRequestBean;
 import com.sbroussi.dto.catalog.DtoResponseBean;
 import org.apache.maven.plugin.logging.Log;
@@ -78,7 +78,7 @@ public class CatalogGenerator implements URIResolver {
             final Map<String, Set<DtoRequestBean>> apps = catalogExtended.getRequestsByApplicationId();
             final Map<String, DtoRequestBean> requests = catalogExtended.getRequestBeans();
             final Map<String, DtoResponseBean> responses = catalogExtended.getResponseBeans();
-            final Map<String, Set<DtoFieldBean>> datatypes = catalogExtended.getFieldsByDatatypes();
+            final Map<String, DtoDatatypeBean> datatypes = catalogExtended.getDatatypes();
             final Set<String> packagesList = catalogExtended.getPackages();
             log.info("Generate catalog for [" + requests.size() + "] requests");
             log.info("Generate catalog for [" + responses.size() + "] responses");
@@ -103,8 +103,8 @@ public class CatalogGenerator implements URIResolver {
 
             // List of Datatypes
             final Template templateDatatypesList = Velocity.getTemplate("/templates/datatypes-list.html.vm");
-            Set<String> sortedDatatypes = new TreeSet<String>();
-            sortedDatatypes.addAll(datatypes.keySet());
+            Set<DtoDatatypeBean> sortedDatatypes = new TreeSet<DtoDatatypeBean>();
+            sortedDatatypes.addAll(datatypes.values());
             context = new VelocityContext();
             context.put("generator", this);
             context.put("now", now);
@@ -114,18 +114,14 @@ public class CatalogGenerator implements URIResolver {
 
             // Datatypes
             final Template templateDatatype = Velocity.getTemplate("/templates/datatype.html.vm");
-            for (final Map.Entry<String, Set<DtoFieldBean>> entry : datatypes.entrySet()) {
+            for (final DtoDatatypeBean datatype : datatypes.values()) {
 
-                String datatype = entry.getKey();
-                Set<DtoFieldBean> fields = entry.getValue();
-
-                String filename = getDatatypeFilename(datatype);
+                String filename = getDatatypeFilename(datatype.getName());
 
                 context = new VelocityContext();
                 context.put("generator", this);
                 context.put("now", now);
-                context.put("datatype", datatype);
-                context.put("fields", fields);
+                context.put("bean", datatype);
 
                 outputFileHtml = new File(outputDirectory, "html/" + filename + ".html");
 
