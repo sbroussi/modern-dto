@@ -123,12 +123,31 @@ public class DtoCatalogExtended {
                 apps.add(requestBean);
             }
 
+            // technical Responses
+            final Class[] technicalResponses = requestBean.getTechnicalResponses();
+            final List<DtoResponseBean> technicalResponseBeans =
+                    new ArrayList<DtoResponseBean>((technicalResponses == null) ? 0 : technicalResponses.length);
+            requestBean.setTechnicalResponseBeans(technicalResponseBeans);
+            for (final Class technicalResponseClass : technicalResponses) {
+                technicalResponseBeans.add(getDtoResponseBean(technicalResponseClass));
+
+                // maintain the list of requests expecting this response
+                String responseClassname = technicalResponseClass.getName();
+                Set<DtoRequestBean> requestsExpectingThisResponse = requestsByExpectedResponse.get(responseClassname);
+                if (requestsExpectingThisResponse == null) {
+                    requestsExpectingThisResponse = new TreeSet<DtoRequestBean>();
+                    requestsByExpectedResponse.put(responseClassname, requestsExpectingThisResponse);
+                }
+                requestsExpectingThisResponse.add(requestBean);
+            }
+
+            // expected Responses
             final Class[] expectedResponses = requestBean.getExpectedResponses();
-            final List<DtoResponseBean> responseBeans = new ArrayList<DtoResponseBean>((expectedResponses == null) ? 0 : expectedResponses.length);
+            final List<DtoResponseBean> responseBeans =
+                    new ArrayList<DtoResponseBean>((expectedResponses == null) ? 0 : expectedResponses.length);
             requestBean.setExpectedResponseBeans(responseBeans);
             for (final Class expectedResponseClass : expectedResponses) {
                 responseBeans.add(getDtoResponseBean(expectedResponseClass));
-
 
                 // maintain the list of requests expecting this response
                 String responseClassname = expectedResponseClass.getName();
@@ -139,6 +158,7 @@ public class DtoCatalogExtended {
                 }
                 requestsExpectingThisResponse.add(requestBean);
             }
+
         }
 
         // responses

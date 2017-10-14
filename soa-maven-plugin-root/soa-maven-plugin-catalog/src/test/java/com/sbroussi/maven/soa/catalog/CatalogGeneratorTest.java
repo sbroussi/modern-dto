@@ -8,6 +8,8 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.junit.Test;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -38,9 +40,11 @@ public class CatalogGeneratorTest {
 
         // generate SOA Catalog
         Log log = new SystemStreamLog();
+        final String now = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(new Date());
 
         final CatalogGenerator generator = new CatalogGenerator(
                 log,
+                now,
                 dtoCatalog,
                 outputDirectory,
                 encoding);

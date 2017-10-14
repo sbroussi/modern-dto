@@ -41,10 +41,14 @@ public class DtoRequestBean extends DtoAbstractMessage {
     private String[] usedByApplications;
 
     /**
-     * /**
-     * The list of standard ERROR responses or technical messages that may always be returned.
+     * The list of standard ERROR responses or technical messages that may always be returned (as Class).
      */
     private Class[] technicalResponses;
+
+    /**
+     * The list of standard ERROR responses or technical messages that may always be returned (as DtoResponseBean).
+     */
+    private List<DtoResponseBean> technicalResponseBeans;
 
     /**
      * Factory constructor.

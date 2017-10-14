@@ -2,6 +2,7 @@
 <div align="right" style="font-size: 10pt">
     <a href="requests-list-compact.html">see Requests</a>
 </div>
+<hr/>
 <h2>Responses:</h2>
 <ul>
     #foreach( $response in ${responses} )

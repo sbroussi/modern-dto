@@ -21,4 +21,10 @@
         <li><a href="${generator.getResponseFilename($response.dtoClassname)}.html">${response.name}</a> - ${response.firstDtoComment}</li>
     #end
 </ul>
+<h2>Technical responses:</h2>
+<ul>
+    #foreach( $response in ${bean.technicalResponseBeans} )
+        <li><a href="${generator.getResponseFilename($response.dtoClassname)}.html">${response.name}</a> - ${response.firstDtoComment}</li>
+    #end
+</ul>
 #parse("templates/page-footer.vm")

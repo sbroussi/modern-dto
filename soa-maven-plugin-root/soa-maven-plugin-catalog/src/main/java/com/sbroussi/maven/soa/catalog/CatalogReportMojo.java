@@ -1,10 +1,10 @@
 package com.sbroussi.maven.soa.catalog;
 
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.sbroussi.dto.DtoCatalog;
 import com.sbroussi.dto.scan.DtoCatalogScanner;
+import org.apache.maven.doxia.sink.Sink;
 import org.apache.maven.doxia.siterenderer.Renderer;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.Component;
@@ -18,11 +18,12 @@ import org.codehaus.plexus.classworlds.realm.ClassRealm;
 
 import java.io.File;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -160,6 +161,7 @@ public class CatalogReportMojo extends AbstractMavenReport {
         return CATEGORY_PROJECT_REPORTS;
     }
 
+
     List<URL> getProjectClasspathElementURLs() {
         try {
             List<URL> urls = Lists.newArrayList();
@@ -228,17 +230,19 @@ public class CatalogReportMojo extends AbstractMavenReport {
             DtoCatalogScanner scanner = new DtoCatalogScanner(dtoCatalog);
             scanner.scanPackages(Boolean.valueOf(autodetect), packagesList);
 
+            final String now = new SimpleDateFormat("dd/MM/yyyy HH:mm").format(new Date());
+
             // generate SOA Catalog
             CatalogGenerator generator = new CatalogGenerator(
                     getLog(),
+                    now,
                     dtoCatalog,
                     getOutputDirectory(),
                     getEncoding());
             generator.generate();
 
-            // generate report with link to generated html pages
-            final Map<String, String> tokens = ImmutableMap.of("url", getCatalogOutputDirectory().getName() + "/index.html");
-            //new CatalogRenderer(getSink(), getBundle(locale), tokens).render();
+            fillReportPage(dtoCatalog, now);
+
 
         } catch (Exception ex) {
             throw new MavenReportException(ex.getMessage(), ex);
@@ -247,6 +251,47 @@ public class CatalogReportMojo extends AbstractMavenReport {
         }
     }
 
+    /**
+     * Fill the 'Maven report' page,
+     */
+    private void fillReportPage(final DtoCatalog dtoCatalog, final String now) {
+        Sink sink = getSink();
+        sink.head();
+        sink.title();
+        sink.text("SOA Catalog");
+        sink.title_();
+        sink.head_();
+
+        sink.body();
+
+        sink.section1();
+        sink.sectionTitle1();
+        sink.text("SOA Catalog");
+        sink.sectionTitle1_();
+
+        sink.text("Browse the ");
+        sink.link("./soa-catalog/index.html");
+        sink.text("SOA Catalog");
+        sink.link_();
+        sink.text(".");
+
+        sink.paragraph();
+        sink.text("The SOA Catalog contains:");
+        sink.lineBreak();
+        sink.text("- " + dtoCatalog.getRequests().size() + " requests");
+        sink.lineBreak();
+        sink.text("- " + dtoCatalog.getResponses().size() + " responses");
+        sink.paragraph_();
+
+        sink.paragraph();
+        sink.text("Generated " + now);
+        sink.paragraph_();
+
+        sink.section1_();
+
+
+        sink.body_();
+    }
     public ResourceBundle getBundle(Locale locale) {
         return ResourceBundle.getBundle("soa-catalog-report", locale, this.getClass().getClassLoader());
     }
