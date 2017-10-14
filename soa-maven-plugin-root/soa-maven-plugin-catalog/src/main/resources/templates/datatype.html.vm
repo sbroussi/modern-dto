@@ -5,19 +5,34 @@
     #foreach( $comment in ${bean.dtoComments} )
         $comment<br/>
     #end
+    #if (${bean.datatypeReference})
+        <div class="field_datatype">
+        Datatype: <a href="${generator.getDatatypeFilename(${bean.datatypeReference.name})}.html">${bean.datatypeReference.name}</a>
+        </div>
+    #end
     <hr/>
     Java Class: ${bean.name}
 </blockquote>
-<h2>List of Fields referencing this Datatype:</h2>
-<ul>
-    #foreach( $field in ${bean.fields} )
-         #set ($dtoBean = ${field.dtoBean})
-         #if (${dtoBean.class.simpleName} == "DtoRequestBean")
-            <li>Request ${dtoBean.name}, field <a href="${generator.getRequestFilename($dtoBean.dtoClassname)}.html#${dtoBean.name}-${field.name}">${field.name}</a> - ${field.firstDtoComment}</li>
-         #end
-         #if (${dtoBean.class.simpleName} == "DtoResponseBean")
-            <li>Response ${dtoBean.name}, field <a href="${generator.getResponseFilename($dtoBean.dtoClassname)}.html#${dtoBean.name}-${field.name}">${field.name}</a> - ${field.firstDtoComment}</li>
-         #end
-    #end
-</ul>
+#if (!${bean.datatypes.isEmpty()})
+    <h2>List of other Datatypes referencing this Datatype:</h2>
+    <ul>
+        #foreach( $datatype in ${bean.datatypes} )
+            <li><a href="${generator.getDatatypeFilename(${datatype.name})}.html">${datatype.name}</a></li>
+        #end
+    </ul>
+#end
+#if (!${bean.fields.isEmpty()})
+    <h2>List of Fields referencing this Datatype:</h2>
+    <ul>
+        #foreach( $field in ${bean.fields} )
+             #set ($dtoBean = ${field.dtoBean})
+             #if (${dtoBean.class.simpleName} == "DtoRequestBean")
+                <li>Request ${dtoBean.name}, field <a href="${generator.getRequestFilename($dtoBean.dtoClassname)}.html#${dtoBean.name}-${field.name}">${field.name}</a> - ${field.firstDtoComment}</li>
+             #end
+             #if (${dtoBean.class.simpleName} == "DtoResponseBean")
+                <li>Response ${dtoBean.name}, field <a href="${generator.getResponseFilename($dtoBean.dtoClassname)}.html#${dtoBean.name}-${field.name}">${field.name}</a> - ${field.firstDtoComment}</li>
+             #end
+        #end
+    </ul>
+#end
 #parse("templates/page-footer.vm")

@@ -187,21 +187,10 @@ public class DtoCatalogExtended {
             int minOccurs = 1;
             int maxOccurs = 1;
             char type = 'X';
-            Class datatypeReference = null;
 
             final DtoComment dtoComment = field.getAnnotation(DtoComment.class);
             final List<String> dtoComments = DtoCatalogExtended.extractDtoComment(dtoComment, "Field " + field.getName());
 
-
-            DtoFieldReference dtoFieldReference = field.getAnnotation(DtoFieldReference.class);
-            if (dtoFieldReference != null) {
-                datatypeReference = dtoFieldReference.value();
-            } else {
-                DtoFieldNumberReference dtoFieldNumberReference = field.getAnnotation(DtoFieldNumberReference.class);
-                if (dtoFieldNumberReference != null) {
-                    datatypeReference = dtoFieldNumberReference.value();
-                }
-            }
 
             DtoField dtoField = DtoUtils.readDtoField(field);
             if (dtoField != null) {
@@ -215,6 +204,16 @@ public class DtoCatalogExtended {
             }
 
             // maintain the list of DataType references
+            Class datatypeReference = null;
+            DtoFieldReference dtoFieldReference = field.getAnnotation(DtoFieldReference.class);
+            if (dtoFieldReference != null) {
+                datatypeReference = dtoFieldReference.value();
+            } else {
+                DtoFieldNumberReference dtoFieldNumberReference = field.getAnnotation(DtoFieldNumberReference.class);
+                if (dtoFieldNumberReference != null) {
+                    datatypeReference = dtoFieldNumberReference.value();
+                }
+            }
             DtoDatatypeBean dtoDatatypeBean = (datatypeReference == null)
                     ? null
                     : getDtoDatatypeBean(datatypeReference);
@@ -255,6 +254,27 @@ public class DtoCatalogExtended {
         if (bean == null) {
 
             bean = DtoDatatypeBean.fromClass(clazz);
+
+            // this DataType has to reference to another DataType ?
+            Class<?> datatypeReference = null;
+            DtoFieldReference dtoFieldReference = clazz.getAnnotation(DtoFieldReference.class);
+            if (dtoFieldReference != null) {
+                datatypeReference = dtoFieldReference.value();
+            } else {
+                DtoFieldNumberReference dtoFieldNumberReference = clazz.getAnnotation(DtoFieldNumberReference.class);
+                if (dtoFieldNumberReference != null) {
+                    datatypeReference = dtoFieldNumberReference.value();
+                }
+            }
+            if (datatypeReference != null) {
+                // recursive call
+                final DtoDatatypeBean referenceDataType = getDtoDatatypeBean(datatypeReference);
+
+                // maintain cross-references
+                bean.setDatatypeReference(referenceDataType);
+                referenceDataType.getDatatypes().add(bean);
+
+            }
 
             datatypes.put(className, bean);
         }

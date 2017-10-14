@@ -31,12 +31,24 @@ public class TestResponseA {
     public String myResponseField2;
 
 
-    @DtoComment(notes = {"This is the documentation of a datatype",
+    @DtoComment(notes = {"the field 3"})
+    @DtoFieldReference(TestResponseA.MY_DATATYPE_FINAL_REF.class)
+    public String myResponseField3;
+
+
+    @DtoComment(notes = {"This is the documentation of an intermediate datatype",
+            "that reference another datatype"})
+    @DtoFieldReference(MY_DATATYPE_FINAL_REF.class)
+    public static class MY_DATATYPE_REF {
+    }
+
+    @DtoComment(notes = {"This is the documentation of a final datatype",
             "that can be referenced by many fields to share/centralize",
             "definitions of DataTypes",
             "here we have: a plain String of 3 characters maximum"})
     @DtoField(length = 3)
-    public static class MY_DATATYPE_REF {
+    public static class MY_DATATYPE_FINAL_REF {
     }
+
 
 }

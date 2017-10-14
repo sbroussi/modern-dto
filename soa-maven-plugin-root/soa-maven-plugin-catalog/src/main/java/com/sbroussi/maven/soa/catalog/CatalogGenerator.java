@@ -159,10 +159,19 @@ public class CatalogGenerator implements URIResolver {
                 createFile(outputFileHtml, templateApplication, context);
             }
 
-            // List of Requests
-            final Template templateRequestsList = Velocity.getTemplate("/templates/requests-list.html.vm");
+            // List of Requests (Compact)
             Set<DtoRequestBean> sortedRequests = new TreeSet<DtoRequestBean>();
             sortedRequests.addAll(requests.values());
+            final Template templateRequestsListCompact = Velocity.getTemplate("/templates/requests-list-compact.html.vm");
+            context = new VelocityContext();
+            context.put("generator", this);
+            context.put("now", now);
+            context.put("requests", sortedRequests);
+            outputFileHtml = new File(outputDirectory, "html/requests-list-compact.html");
+            createFile(outputFileHtml, templateRequestsListCompact, context);
+
+            // List of Requests
+            final Template templateRequestsList = Velocity.getTemplate("/templates/requests-list.html.vm");
             context = new VelocityContext();
             context.put("generator", this);
             context.put("now", now);
@@ -186,10 +195,19 @@ public class CatalogGenerator implements URIResolver {
                 createFile(outputFileHtml, templateRequest, context);
             }
 
-            // List of Responses
-            final Template templateResponsesList = Velocity.getTemplate("/templates/responses-list.html.vm");
+            // List of Responses (Compact)
+            final Template templateResponsesListCompact = Velocity.getTemplate("/templates/responses-list-compact.html.vm");
             Set<DtoResponseBean> sortedResponses = new TreeSet<DtoResponseBean>();
             sortedResponses.addAll(responses.values());
+            context = new VelocityContext();
+            context.put("generator", this);
+            context.put("now", now);
+            context.put("responses", sortedResponses);
+            outputFileHtml = new File(outputDirectory, "html/responses-list-compact.html");
+            createFile(outputFileHtml, templateResponsesListCompact, context);
+
+            // List of Responses
+            final Template templateResponsesList = Velocity.getTemplate("/templates/responses-list.html.vm");
             context = new VelocityContext();
             context.put("generator", this);
             context.put("now", now);
@@ -217,9 +235,7 @@ public class CatalogGenerator implements URIResolver {
             // Static resources
             copyResource("/www/css/catalog.css", new File(outputDirectory, "css/catalog.css"));
             copyResource("/www/img/logo.jpg", new File(outputDirectory, "img/logo.jpg"));
-            copyResource("/www/js/jquery-1.7.min.js", new File(outputDirectory, "js/jquery-1.7.min.js"));
             copyResource("/www/banner.html", new File(outputDirectory, "banner.html"));
-            copyResource("/www/welcome.html", new File(outputDirectory, "welcome.html"));
             copyResource("/www/index.html", new File(outputDirectory, "index.html"));
 
         } catch (Exception ex) {
@@ -258,6 +274,18 @@ public class CatalogGenerator implements URIResolver {
 
     public String getApplicationFilename(final String applicationId) {
         return "app_" + applicationId.replace(' ', '_');
+    }
+
+    public String escapeHtml(final String input) {
+        if (input == null) {
+            return "";
+        }
+        String html = input.replaceAll("&", "&amp;");
+        html = html.replaceAll("<", "&lt;");
+        html = html.replaceAll(">", "&gt;");
+        html = html.replaceAll("\"", "&quote;");
+        html = html.replaceAll("'", "&apos;");
+        return html;
     }
 
     private void copyResource(final String resource, final File outputFile) throws IOException {

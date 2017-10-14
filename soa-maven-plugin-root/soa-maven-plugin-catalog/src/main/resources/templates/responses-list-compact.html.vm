@@ -1,0 +1,12 @@
+#parse("templates/page-begin.vm")
+<div align="right" style="font-size: 10pt">
+    <a href="requests-list-compact.html">see Requests</a>
+</div>
+<h2>Responses:</h2>
+<ul>
+    #foreach( $response in ${responses} )
+        <li><a target="frame-body" href="${generator.getResponseFilename($response.dtoClassname)}.html"
+        title="${generator.escapeHtml($response.firstDtoComment)}">${response.name}</a></li>
+    #end
+</ul>
+#parse("templates/page-footer.vm")

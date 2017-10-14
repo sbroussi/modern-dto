@@ -42,7 +42,7 @@
 
                     #if (${field.datatypeReference})
                         <div class="field_datatype">
-                        Datatype: <a href="${generator.getDatatypeFilename(${field.datatypeReference.name})}.html">${field.datatypeReference}</a>
+                        Datatype: <a href="${generator.getDatatypeFilename(${field.datatypeReference.name})}.html">${field.datatypeReference.name}</a>
                         </div>
                     #end
                 </div>

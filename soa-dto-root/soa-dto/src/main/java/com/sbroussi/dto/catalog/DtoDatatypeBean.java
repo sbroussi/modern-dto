@@ -1,5 +1,6 @@
 package com.sbroussi.dto.catalog;
 
+import com.sbroussi.dto.DtoUtils;
 import com.sbroussi.dto.annotations.DtoComment;
 import com.sbroussi.dto.annotations.DtoField;
 import com.sbroussi.dto.annotations.DtoFieldNumber;
@@ -59,6 +60,18 @@ public class DtoDatatypeBean implements Comparable<DtoDatatypeBean> {
 
 
     /**
+     * List of the other 'DataTypes' that are referencing this DataType.
+     */
+    @Builder.Default
+    private Set<DtoDatatypeBean> datatypes = new TreeSet<DtoDatatypeBean>();
+
+    /**
+     * Optional: when a Datatype references another DataTypes to
+     * share/centralize definitions (see @DtoFieldReference and @DtoFieldNumberReference).
+     */
+    private DtoDatatypeBean datatypeReference;
+
+    /**
      * Factory constructor.
      *
      * @param clazz the class of the DtoDatatypeBean.
@@ -67,8 +80,8 @@ public class DtoDatatypeBean implements Comparable<DtoDatatypeBean> {
 
         final String className = clazz.getName();
 
-        DtoField dtoField = clazz.getAnnotation(DtoField.class);
-        DtoFieldNumber dtoFieldNumber = clazz.getAnnotation(DtoFieldNumber.class);
+        DtoField dtoField = DtoUtils.readDtoField(clazz);
+        DtoFieldNumber dtoFieldNumber = DtoUtils.readDtoFieldNumber(DtoFieldNumber.class);
 
         final DtoComment dtoComment = clazz.getAnnotation(DtoComment.class);
         final List<String> dtoComments = DtoCatalogExtended.extractDtoComment(dtoComment, "Datatype " + className);
