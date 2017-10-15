@@ -45,6 +45,8 @@ public class CatalogGeneratorTest {
         final CatalogGenerator generator = new CatalogGenerator(
                 log,
                 now,
+                "test-project",
+                "test-version",
                 dtoCatalog,
                 outputDirectory,
                 encoding);

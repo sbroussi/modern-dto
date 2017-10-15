@@ -36,28 +36,40 @@ public class CatalogGenerator implements URIResolver {
 
     private final Log log;
     private final String now;
+    private final String projectName;
+    private final String projectVersion;
+    private final String projectInfosHtml;
+
     private final DtoCatalog dtoCatalog;
+    private final String outputDirectoryRoot;
     private final String outputDirectory;
-    private final String outputDirectoryCatalog;
     private final String encoding;
 
     public CatalogGenerator(final Log log,
                             final String now,
+                            final String projectName,
+                            final String projectVersion,
                             final DtoCatalog dtoCatalog,
                             final String outputDirectory,
                             final String encoding) {
         this.log = log;
         this.now = now;
+        this.projectName = projectName;
+        this.projectVersion = projectVersion;
         this.dtoCatalog = dtoCatalog;
-        this.outputDirectory = outputDirectory;
-        this.outputDirectoryCatalog = outputDirectory + "/soa-catalog";
+        this.outputDirectoryRoot = outputDirectory;
+        this.outputDirectory = outputDirectory + "/soa-catalog";
         this.encoding = encoding;
+
+        this.projectInfosHtml = (projectName != null)
+                ? "Project '<strong>" + projectName + "</strong>' version '<strong>" + projectVersion + "</strong>'<hr/>"
+                : "";
 
     }
 
     public void generate() throws MavenReportException {
 
-        log.info("Generate catalog to folder: [" + outputDirectoryCatalog + "]");
+        log.info("Generate catalog to folder: [" + outputDirectory + "]");
 
         try {
 
@@ -92,13 +104,14 @@ public class CatalogGenerator implements URIResolver {
             VelocityContext context = new VelocityContext();
             context.put("generator", this);
             context.put("now", now);
+            context.put("projectInfosHtml", projectInfosHtml);
             context.put("nbRequests", requests.size());
             context.put("nbResponses", responses.size());
             context.put("nbDataTypes", datatypes.size());
             context.put("nbApplications", apps.size());
             context.put("nbPackages", packagesList.size());
             context.put("packagesList", packagesList);
-            File outputFileHtml = new File(outputDirectoryCatalog, "html/index.html");
+            File outputFileHtml = new File(outputDirectory, "html/index.html");
             createFile(outputFileHtml, templateWelcome, context);
 
 
@@ -109,8 +122,9 @@ public class CatalogGenerator implements URIResolver {
             context = new VelocityContext();
             context.put("generator", this);
             context.put("now", now);
+            context.put("projectInfosHtml", projectInfosHtml);
             context.put("datatypes", sortedDatatypes);
-            outputFileHtml = new File(outputDirectoryCatalog, "html/datatypes-list.html");
+            outputFileHtml = new File(outputDirectory, "html/datatypes-list.html");
             createFile(outputFileHtml, templateDatatypesList, context);
 
             // Datatypes
@@ -122,9 +136,10 @@ public class CatalogGenerator implements URIResolver {
                 context = new VelocityContext();
                 context.put("generator", this);
                 context.put("now", now);
+                context.put("projectInfosHtml", projectInfosHtml);
                 context.put("bean", datatype);
 
-                outputFileHtml = new File(outputDirectoryCatalog, "html/" + filename + ".html");
+                outputFileHtml = new File(outputDirectory, "html/" + filename + ".html");
 
                 createFile(outputFileHtml, templateDatatype, context);
             }
@@ -136,8 +151,9 @@ public class CatalogGenerator implements URIResolver {
             context = new VelocityContext();
             context.put("generator", this);
             context.put("now", now);
+            context.put("projectInfosHtml", projectInfosHtml);
             context.put("applications", sortedApps);
-            outputFileHtml = new File(outputDirectoryCatalog, "html/applications-list.html");
+            outputFileHtml = new File(outputDirectory, "html/applications-list.html");
             createFile(outputFileHtml, templateApplicationsList, context);
 
             // Applications
@@ -152,10 +168,11 @@ public class CatalogGenerator implements URIResolver {
                 context = new VelocityContext();
                 context.put("generator", this);
                 context.put("now", now);
+                context.put("projectInfosHtml", projectInfosHtml);
                 context.put("applicationId", applicationId);
                 context.put("requests", appRequests);
 
-                outputFileHtml = new File(outputDirectoryCatalog, "html/" + filename + ".html");
+                outputFileHtml = new File(outputDirectory, "html/" + filename + ".html");
 
                 createFile(outputFileHtml, templateApplication, context);
             }
@@ -167,8 +184,9 @@ public class CatalogGenerator implements URIResolver {
             context = new VelocityContext();
             context.put("generator", this);
             context.put("now", now);
+            context.put("projectInfosHtml", projectInfosHtml);
             context.put("requests", sortedRequests);
-            outputFileHtml = new File(outputDirectoryCatalog, "html/requests-list-compact.html");
+            outputFileHtml = new File(outputDirectory, "html/requests-list-compact.html");
             createFile(outputFileHtml, templateRequestsListCompact, context);
 
             // List of Requests
@@ -176,8 +194,9 @@ public class CatalogGenerator implements URIResolver {
             context = new VelocityContext();
             context.put("generator", this);
             context.put("now", now);
+            context.put("projectInfosHtml", projectInfosHtml);
             context.put("requests", sortedRequests);
-            outputFileHtml = new File(outputDirectoryCatalog, "html/requests-list.html");
+            outputFileHtml = new File(outputDirectory, "html/requests-list.html");
             createFile(outputFileHtml, templateRequestsList, context);
 
             // Requests
@@ -189,9 +208,10 @@ public class CatalogGenerator implements URIResolver {
                 context = new VelocityContext();
                 context.put("generator", this);
                 context.put("now", now);
+                context.put("projectInfosHtml", projectInfosHtml);
                 context.put("bean", bean);
 
-                outputFileHtml = new File(outputDirectoryCatalog, "html/" + filename + ".html");
+                outputFileHtml = new File(outputDirectory, "html/" + filename + ".html");
 
                 createFile(outputFileHtml, templateRequest, context);
             }
@@ -203,8 +223,9 @@ public class CatalogGenerator implements URIResolver {
             context = new VelocityContext();
             context.put("generator", this);
             context.put("now", now);
+            context.put("projectInfosHtml", projectInfosHtml);
             context.put("responses", sortedResponses);
-            outputFileHtml = new File(outputDirectoryCatalog, "html/responses-list-compact.html");
+            outputFileHtml = new File(outputDirectory, "html/responses-list-compact.html");
             createFile(outputFileHtml, templateResponsesListCompact, context);
 
             // List of Responses
@@ -212,8 +233,9 @@ public class CatalogGenerator implements URIResolver {
             context = new VelocityContext();
             context.put("generator", this);
             context.put("now", now);
+            context.put("projectInfosHtml", projectInfosHtml);
             context.put("responses", sortedResponses);
-            outputFileHtml = new File(outputDirectoryCatalog, "html/responses-list.html");
+            outputFileHtml = new File(outputDirectory, "html/responses-list.html");
             createFile(outputFileHtml, templateResponsesList, context);
 
             // Responses
@@ -225,19 +247,20 @@ public class CatalogGenerator implements URIResolver {
                 context = new VelocityContext();
                 context.put("generator", this);
                 context.put("now", now);
+                context.put("projectInfosHtml", projectInfosHtml);
                 context.put("bean", bean);
 
-                outputFileHtml = new File(outputDirectoryCatalog, "html/" + filename + ".html");
+                outputFileHtml = new File(outputDirectory, "html/" + filename + ".html");
 
                 createFile(outputFileHtml, templateResponse, context);
             }
 
 
             // Static resources of SOA Catalog
-            copyResource("/www/soa-catalog/css/catalog.css", new File(outputDirectoryCatalog, "css/catalog.css"));
-            copyResource("/www/soa-catalog/img/logo.jpg", new File(outputDirectoryCatalog, "img/logo.jpg"));
-            copyResource("/www/soa-catalog/banner.html", new File(outputDirectoryCatalog, "banner.html"));
-            copyResource("/www/soa-catalog/index.html", new File(outputDirectoryCatalog, "index.html"));
+            copyResource("/www/soa-catalog/css/catalog.css", new File(outputDirectory, "css/catalog.css"));
+            copyResource("/www/soa-catalog/img/logo.jpg", new File(outputDirectory, "img/logo.jpg"));
+            copyResource("/www/soa-catalog/banner.html", new File(outputDirectory, "banner.html"));
+            copyResource("/www/soa-catalog/index.html", new File(outputDirectory, "index.html"));
 
         } catch (Exception ex) {
             throw new MavenReportException(ex.getMessage(), ex);

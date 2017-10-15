@@ -115,6 +115,7 @@ public class CatalogReportMojo extends AbstractMavenReport {
     )
     private PluginDescriptor plugin;
 
+
     @Component
     private Renderer siteRenderer;
 
@@ -236,6 +237,8 @@ public class CatalogReportMojo extends AbstractMavenReport {
             CatalogGenerator generator = new CatalogGenerator(
                     getLog(),
                     now,
+                    (project == null) ? null : project.getName(),
+                    (project == null) ? null : project.getVersion(),
                     dtoCatalog,
                     getOutputDirectory(),
                     getEncoding());
@@ -256,6 +259,8 @@ public class CatalogReportMojo extends AbstractMavenReport {
      */
     private void fillReportPage(final DtoCatalog dtoCatalog, final String now) {
         Sink sink = getSink();
+
+
         sink.head();
         sink.title();
         sink.text("SOA Catalog");
@@ -276,7 +281,20 @@ public class CatalogReportMojo extends AbstractMavenReport {
         sink.text(".");
 
         sink.paragraph();
-        sink.text("The SOA Catalog contains:");
+        sink.text("The SOA Catalog");
+        if (project != null) {
+            sink.text(" of project '");
+            sink.bold();
+            sink.text(project.getName());
+            sink.bold_();
+            sink.text("' version '");
+            sink.bold();
+            sink.text(project.getVersion());
+            sink.bold_();
+            sink.text("'");
+        }
+        sink.text(" contains:");
+
         sink.lineBreak();
         sink.text("- " + dtoCatalog.getRequests().size() + " requests");
         sink.lineBreak();
@@ -292,6 +310,7 @@ public class CatalogReportMojo extends AbstractMavenReport {
 
         sink.body_();
     }
+
     public ResourceBundle getBundle(Locale locale) {
         return ResourceBundle.getBundle("soa-catalog-report", locale, this.getClass().getClassLoader());
     }

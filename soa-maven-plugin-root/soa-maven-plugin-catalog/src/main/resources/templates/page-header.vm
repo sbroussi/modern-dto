@@ -8,4 +8,6 @@ Navigation: <a href="index.html">Home</a>
 <a href="responses-list.html">Responses</a>
 &nbsp; | &nbsp;
 <a href="datatypes-list.html">Datatypes</a>
+&nbsp; | &nbsp;
 <hr/>
+${projectInfosHtml}
