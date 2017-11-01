@@ -9,12 +9,12 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class ABORT {
+public class ABORTKO {
 
     @DtoField(length = 1)
     private String errorCode;
 
-    @DtoField(length = 80)
+    @DtoField(length = 38)
     private String errorMessage;
 
 }

@@ -1,7 +1,7 @@
 package com.sbroussi.dto.annotations;
 
 
-import com.sbroussi.dto.error.ABORT;
+import com.sbroussi.dto.error.ABORTSelector;
 import com.sbroussi.dto.error.ERROR;
 import com.sbroussi.dto.error.INFO;
 
@@ -32,6 +32,6 @@ public @interface DtoRequest {
      * <p>
      * Defaults to: ERROR, ABORT, INFO..
      */
-    Class[] technicalResponses() default {ABORT.class, ERROR.class, INFO.class};
+    Class[] technicalResponses() default {ABORTSelector.class, ERROR.class, INFO.class};
 
 }
