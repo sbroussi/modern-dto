@@ -1,8 +1,10 @@
 package com.sbroussi.dto.catalog;
 
+import com.sbroussi.dto.annotations.DtoChoice;
 import com.sbroussi.dto.annotations.DtoComment;
 import com.sbroussi.dto.annotations.DtoField;
 import com.sbroussi.dto.annotations.DtoFieldNumber;
+import com.sbroussi.dto.annotations.DtoRepeat;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -19,6 +21,9 @@ public class DtoFieldBean implements Comparable<DtoFieldBean> {
 
     private DtoField dtoField;
     private DtoFieldNumber dtoFieldNumber;
+
+    private DtoRepeat dtoRepeat;
+    private DtoChoice dtoChoice;
 
     /**
      * The documentation annotation.
@@ -56,9 +61,6 @@ public class DtoFieldBean implements Comparable<DtoFieldBean> {
      * The type ('X' for String or '9' for Numbers),
      */
     private char type;
-
-    private int minOccurs = 1;
-    private int maxOccurs = 1;
 
     private int positionStart;
     private int positionEnd;

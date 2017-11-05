@@ -1,14 +1,12 @@
 body {font-family: Helvetica; font-size: small; background-color: #fef4ea}
-.card_request {background-color: #eaf6de}
-.card_response {background-color: #deeaf6}
 h2 {font-size: larger; font-weight: bold}
 td {vertical-align: top; border-color: #c0c0c0; border-width: thin; border-style: solid}
 table {font-family: Helvetica; border-collapse: collapse; vertical-align:top }
 .tableTitle {background-color: #ff9900; color: white; font-size: 18pt}
 .field_documentation {font-family: Helvetica}
 .field_datatype {text-align: right; font-style: italic; color: #808080 }
-.feature {color: #0F60B0}
-.footer {color: #000066}
 .response_fields {}
-.cell_title {background-color: #ffe0c3; padding: 5px}
-.cell_data {background-color: #fef4ea; padding-right: 5px; padding-left: 5px}
+.cell_title {background-color: #60A6DA; padding: 5px}
+.cell_data {background-color: #EBEBEB; padding-right: 5px; padding-left: 5px}
+.cell_choice {background-color: #FF6200; padding-right: 5px; padding-left: 5px}
+

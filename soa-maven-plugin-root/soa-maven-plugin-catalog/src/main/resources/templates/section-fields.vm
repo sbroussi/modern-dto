@@ -20,36 +20,47 @@
     </tr>
 
     #foreach( $field in ${bean.fields} )
-        <tr>
-            <td class="cell_data"><a name="${bean.name}-${field.name}"></a>
-                ${field.name}</td>
-            <td align="right" class="cell_data">
-                #if ( (${field.minOccurs} != 1) && (${field.maxOccurs} != 1) )
-                    <font color="red">
-                        OCCURS ${field.minOccurs} ... ${field.maxOccurs}
-                    </font>
-                #else
-                    ${field.type}
-                #end
-
-            </td>
-            <td align="right" class="cell_data">${field.length}</td>
-            <td class="cell_data">
-                <div class="field_documentation">
-                    #foreach( $comment in ${field.dtoComments} )
-                        $comment<br/>
+        #if (${field.dtoChoice})
+            <tr>
+                <td class="cell_data"><a name="${bean.name}-${field.name}"></a>
+                    ${field.name}</td>
+                 </td>
+                 <td class="cell_data">&nbsp;</td>
+                 <td class="cell_data">&nbsp;</td>
+                 <td class="cell_choice">IF THE FIRST CHARACTER IS: ${field.dtoChoice.parseWhenNextCharacterIs()}</td>
+                 <td class="cell_data">&nbsp;</td>
+             </tr>
+        #else
+            <tr>
+                <td class="cell_data"><a name="${bean.name}-${field.name}"></a>
+                    ${field.name}</td>
+                <td align="right" class="cell_data">
+                    #if ( ${field.dtoRepeat}  )
+                        <font color="red">
+                            OCCURS ${field.dtoRepeat.minOccurs} ... ${field.dtoRepeat.maxOccurs}
+                        </font>
+                    #else
+                        ${field.type}
                     #end
 
-                    #if (${field.datatypeReference})
-                        <div class="field_datatype">
-                        Datatype: <a href="${generator.getDatatypeFilename(${field.datatypeReference.name})}.html">${field.datatypeReference.name}</a>
-                        </div>
-                    #end
-                </div>
-            </td>
-            <td align="right" class="cell_data">${field.positionStart} - ${field.positionEnd}</td>
-        </tr>
+                </td>
+                <td align="right" class="cell_data">${field.length}</td>
+                <td class="cell_data">
+                    <div class="field_documentation">
+                        #foreach( $comment in ${field.dtoComments} )
+                            $comment<br/>
+                        #end
 
+                        #if (${field.datatypeReference})
+                            <div class="field_datatype">
+                            Datatype: <a href="${generator.getDatatypeFilename(${field.datatypeReference.name})}.html">${field.datatypeReference.name}</a>
+                            </div>
+                        #end
+                    </div>
+                </td>
+                <td align="right" class="cell_data">${field.positionStart} - ${field.positionEnd}</td>
+            </tr>
+        #end
     #end
 </table>
 

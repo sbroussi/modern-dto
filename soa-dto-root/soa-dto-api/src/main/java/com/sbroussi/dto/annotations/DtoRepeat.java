@@ -7,15 +7,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.FIELD})
-public @interface DtoFieldNumber {
+@Target({ElementType.FIELD})
+public @interface DtoRepeat {
 
-    int length();
+    int minOccurs() default 0;
 
-    char paddingChar() default '0';
-
-    int fractionDigits();
-
-    boolean withSign() default false;
+    int maxOccurs();
 
 }

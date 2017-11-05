@@ -14,6 +14,6 @@ public class ABORTSelector {
     private ABORT abort;
 
     @DtoChoice(parseWhenNextCharacterIs = 'E')
-    protected ABORTKO abortko;
+    private ABORTKO abortko;
 
 }

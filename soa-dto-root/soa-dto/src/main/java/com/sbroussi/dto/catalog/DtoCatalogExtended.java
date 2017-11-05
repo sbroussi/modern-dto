@@ -2,11 +2,13 @@ package com.sbroussi.dto.catalog;
 
 import com.sbroussi.dto.DtoCatalog;
 import com.sbroussi.dto.DtoUtils;
+import com.sbroussi.dto.annotations.DtoChoice;
 import com.sbroussi.dto.annotations.DtoComment;
 import com.sbroussi.dto.annotations.DtoField;
 import com.sbroussi.dto.annotations.DtoFieldNumber;
 import com.sbroussi.dto.annotations.DtoFieldNumberReference;
 import com.sbroussi.dto.annotations.DtoFieldReference;
+import com.sbroussi.dto.annotations.DtoRepeat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DtoCatalogExtended {
 
     private final DtoCatalog dtoCatalog;
+
 
     /**
      * The map of 'DtoRequestBean' classes (for Catalog generation or DEV tooling),
@@ -91,7 +94,7 @@ public class DtoCatalogExtended {
     /**
      * Constructor (no DTOS are scanned, you must call the method 'scan' to analyse the DTOs).
      *
-     * @param dtoCatalog the DTO Catalog.
+     * @param dtoCatalog      the DTO Catalog.
      */
     public DtoCatalogExtended(final DtoCatalog dtoCatalog) {
         this.dtoCatalog = dtoCatalog;
@@ -174,6 +177,8 @@ public class DtoCatalogExtended {
             responseBean.setRequestsExpectingThisResponse((requestsExpectingThisResponse == null)
                     ? new ArrayList<DtoRequestBean>(0)
                     : requestsExpectingThisResponse);
+
+
         }
     }
 
@@ -201,16 +206,16 @@ public class DtoCatalogExtended {
         final Set<DtoFieldBean> fields = new TreeSet<DtoFieldBean>();
         dtoBean.setFields(fields);
         int position = 1;
-        for (final Field field : clazz.getFields()) {
+        for (final Field field : clazz.getDeclaredFields()) {
 
             int length = 0;
-            int minOccurs = 1;
-            int maxOccurs = 1;
             char type = 'X';
 
             final DtoComment dtoComment = field.getAnnotation(DtoComment.class);
             final List<String> dtoComments = DtoCatalogExtended.extractDtoComment(dtoComment, "Field " + field.getName());
 
+            DtoRepeat dtoRepeat = field.getAnnotation(DtoRepeat.class);
+            DtoChoice dtoChoice = field.getAnnotation(DtoChoice.class);
 
             DtoField dtoField = DtoUtils.readDtoField(field);
             if (dtoField != null) {
@@ -220,7 +225,6 @@ public class DtoCatalogExtended {
             if (dtoFieldNumber != null) {
                 type = '9';
                 length = dtoFieldNumber.length();
-                dtoField = dtoFieldNumber.dtoField();
             }
 
             // maintain the list of DataType references
@@ -242,6 +246,8 @@ public class DtoCatalogExtended {
             final DtoFieldBean fieldBean = DtoFieldBean.builder()
                     .dtoField(dtoField)
                     .dtoFieldNumber(dtoFieldNumber)
+                    .dtoRepeat(dtoRepeat)
+                    .dtoChoice(dtoChoice)
                     .dtoBean(dtoBean)
                     .datatypeReference(dtoDatatypeBean)
                     .dtoComment(dtoComment)
@@ -251,8 +257,6 @@ public class DtoCatalogExtended {
                     .name(field.getName())
                     .length(length)
                     .type(type)
-                    .minOccurs(minOccurs)
-                    .maxOccurs(maxOccurs)
                     .positionStart(position)
                     .positionEnd(position + length)
                     .build();
